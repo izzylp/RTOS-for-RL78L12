@@ -1,0 +1,13 @@
+# RTOS-for-RL78L12 
+
+Functions:
+initDriver
+initCtrDrv
+kernelAddProc
+kernelLoop
+
+TODO LIST:
+- Serial has some issues regarding TX and RX buffering
+- PWM is not tested
+- PID driver
+- WDT driver

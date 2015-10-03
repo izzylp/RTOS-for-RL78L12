@@ -1,0 +1,11 @@
+file Sist_Op_stable.x
+target sim
+load
+break main
+break kernelInit
+break kernelLoop
+break CreateIdleProc
+break R_IT_Start
+break kernelAddProc
+handle SIGTRAP nostop
+run

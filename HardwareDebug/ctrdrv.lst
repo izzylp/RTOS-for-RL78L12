@@ -1,0 +1,312 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             	.data
+  28                             		.balign 2
+  31                             	_drvGetFunc:
+  32 0000 00 00                   		.short	%code(_getLedDriver)
+  33 0002 00 00                   		.short	%code(_getLcdDriver)
+  34 0004 00 00                   		.short	%code(_getBotDriver)
+  35 0006 00 00                   		.short	%code(_getADCDriver)
+  36 0008 00 00                   		.short	%code(_getSerDriver)
+  37 000a 00 00                   		.short	%code(_getPWMDriver)
+  38 000c 00 00                   		.short	%code(_getPIDDriver)
+  39 000e 00 00                   		.short	%code(_getTimDriver)
+  40 0010 00 00                   		.short	%code(_getIntDriver)
+  41                             		.local	_driversLoaded
+  42                             		.comm	_driversLoaded,40,2
+  43                             		.local	_qntDrvLoaded
+  44                             		.comm	_qntDrvLoaded,1,1
+  45                             	.text
+  46                             		.global	_initCtrDrv
+  48                             	_initCtrDrv:
+  49                             	.LFB0:
+  50                             		.file 1 "../src/ctrdrv.c"
+   1:../src/ctrdrv.c **** /*
+   2:../src/ctrdrv.c ****  * ctrdrv.c
+   3:../src/ctrdrv.c ****  *
+   4:../src/ctrdrv.c ****  *  Created on: May 18, 2014
+   5:../src/ctrdrv.c ****  *      Author: Pedro
+   6:../src/ctrdrv.c ****  */
+   7:../src/ctrdrv.c **** #include "ctrdrv.h"
+   8:../src/ctrdrv.c **** #include "kernel.h"
+   9:../src/ctrdrv.c **** 
+  10:../src/ctrdrv.c **** static driver *driversLoaded[QNTD_DRV];
+  11:../src/ctrdrv.c **** static char qntDrvLoaded;
+  12:../src/ctrdrv.c **** 
+  13:../src/ctrdrv.c **** char initCtrDrv(void)
+  14:../src/ctrdrv.c **** {
+  51                             		.loc 1 14 0
+  15:../src/ctrdrv.c ****     qntDrvLoaded = 0;
+  52                             		.loc 1 15 0
+  53 0000 F5 28 00                		clrb	!_qntDrvLoaded
+  16:../src/ctrdrv.c ****     return SUCESSO;
+  54                             		.loc 1 16 0
+  55 0003 CD F0 00                		mov	r8, #0
+  17:../src/ctrdrv.c **** }
+  56                             		.loc 1 17 0
+  57 0006 D7                      		ret
+  58                             	.LFE0:
+  60                             		.global	_initDriver
+  62                             	_initDriver:
+  63                             	.LFB1:
+  18:../src/ctrdrv.c **** 
+  19:../src/ctrdrv.c **** char initDriver(char newDriver)
+  20:../src/ctrdrv.c **** {
+  64                             		.loc 1 20 0
+  65                             		; start of function
+  66                             		; push 2: r16
+  67                             		; locals: 2 bytes
+  68                             		; outgoing: 2 bytes
+  69 0007 61 EF                   		sel	rb2
+  70 0009 C1                      		push	ax ; r16
+  71                             	.LCFI0:
+  72 000a 61 CF                   		sel	rb0
+  73 000c 20 04                   		subw	sp, #4
+  74                             	.LCFI1:
+  21:../src/ctrdrv.c ****     char resp = FALHA;
+  75                             		.loc 1 21 0
+  76 000e C8 03 01                		mov	[sp+3], #1
+  22:../src/ctrdrv.c ****     if (qntDrvLoaded < QNTD_DRV) {
+  77                             		.loc 1 22 0
+  78 0011 8F 28 00                		mov	a, !_qntDrvLoaded
+  79 0014 9D F0                   		mov	r8, a
+  80 0016 4A F0 13                		cmp	r8, #19 
+  81 0019 61 F3                   		sknh 
+  82 001b EC BE 00 00             		br	!!.L4
+  23:../src/ctrdrv.c ****         driversLoaded[qntDrvLoaded] = drvGetFunc[newDriver]();
+  83                             		.loc 1 23 0
+  84 001f 8F 28 00                		mov	a, !_qntDrvLoaded
+  85 0022 9D F0                   		mov	r8, a
+  86 0024 70                      		mov	x, a 
+  87 0025 51 00                   		mov	a, #0
+  88 0027 BD E8                   		movw	r16, ax
+  89 0029 88 0A                   		mov	a, [sp+10]
+  90 002b 9D F0                   		mov	r8, a
+  91 002d CD F1 00                		mov	r9, #0
+  92 0030 AD F0                   		movw	ax, r8
+  93 0032 01                      		addw	ax, ax
+  94 0033 BD F0                   		movw	r8, ax
+  95 0035 04 00 00                		addw	ax, #_drvGetFunc
+  96 0038 BD F0                   		movw	r8, ax
+  97 003a BD F2                   		movw	r10, ax
+  98 003c FA F2                   		movw	hl, r10
+  99 003e AB                      		movw	ax, [hl]
+ 100 003f BD F0                   		movw	r8, ax
+ 101 0041 BD F4                   		movw	r12, ax
+ 102 0043 FA F4                   		movw	hl, r12
+ 103 0045 61 FA                   		call	hl
+ 104 0047 AD E8                   		movw	ax, r16
+ 105 0049 01                      		addw	ax, ax
+ 106 004a BD F2                   		movw	r10, ax
+ 107 004c 04 00 00                		addw	ax, #_driversLoaded
+ 108 004f BD F2                   		movw	r10, ax
+ 109 0051 BD F4                   		movw	r12, ax
+ 110 0053 FA F4                   		movw	hl, r12
+ 111 0055 AD F0                   		movw	ax, r8
+ 112 0057 BB                      		movw	[hl], ax
+  24:../src/ctrdrv.c ****         resp = driversLoaded[qntDrvLoaded]->drv_init(&newDriver);
+ 113                             		.loc 1 24 0
+ 114 0058 8F 28 00                		mov	a, !_qntDrvLoaded
+ 115 005b 9D F0                   		mov	r8, a
+ 116 005d CD F1 00                		mov	r9, #0
+ 117 0060 AD F0                   		movw	ax, r8
+ 118 0062 01                      		addw	ax, ax
+ 119 0063 BD F0                   		movw	r8, ax
+ 120 0065 04 00 00                		addw	ax, #_driversLoaded
+ 121 0068 BD F0                   		movw	r8, ax
+ 122 006a BD F2                   		movw	r10, ax
+ 123 006c FA F2                   		movw	hl, r10
+ 124 006e AB                      		movw	ax, [hl]
+ 125 006f BD F0                   		movw	r8, ax
+ 126 0071 FA F0                   		movw	hl, r8
+ 127 0073 AC 04                   		movw	ax, [hl+4]
+ 128 0075 BD F0                   		movw	r8, ax
+ 129 0077 AE F8                   		movw	ax, sp
+ 130 0079 BD F4                   		movw	r12, ax
+ 131 007b 04 0A 00                		addw	ax, #10
+ 132 007e B8 00                   		movw	[sp], ax
+ 133 0080 AD F0                   		movw	ax, r8
+ 134 0082 BD F2                   		movw	r10, ax
+ 135 0084 FA F2                   		movw	hl, r10
+ 136 0086 61 FA                   		call	hl
+ 137 0088 8D F0                   		mov	a, r8
+ 138 008a 98 03                   		mov	[sp+3], a
+  25:../src/ctrdrv.c ****         /*  Linha adicionada para adicionar id  */
+  26:../src/ctrdrv.c ****         driversLoaded[qntDrvLoaded]->drv_id = newDriver;
+ 139                             		.loc 1 26 0
+ 140 008c 8F 28 00                		mov	a, !_qntDrvLoaded
+ 141 008f 9D F0                   		mov	r8, a
+ 142 0091 CD F1 00                		mov	r9, #0
+ 143 0094 AD F0                   		movw	ax, r8
+ 144 0096 01                      		addw	ax, ax
+ 145 0097 BD F0                   		movw	r8, ax
+ 146 0099 04 00 00                		addw	ax, #_driversLoaded
+ 147 009c BD F0                   		movw	r8, ax
+ 148 009e BD F4                   		movw	r12, ax
+ 149 00a0 FA F4                   		movw	hl, r12
+ 150 00a2 AB                      		movw	ax, [hl]
+ 151 00a3 BD F0                   		movw	r8, ax
+ 152 00a5 88 0A                   		mov	a, [sp+10]
+ 153 00a7 9D F2                   		mov	r10, a
+ 154 00a9 AD F0                   		movw	ax, r8
+ 155 00ab BD F4                   		movw	r12, ax
+ 156 00ad FA F4                   		movw	hl, r12
+ 157 00af 8D F2                   		mov	a, r10
+ 158 00b1 9B                      		mov	[hl], a
+  27:../src/ctrdrv.c ****         qntDrvLoaded++;
+ 159                             		.loc 1 27 0
+ 160 00b2 8F 28 00                		mov	a, !_qntDrvLoaded
+ 161 00b5 9D F0                   		mov	r8, a
+ 162 00b7 A4 F0                   		inc	r8
+ 163 00b9 8D F0                   		mov	a, r8
+ 164 00bb 9F 28 00                		mov	!_qntDrvLoaded, a
+ 165                             	.L4:
+  28:../src/ctrdrv.c ****     }
+  29:../src/ctrdrv.c ****     return resp;
+ 166                             		.loc 1 29 0
+ 167 00be 88 03                   		mov	a, [sp+3]
+ 168 00c0 9D F0                   		mov	r8, a
+  30:../src/ctrdrv.c **** }
+ 169                             		.loc 1 30 0
+ 170 00c2 10 04                   		addw	sp, #4
+ 171 00c4 61 EF                   		sel	rb2
+ 172 00c6 C0                      		pop	ax ; r16
+ 173 00c7 61 CF                   		sel	rb0
+ 174 00c9 D7                      		ret
+ 175                             	.LFE1:
+ 177                             		.global	_callDriver
+ 179                             	_callDriver:
+ 180                             	.LFB2:
+  31:../src/ctrdrv.c **** 
+  32:../src/ctrdrv.c **** char callDriver(char drv_id, char func_id, void *parameters)
+  33:../src/ctrdrv.c **** {
+ 181                             		.loc 1 33 0
+ 182                             		; start of function
+ 183                             		; locals: 6 bytes
+ 184                             		; outgoing: 2 bytes
+ 185 00ca 20 08                   		subw	sp, #8
+ 186                             	.LCFI2:
+  34:../src/ctrdrv.c ****     char i;
+  35:../src/ctrdrv.c **** 
+  36:../src/ctrdrv.c ****     for (i=0; i<qntDrvLoaded; i++) {
+ 187                             		.loc 1 36 0
+ 188 00cc C8 07 00                		mov	[sp+7], #0
+ 189 00cf EC 4C 01 00             		br	!!.L7
+ 190                             	.L10:
+  37:../src/ctrdrv.c ****         if (drv_id == driversLoaded[i]->drv_id) {
+ 191                             		.loc 1 37 0
+ 192 00d3 88 07                   		mov	a, [sp+7]
+ 193 00d5 70                      		mov	x, a 
+ 194 00d6 51 00                   		mov	a, #0
+ 195 00d8 BD F0                   		movw	r8, ax
+ 196 00da 01                      		addw	ax, ax
+ 197 00db BD F0                   		movw	r8, ax
+ 198 00dd 04 00 00                		addw	ax, #_driversLoaded
+ 199 00e0 BD F0                   		movw	r8, ax
+ 200 00e2 BD F2                   		movw	r10, ax
+ 201 00e4 FA F2                   		movw	hl, r10
+ 202 00e6 AB                      		movw	ax, [hl]
+ 203 00e7 BD F0                   		movw	r8, ax
+ 204 00e9 BD F2                   		movw	r10, ax
+ 205 00eb FA F2                   		movw	hl, r10
+ 206 00ed 8B                      		mov	a, [hl]
+ 207 00ee 9D F1                   		mov	r9, a
+ 208 00f0 88 0C                   		mov	a, [sp+12]
+ 209 00f2 9D F0                   		mov	r8, a
+ 210 00f4 8D F1                   		mov	a, r9
+ 211 00f6 4B F0                   		cmp	a, r8 
+ 212 00f8 61 E8                   		skz 
+ 213 00fa EC 45 01 00             		br	!!.L8
+  38:../src/ctrdrv.c ****              return driversLoaded[i]->drv_func[func_id](parameters);
+ 214                             		.loc 1 38 0
+ 215 00fe 88 07                   		mov	a, [sp+7]
+ 216 0100 70                      		mov	x, a 
+ 217 0101 51 00                   		mov	a, #0
+ 218 0103 BD F0                   		movw	r8, ax
+ 219 0105 01                      		addw	ax, ax
+ 220 0106 BD F0                   		movw	r8, ax
+ 221 0108 04 00 00                		addw	ax, #_driversLoaded
+ 222 010b BD F0                   		movw	r8, ax
+ 223 010d BD F2                   		movw	r10, ax
+ 224 010f FA F2                   		movw	hl, r10
+ 225 0111 AB                      		movw	ax, [hl]
+ 226 0112 BD F0                   		movw	r8, ax
+ 227 0114 FA F0                   		movw	hl, r8
+ 228 0116 AC 02                   		movw	ax, [hl+2]
+ 229 0118 BD F2                   		movw	r10, ax
+ 230 011a 88 0E                   		mov	a, [sp+14]
+ 231 011c 70                      		mov	x, a 
+ 232 011d 51 00                   		mov	a, #0
+ 233 011f BD F0                   		movw	r8, ax
+ 234 0121 01                      		addw	ax, ax
+ 235 0122 B8 02                   		movw	[sp+2], ax
+ 236 0124 BD F0                   		movw	r8, ax
+ 237 0126 B8 04                   		movw	[sp+4], ax
+ 238 0128 06 F2                   		addw	ax, r10
+ 239 012a BD F0                   		movw	r8, ax
+ 240 012c BD F2                   		movw	r10, ax
+ 241 012e FA F2                   		movw	hl, r10
+ 242 0130 AB                      		movw	ax, [hl]
+ 243 0131 BD F0                   		movw	r8, ax
+ 244 0133 A8 10                   		movw	ax, [sp+16]
+ 245 0135 BD F2                   		movw	r10, ax
+ 246 0137 B8 00                   		movw	[sp], ax
+ 247 0139 AD F0                   		movw	ax, r8
+ 248 013b BD F2                   		movw	r10, ax
+ 249 013d FA F2                   		movw	hl, r10
+ 250 013f 61 FA                   		call	hl
+ 251 0141 EC 5E 01 00             		br	!!.L9
+ 252                             	.L8:
+  36:../src/ctrdrv.c ****     for (i=0; i<qntDrvLoaded; i++) {
+ 253                             		.loc 1 36 0
+ 254 0145 88 07                   		mov	a, [sp+7]
+ 255 0147 9D F0                   		mov	r8, a
+ 256 0149 81                      		inc	a
+ 257 014a 98 07                   		mov	[sp+7], a
+ 258                             	.L7:
+  36:../src/ctrdrv.c ****     for (i=0; i<qntDrvLoaded; i++) {
+ 259                             		.loc 1 36 0 is_stmt 0 discriminator 1
+ 260 014c 8F 28 00                		mov	a, !_qntDrvLoaded
+ 261 014f 9D F0                   		mov	r8, a
+ 262 0151 88 07                   		mov	a, [sp+7]
+ 263 0153 4B F0                   		cmp	a, r8 
+ 264 0155 61 D8                   		sknc 
+ 265 0157 EC D3 00 00             		br	!!.L10
+  39:../src/ctrdrv.c ****         }
+  40:../src/ctrdrv.c ****     }
+  41:../src/ctrdrv.c ****     return DRV_FUNC_NOT_FOUND;
+ 266                             		.loc 1 41 0 is_stmt 1
+ 267 015b CD F0 04                		mov	r8, #4
+ 268                             	.L9:
+  42:../src/ctrdrv.c **** }
+ 269                             		.loc 1 42 0
+ 270 015e 10 08                   		addw	sp, #8
+ 271 0160 D7                      		ret
+ 272                             	.LFE2:
+ 328                             	.Letext0:
+ 329                             		.file 2 "../src/dd_types.h"
+ 330                             		.file 3 "../src/ctrdrv.h"

@@ -1,0 +1,169 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.global	_R_Systeminit
+  29                             	_R_Systeminit:
+  30                             	.LFB0:
+  31                             		.file 1 "../src/r_systeminit.c"
+   1:../src/r_systeminit.c **** /**************************************************************************************************
+   2:../src/r_systeminit.c **** * DISCLAIMER
+   3:../src/r_systeminit.c **** * This software is supplied by Renesas Electronics Corporation and is only 
+   4:../src/r_systeminit.c **** * intended for use with Renesas products. No other uses are authorized. This 
+   5:../src/r_systeminit.c **** * software is owned by Renesas Electronics Corporation and is protected under 
+   6:../src/r_systeminit.c **** * all applicable laws, including copyright laws.
+   7:../src/r_systeminit.c **** * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING 
+   8:../src/r_systeminit.c **** * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT 
+   9:../src/r_systeminit.c **** * LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE 
+  10:../src/r_systeminit.c **** * AND NON-INFRINGEMENT.  ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIMED.
+  11:../src/r_systeminit.c **** * TO THE MAXIMUM EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS 
+  12:../src/r_systeminit.c **** * ELECTRONICS CORPORATION NOR ANY OF ITS AFFILIATED COMPANIES SHALL BE LIABLE 
+  13:../src/r_systeminit.c **** * FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR 
+  14:../src/r_systeminit.c **** * ANY REASON RELATED TO THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE 
+  15:../src/r_systeminit.c **** * BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  16:../src/r_systeminit.c **** * Renesas reserves the right, without notice, to make changes to this software 
+  17:../src/r_systeminit.c **** * and to discontinue the availability of this software.  By using this software, 
+  18:../src/r_systeminit.c **** * you agree to the additional terms and conditions found by accessing the 
+  19:../src/r_systeminit.c **** * following link:
+  20:../src/r_systeminit.c **** * http://www.renesas.com/disclaimer
+  21:../src/r_systeminit.c **** *
+  22:../src/r_systeminit.c **** * Copyright (C) 2012 Renesas Electronics Corporation. All rights reserved.
+  23:../src/r_systeminit.c **** ***************************************************************************************************
+  24:../src/r_systeminit.c **** 
+  25:../src/r_systeminit.c **** /**************************************************************************************************
+  26:../src/r_systeminit.c **** * File Name    : r_systeminit.c
+  27:../src/r_systeminit.c **** * Version      : Applilet3 for RL78/L12 V1.00.00 [23 Mar 2012]
+  28:../src/r_systeminit.c **** * Device(s)    : R5F10RLC
+  29:../src/r_systeminit.c **** * Tool-Chain   : GNURL78 v12.03
+  30:../src/r_systeminit.c **** * Description  : This file implements system initializing function.
+  31:../src/r_systeminit.c **** * Creation Date: 21/01/2013
+  32:../src/r_systeminit.c **** ***************************************************************************************************
+  33:../src/r_systeminit.c **** 
+  34:../src/r_systeminit.c **** 
+  35:../src/r_systeminit.c **** /**************************************************************************************************
+  36:../src/r_systeminit.c **** Includes
+  37:../src/r_systeminit.c **** ***************************************************************************************************
+  38:../src/r_systeminit.c **** /* Defines the I/O register structures */
+  39:../src/r_systeminit.c **** #include "iodefine.h"
+  40:../src/r_systeminit.c **** 
+  41:../src/r_systeminit.c **** /* Defines the extended I/O register structures */
+  42:../src/r_systeminit.c **** #include "iodefine_ext.h"
+  43:../src/r_systeminit.c **** 
+  44:../src/r_systeminit.c **** /* Header files inclusion */
+  45:../src/r_systeminit.c **** #include "r_cg_macrodriver.h"
+  46:../src/r_systeminit.c **** #include "r_cg_cgc.h"
+  47:../src/r_systeminit.c **** #include "r_cg_intc.h"
+  48:../src/r_systeminit.c **** #include "r_cg_adc.h"
+  49:../src/r_systeminit.c **** #include "r_cg_it.h"
+  50:../src/r_systeminit.c **** #include "r_cg_userdefine.h"
+  51:../src/r_systeminit.c **** 
+  52:../src/r_systeminit.c **** /**************************************************************************************************
+  53:../src/r_systeminit.c **** * Function Name: R_Systeminit
+  54:../src/r_systeminit.c **** * Description  : This function initializes all peripherals used in this demo.
+  55:../src/r_systeminit.c **** * Arguments    : None
+  56:../src/r_systeminit.c **** * Return Value : None
+  57:../src/r_systeminit.c **** ***************************************************************************************************
+  58:../src/r_systeminit.c **** void R_Systeminit(void)
+  59:../src/r_systeminit.c **** {
+  32                             		.loc 1 59 0
+  60:../src/r_systeminit.c ****         /* Configure port pin assignments */
+  61:../src/r_systeminit.c ****         PIOR = 0x00U;
+  33                             		.loc 1 61 0
+  34 0000 C9 F0 77 00             		movw	r8, #119
+  35 0004 AD F0                   		movw	ax, r8
+  36 0006 BD F2                   		movw	r10, ax
+  37 0008 FA F2                   		movw	hl, r10
+  38 000a F1                      		clrb	a
+  39 000b 9B                      		mov	[hl], a
+  62:../src/r_systeminit.c **** 
+  63:../src/r_systeminit.c ****         /* Configure the LCD */
+  64:../src/r_systeminit.c ****         R_LCD_Create();
+  40                             		.loc 1 64 0
+  41 000c FC 00 00 00             		call	!!%code(_R_LCD_Create)
+  65:../src/r_systeminit.c **** 
+  66:../src/r_systeminit.c ****         /* Configure system clocks */
+  67:../src/r_systeminit.c ****         R_CGC_Create();
+  42                             		.loc 1 67 0
+  43 0010 FC 00 00 00             		call	!!%code(_R_CGC_Create)
+  68:../src/r_systeminit.c **** 
+  69:../src/r_systeminit.c ****         /* Configure ADC */
+  70:../src/r_systeminit.c ****         R_ADC_Create();
+  44                             		.loc 1 70 0
+  45 0014 FC 00 00 00             		call	!!%code(_R_ADC_Create)
+  71:../src/r_systeminit.c **** 
+  72:../src/r_systeminit.c ****         /* Configure timer unit 0 */
+  73:../src/r_systeminit.c ****         R_TAU0_Create();
+  46                             		.loc 1 73 0
+  47 0018 FC 00 00 00             		call	!!%code(_R_TAU0_Create)
+  74:../src/r_systeminit.c **** 
+  75:../src/r_systeminit.c ****         /* Configure the interval timer */
+  76:../src/r_systeminit.c ****         R_IT_Create();
+  48                             		.loc 1 76 0
+  49 001c FC 00 00 00             		call	!!%code(_R_IT_Create)
+  77:../src/r_systeminit.c **** 
+  78:../src/r_systeminit.c ****         /* Configure RTC */
+  79:../src/r_systeminit.c ****         //R_RTC_Create();
+  80:../src/r_systeminit.c **** 
+  81:../src/r_systeminit.c ****         /* Configure external interrupts */
+  82:../src/r_systeminit.c ****         R_INTC_Create();
+  50                             		.loc 1 82 0
+  51 0020 FC 00 00 00             		call	!!%code(_R_INTC_Create)
+  83:../src/r_systeminit.c **** 
+  84:../src/r_systeminit.c ****         /* Disable CRC operations */
+  85:../src/r_systeminit.c ****         CRC0CTL = 0x00U;
+  52                             		.loc 1 85 0
+  53 0024 C9 F0 F0 02             		movw	r8, #752
+  54 0028 AD F0                   		movw	ax, r8
+  55 002a BD F2                   		movw	r10, ax
+  56 002c FA F2                   		movw	hl, r10
+  57 002e F1                      		clrb	a
+  58 002f 9B                      		mov	[hl], a
+  86:../src/r_systeminit.c **** 
+  87:../src/r_systeminit.c ****         /* Disable RAM and SFR protections */
+  88:../src/r_systeminit.c ****         IAWCTL = 0x00U;
+  59                             		.loc 1 88 0
+  60 0030 C9 F0 78 00             		movw	r8, #120
+  61 0034 AD F0                   		movw	ax, r8
+  62 0036 BD F2                   		movw	r10, ax
+  63 0038 FA F2                   		movw	hl, r10
+  64 003a F1                      		clrb	a
+  65 003b 9B                      		mov	[hl], a
+  89:../src/r_systeminit.c **** 
+  90:../src/r_systeminit.c ****         /* Disable RAM parity */
+  91:../src/r_systeminit.c ****         RPECTL = 0x80;
+  66                             		.loc 1 91 0
+  67 003c C9 F0 F5 00             		movw	r8, #245
+  68 0040 AD F0                   		movw	ax, r8
+  69 0042 BD F2                   		movw	r10, ax
+  70 0044 FA F2                   		movw	hl, r10
+  71 0046 51 80                   		mov	a, #-128
+  72 0048 9B                      		mov	[hl], a
+  92:../src/r_systeminit.c **** }
+  73                             		.loc 1 92 0
+  74 0049 D7                      		ret
+  75                             	.LFE0:
+ 103                             	.Letext0:
+ 104                             		.file 2 "../src/iodefine.h"
+ 105                             		.file 3 "../src/iodefine_ext.h"

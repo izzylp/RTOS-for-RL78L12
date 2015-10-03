@@ -1,0 +1,12 @@
+drvLcd.c:15:6:initLcd	0	static
+drvLcd.c:21:6:lcdClear	0	static
+drvLcd.c:27:6:lcdOn	0	static
+drvLcd.c:33:6:lcdOff	0	static
+drvLcd.c:40:6:lcdDelay	10	static
+drvLcd.c:45:6:lcdString	4	static
+drvLcd.c:51:6:lcdSimbolos	2	static
+drvLcd.c:57:6:lcdDias	2	static
+drvLcd.c:64:6:lcdBateria	4	static
+drvLcd.c:76:6:lcdSecA	28	static
+drvLcd.c:118:6:ledSecB	8	static
+drvLcd.c:146:9:getLcdDriver	2	static

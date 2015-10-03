@@ -1,0 +1,1211 @@
+Archive member included because of file (symbol)
+
+libSist_Op_stable.a(strlen.o)
+                              ./src/drvSer.o (strlen)
+libSist_Op_stable.a(strncpy.o)
+                              ./src/drvSer.o (strncpy)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o)
+                              ./src/drvPID.o (__divsf3)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_si_to_sf.o)
+                              ./src/drvPID.o (__floatsisf)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_sf_to_si.o)
+                              ./src/drvPID.o (__fixsfsi)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_thenan_sf.o)
+                              /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o) (__thenan_sf)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(divmodhi.o)
+                              ./src/Sist_Op_stable.o (__udivhi3)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clzsi2.o)
+                              /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_si_to_sf.o) (__clzsi2)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_pack_sf.o)
+                              /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o) (__pack_f)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_unpack_sf.o)
+                              /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o) (__unpack_f)
+/home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clz.o)
+                              /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clzsi2.o) (__clz_tab)
+
+Allocating common symbols
+Common symbol       size              file
+
+g_uart0_tx_count    0x2               ./src/drvSer.o
+pool                0xa0              ./src/kernel.o
+RRactualTask        0x1               ./src/kernel.o
+gp_uart0_rx_address
+                    0x2               ./src/drvSer.o
+g_uart0_rx_count    0x2               ./src/drvSer.o
+p_fcn               0x2               ./src/kernel.o
+SP_dummy            0x4               ./src/kernel.o
+SECTB_map           0x28              ./src/lcd_panel.o
+SECTC_map           0x52              ./src/lcd_panel.o
+actualTask          0x1               ./src/kernel.o
+lastTask            0x1               ./src/kernel.o
+gp_uart0_tx_address
+                    0x2               ./src/drvSer.o
+SECTA_map           0x28              ./src/lcd_panel.o
+g_uart0_rx_length   0x2               ./src/r_cg_serial.o
+
+Discarded input sections
+
+ .group         0x00000000        0x8 ./src/Sist_Op_stable.o
+ .group         0x00000000        0x8 ./src/Sist_Op_stable.o
+ .group         0x00000000        0x8 ./src/Sist_Op_stable.o
+ .group         0x00000000        0x8 ./src/Sist_Op_stable.o
+ .group         0x00000000        0x8 ./src/Sist_Op_stable.o
+ .group         0x00000000        0x8 ./src/Sist_Op_stable.o
+ .group         0x00000000        0x8 ./src/ctrdrv.o
+ .group         0x00000000        0x8 ./src/ctrdrv.o
+ .group         0x00000000        0x8 ./src/ctrdrv.o
+ .group         0x00000000        0x8 ./src/ctrdrv.o
+ .group         0x00000000        0x8 ./src/ctrdrv.o
+ .group         0x00000000        0x8 ./src/ctrdrv.o
+ .debug_macro   0x00000000      0x4de ./src/ctrdrv.o
+ .debug_macro   0x00000000       0x10 ./src/ctrdrv.o
+ .debug_macro   0x00000000      0xd37 ./src/ctrdrv.o
+ .debug_macro   0x00000000       0xa0 ./src/ctrdrv.o
+ .debug_macro   0x00000000      0x7ce ./src/ctrdrv.o
+ .debug_macro   0x00000000       0x70 ./src/ctrdrv.o
+ .group         0x00000000        0x8 ./src/drvADC.o
+ .group         0x00000000        0x8 ./src/drvADC.o
+ .group         0x00000000        0x8 ./src/drvADC.o
+ .group         0x00000000        0x8 ./src/drvADC.o
+ .group         0x00000000        0x8 ./src/drvADC.o
+ .group         0x00000000        0x8 ./src/drvADC.o
+ .debug_macro   0x00000000      0x4de ./src/drvADC.o
+ .debug_macro   0x00000000      0xd37 ./src/drvADC.o
+ .debug_macro   0x00000000       0xa0 ./src/drvADC.o
+ .debug_macro   0x00000000      0x7ce ./src/drvADC.o
+ .debug_macro   0x00000000       0x70 ./src/drvADC.o
+ .group         0x00000000        0x8 ./src/drvBot.o
+ .group         0x00000000        0x8 ./src/drvBot.o
+ .group         0x00000000        0x8 ./src/drvBot.o
+ .group         0x00000000        0x8 ./src/drvBot.o
+ .group         0x00000000        0x8 ./src/drvBot.o
+ .debug_macro   0x00000000      0x4de ./src/drvBot.o
+ .debug_macro   0x00000000      0xd37 ./src/drvBot.o
+ .debug_macro   0x00000000       0xa0 ./src/drvBot.o
+ .debug_macro   0x00000000      0x7ce ./src/drvBot.o
+ .debug_macro   0x00000000       0x70 ./src/drvBot.o
+ .group         0x00000000        0x8 ./src/drvInterrupt.o
+ .group         0x00000000        0x8 ./src/drvInterrupt.o
+ .group         0x00000000        0x8 ./src/drvInterrupt.o
+ .group         0x00000000        0x8 ./src/drvInterrupt.o
+ .group         0x00000000        0x8 ./src/drvInterrupt.o
+ .debug_macro   0x00000000      0x4de ./src/drvInterrupt.o
+ .debug_macro   0x00000000      0xd37 ./src/drvInterrupt.o
+ .debug_macro   0x00000000       0xa0 ./src/drvInterrupt.o
+ .debug_macro   0x00000000      0x7ce ./src/drvInterrupt.o
+ .debug_macro   0x00000000       0x70 ./src/drvInterrupt.o
+ .group         0x00000000        0x8 ./src/drvLcd.o
+ .group         0x00000000        0x8 ./src/drvLcd.o
+ .group         0x00000000        0x8 ./src/drvLcd.o
+ .group         0x00000000        0x8 ./src/drvLcd.o
+ .group         0x00000000        0x8 ./src/drvLcd.o
+ .group         0x00000000        0x8 ./src/drvLcd.o
+ .debug_macro   0x00000000      0x4de ./src/drvLcd.o
+ .debug_macro   0x00000000      0xd37 ./src/drvLcd.o
+ .debug_macro   0x00000000       0xa0 ./src/drvLcd.o
+ .debug_macro   0x00000000      0x7ce ./src/drvLcd.o
+ .debug_macro   0x00000000       0x70 ./src/drvLcd.o
+ .group         0x00000000        0x8 ./src/drvLed.o
+ .group         0x00000000        0x8 ./src/drvLed.o
+ .group         0x00000000        0x8 ./src/drvLed.o
+ .group         0x00000000        0x8 ./src/drvLed.o
+ .group         0x00000000        0x8 ./src/drvLed.o
+ .debug_macro   0x00000000      0x4de ./src/drvLed.o
+ .debug_macro   0x00000000      0xd37 ./src/drvLed.o
+ .debug_macro   0x00000000       0xa0 ./src/drvLed.o
+ .debug_macro   0x00000000      0x7ce ./src/drvLed.o
+ .debug_macro   0x00000000       0x70 ./src/drvLed.o
+ .group         0x00000000        0x8 ./src/drvPID.o
+ .group         0x00000000        0x8 ./src/drvPID.o
+ .group         0x00000000        0x8 ./src/drvPID.o
+ .group         0x00000000        0x8 ./src/drvPID.o
+ .group         0x00000000        0x8 ./src/drvPID.o
+ .group         0x00000000        0x8 ./src/drvPID.o
+ .debug_macro   0x00000000      0x4de ./src/drvPID.o
+ .debug_macro   0x00000000       0x10 ./src/drvPID.o
+ .debug_macro   0x00000000      0xd37 ./src/drvPID.o
+ .debug_macro   0x00000000       0xa0 ./src/drvPID.o
+ .debug_macro   0x00000000      0x7ce ./src/drvPID.o
+ .debug_macro   0x00000000       0x70 ./src/drvPID.o
+ .group         0x00000000        0x8 ./src/drvPWM.o
+ .group         0x00000000        0x8 ./src/drvPWM.o
+ .group         0x00000000        0x8 ./src/drvPWM.o
+ .group         0x00000000        0x8 ./src/drvPWM.o
+ .group         0x00000000        0x8 ./src/drvPWM.o
+ .group         0x00000000        0x8 ./src/drvPWM.o
+ .debug_macro   0x00000000      0x4de ./src/drvPWM.o
+ .debug_macro   0x00000000      0xd37 ./src/drvPWM.o
+ .debug_macro   0x00000000       0xa0 ./src/drvPWM.o
+ .debug_macro   0x00000000      0x7ce ./src/drvPWM.o
+ .debug_macro   0x00000000       0x70 ./src/drvPWM.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvSer.o
+ .debug_macro   0x00000000      0x4de ./src/drvSer.o
+ .debug_macro   0x00000000      0xd37 ./src/drvSer.o
+ .debug_macro   0x00000000      0x7ce ./src/drvSer.o
+ .debug_macro   0x00000000       0x70 ./src/drvSer.o
+ .debug_macro   0x00000000       0xa0 ./src/drvSer.o
+ .group         0x00000000        0x8 ./src/drvTimer.o
+ .group         0x00000000        0x8 ./src/drvTimer.o
+ .group         0x00000000        0x8 ./src/drvTimer.o
+ .group         0x00000000        0x8 ./src/drvTimer.o
+ .group         0x00000000        0x8 ./src/drvTimer.o
+ .group         0x00000000        0x8 ./src/drvTimer.o
+ .debug_macro   0x00000000      0x4de ./src/drvTimer.o
+ .debug_macro   0x00000000      0xd37 ./src/drvTimer.o
+ .debug_macro   0x00000000      0x7ce ./src/drvTimer.o
+ .debug_macro   0x00000000       0x70 ./src/drvTimer.o
+ .debug_macro   0x00000000       0xa0 ./src/drvTimer.o
+ .group         0x00000000        0x8 ./src/hardware_setup.o
+ .group         0x00000000        0x8 ./src/hardware_setup.o
+ .group         0x00000000        0x8 ./src/hardware_setup.o
+ .group         0x00000000        0x8 ./src/hardware_setup.o
+ .debug_macro   0x00000000      0x4de ./src/hardware_setup.o
+ .debug_macro   0x00000000      0xd37 ./src/hardware_setup.o
+ .debug_macro   0x00000000      0x7ce ./src/hardware_setup.o
+ .debug_macro   0x00000000       0x70 ./src/hardware_setup.o
+ .group         0x00000000        0x8 ./src/interrupt_handlers.o
+ .debug_macro   0x00000000      0x4de ./src/interrupt_handlers.o
+ .group         0x00000000        0x8 ./src/kernel.o
+ .group         0x00000000        0x8 ./src/kernel.o
+ .group         0x00000000        0x8 ./src/kernel.o
+ .group         0x00000000        0x8 ./src/kernel.o
+ .group         0x00000000        0x8 ./src/kernel.o
+ .group         0x00000000        0x8 ./src/kernel.o
+ .debug_macro   0x00000000      0x4de ./src/kernel.o
+ .debug_macro   0x00000000      0xd37 ./src/kernel.o
+ .debug_macro   0x00000000      0x7ce ./src/kernel.o
+ .debug_macro   0x00000000       0x70 ./src/kernel.o
+ .debug_macro   0x00000000       0xa0 ./src/kernel.o
+ .debug_macro   0x00000000       0x10 ./src/kernel.o
+ .group         0x00000000        0x8 ./src/lcd_panel.o
+ .group         0x00000000        0x8 ./src/lcd_panel.o
+ .group         0x00000000        0x8 ./src/lcd_panel.o
+ .group         0x00000000        0x8 ./src/lcd_panel.o
+ .group         0x00000000        0x8 ./src/lcd_panel.o
+ .group         0x00000000        0x8 ./src/lcd_panel.o
+ .debug_macro   0x00000000      0x4de ./src/lcd_panel.o
+ .debug_macro   0x00000000      0xd37 ./src/lcd_panel.o
+ .debug_macro   0x00000000      0x7ce ./src/lcd_panel.o
+ .debug_macro   0x00000000       0x70 ./src/lcd_panel.o
+ .debug_macro   0x00000000      0x2d4 ./src/lcd_panel.o
+ .group         0x00000000        0x8 ./src/r_cg_adc.o
+ .group         0x00000000        0x8 ./src/r_cg_adc.o
+ .group         0x00000000        0x8 ./src/r_cg_adc.o
+ .group         0x00000000        0x8 ./src/r_cg_adc.o
+ .group         0x00000000        0x8 ./src/r_cg_adc.o
+ .group         0x00000000        0x8 ./src/r_cg_adc.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_adc.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_adc.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_adc.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_adc.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_adc.o
+ .group         0x00000000        0x8 ./src/r_cg_adc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_adc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_adc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_adc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_adc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_adc_user.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_adc_user.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_adc_user.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_adc_user.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_adc_user.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_adc_user.o
+ .debug_macro   0x00000000      0x17b ./src/r_cg_adc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_cgc.o
+ .group         0x00000000        0x8 ./src/r_cg_cgc.o
+ .group         0x00000000        0x8 ./src/r_cg_cgc.o
+ .group         0x00000000        0x8 ./src/r_cg_cgc.o
+ .group         0x00000000        0x8 ./src/r_cg_cgc.o
+ .group         0x00000000        0x8 ./src/r_cg_cgc.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_cgc.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_cgc.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_cgc.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_cgc.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_cgc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_intc.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_intc.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_intc.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_intc.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_intc.o
+ .group         0x00000000        0x8 ./src/r_cg_intc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_intc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_intc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_intc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_intc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_intc_user.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_intc_user.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_intc_user.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_intc_user.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_intc_user.o
+ .debug_macro   0x00000000      0x114 ./src/r_cg_intc_user.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_intc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_it.o
+ .group         0x00000000        0x8 ./src/r_cg_it.o
+ .group         0x00000000        0x8 ./src/r_cg_it.o
+ .group         0x00000000        0x8 ./src/r_cg_it.o
+ .group         0x00000000        0x8 ./src/r_cg_it.o
+ .group         0x00000000        0x8 ./src/r_cg_it.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_it.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_it.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_it.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_it.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_it.o
+ .group         0x00000000        0x8 ./src/r_cg_it_user.o
+ .group         0x00000000        0x8 ./src/r_cg_it_user.o
+ .group         0x00000000        0x8 ./src/r_cg_it_user.o
+ .group         0x00000000        0x8 ./src/r_cg_it_user.o
+ .group         0x00000000        0x8 ./src/r_cg_it_user.o
+ .group         0x00000000        0x8 ./src/r_cg_it_user.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_it_user.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_it_user.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_it_user.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_it_user.o
+ .debug_macro   0x00000000       0x28 ./src/r_cg_it_user.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_it_user.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_lcd.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_lcd.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_lcd.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_lcd.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_lcd.o
+ .debug_macro   0x00000000      0x20f ./src/r_cg_lcd.o
+ .debug_macro   0x00000000      0x1e9 ./src/r_cg_lcd.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_lcd.o
+ .group         0x00000000        0x8 ./src/r_cg_rtc.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_rtc.o
+ .group         0x00000000        0x8 ./src/r_cg_rtc_user.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_rtc_user.o
+ .group         0x00000000        0x8 ./src/r_cg_serial.o
+ .group         0x00000000        0x8 ./src/r_cg_serial.o
+ .group         0x00000000        0x8 ./src/r_cg_serial.o
+ .group         0x00000000        0x8 ./src/r_cg_serial.o
+ .group         0x00000000        0x8 ./src/r_cg_serial.o
+ .group         0x00000000        0x8 ./src/r_cg_serial.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_serial.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_serial.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_serial.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_serial.o
+ .debug_macro   0x00000000      0x4a4 ./src/r_cg_serial.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_serial.o
+ .group         0x00000000        0x8 ./src/r_cg_timer.o
+ .group         0x00000000        0x8 ./src/r_cg_timer.o
+ .group         0x00000000        0x8 ./src/r_cg_timer.o
+ .group         0x00000000        0x8 ./src/r_cg_timer.o
+ .group         0x00000000        0x8 ./src/r_cg_timer.o
+ .group         0x00000000        0x8 ./src/r_cg_timer.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_timer.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_timer.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_timer.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_timer.o
+ .debug_macro   0x00000000      0x636 ./src/r_cg_timer.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_timer.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x4de ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0xd37 ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x7ce ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000       0x70 ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x636 ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x20f ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000       0xa0 ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x17b ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x114 ./src/r_cg_timer_user.o
+ .debug_macro   0x00000000      0x2d4 ./src/r_cg_timer_user.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/r_systeminit.o
+ .debug_macro   0x00000000      0x4de ./src/r_systeminit.o
+ .debug_macro   0x00000000      0xd37 ./src/r_systeminit.o
+ .debug_macro   0x00000000      0x7ce ./src/r_systeminit.o
+ .debug_macro   0x00000000       0x70 ./src/r_systeminit.o
+ .debug_macro   0x00000000      0x20f ./src/r_systeminit.o
+ .debug_macro   0x00000000      0x114 ./src/r_systeminit.o
+ .debug_macro   0x00000000       0xa0 ./src/r_systeminit.o
+ .debug_macro   0x00000000      0x17b ./src/r_systeminit.o
+ .debug_macro   0x00000000       0x28 ./src/r_systeminit.o
+ .group         0x00000000        0x8 ./src/vector_table.o
+ .debug_macro   0x00000000      0x4de ./src/vector_table.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+
+.vec            0x00000000        0x2
+ *(.vec)
+ .vec           0x00000000        0x2 ./src/vector_table.o
+                0x00000000                HardwareVectors
+
+.vects          0x00000004       0x7c
+ *(.vects)
+ .vects         0x00000004       0x7c ./src/vector_table.o
+                0x00000004                Vectors
+
+.option_bytes   0x000000c0        0x4
+ *(.option_bytes)
+ .option_bytes  0x000000c0        0x4 ./src/vector_table.o
+                0x000000c0                Option_Bytes
+
+.security_id    0x000000c4        0xa
+ *(.security_id)
+ .security_id   0x000000c4        0xa ./src/vector_table.o
+                0x000000c4                Security_Id
+
+.text           0x000000d8     0x66c8
+ *(.text)
+ .text          0x000000d8      0x569 ./src/Sist_Op_stable.o
+                0x000000d8                procRelogio
+                0x000001e9                teclado
+                0x00000251                temperatura
+                0x0000031d                pisca_leds
+                0x00000372                recebe_comando
+                0x000004bf                processa_comando
+                0x00000584                PWM_func
+                0x000005b4                main
+ .text          0x00000641      0x161 ./src/ctrdrv.o
+                0x00000641                initCtrDrv
+                0x00000648                initDriver
+                0x0000070b                callDriver
+ .text          0x000007a2       0x74 ./src/drvADC.o
+                0x000007a2                initADC
+                0x000007ae                ADCStart
+                0x000007b6                ADCSGet
+                0x000007cc                ADCGet
+                0x000007de                ADCStop
+                0x000007e6                getADCDriver
+ .text          0x00000816      0x153 ./src/drvBot.o
+                0x00000816                initBot
+                0x0000081a                botPush
+                0x00000890                botSelect
+                0x00000945                getBotDriver
+ .text          0x00000969       0x2d ./src/drvInterrupt.o
+                0x00000969                initInterrupt
+                0x00000970                intEnable
+                0x00000977                intDisable
+                0x0000097e                getIntDriver
+ .text          0x00000996      0x256 ./src/drvLcd.o
+                0x00000996                initLcd
+                0x0000099e                lcdClear
+                0x000009a6                lcdOn
+                0x000009ae                lcdOff
+                0x000009b6                lcdDelay
+                0x000009db                lcdString
+                0x000009f0                lcdSimbolos
+                0x00000a09                lcdDias
+                0x00000a22                lcdBateria
+                0x00000a3e                lcdSecA
+                0x00000aa5                ledSecB
+                0x00000b27                ledSecC
+                0x00000b92                getLcdDriver
+ .text          0x00000bec      0x297 ./src/drvLed.o
+                0x00000bec                initLed
+                0x00000c59                ligaLed
+                0x00000cde                desligaLed
+                0x00000d63                toggleLed
+                0x00000e59                getLedDriver
+ .text          0x00000e83      0x69c ./src/drvPID.o
+                0x00000e83                startPID
+                0x00000e8a                spChange
+                0x00000e95                stopPID
+                0x00000e9c                resetPID
+                0x00000eb8                updatePID
+                0x00001138                getPIDValues
+                0x00001234                setPIDValues
+                0x000014a0                initPID
+                0x000014dd                getPIDDriver
+ .text          0x0000151f      0x388 ./src/drvPWM.o
+                0x000017f3                setPWM
+                0x00001863                getPWM
+                0x0000187f                initPWM
+                0x00001883                getPWMDriver
+ .text          0x000018a7      0x4e1 ./src/drvSer.o
+                0x000018a7                initSer
+                0x000018b3                INT_SR0
+                0x0000195b                INT_ST0
+                0x000019bd                SerRead
+                0x00001a24                SerAvailable
+                0x00001a4e                SerSend
+                0x00001bc1                SerSendLn
+                0x00001d58                getSerDriver
+ .text          0x00001d88       0x32 ./src/drvTimer.o
+                0x00001d88                initTimer
+                0x00001d8c                startTimer
+                0x00001d91                stopTimer
+                0x00001d96                getTimDriver
+ .text          0x00001dba        0xb ./src/hardware_setup.o
+                0x00001dba                HardwareSetup
+ .text          0x00001dc5      0x108 ./src/interrupt_handlers.o
+                0x00001dc5                INT_WDTI
+                0x00001dd1                INT_LVI
+                0x00001ddd                INT_P1
+                0x00001de9                INT_P2
+                0x00001df5                INT_P5
+                0x00001e01                INT_DMA0
+                0x00001e0d                INT_DMA1
+                0x00001e19                INT_TM03H
+                0x00001e25                INT_IICA0
+                0x00001e31                INT_TM01
+                0x00001e3d                INT_TM03
+                0x00001e49                INT_KR
+                0x00001e55                INT_TM04
+                0x00001e61                INT_TM05
+                0x00001e6d                INT_TM06
+                0x00001e79                INT_TM07
+                0x00001e85                INT_LCD0
+                0x00001e91                INT_P6
+                0x00001e9d                INT_P7
+                0x00001ea9                INT_MD
+                0x00001eb5                INT_FL
+                0x00001ec1                INT_BRK_I
+ .text          0x00001ecd      0x67a ./src/kernel.o
+                0x00001ecd                IdleFunc
+                0x00001ed8                timedLoopStart
+                0x00001ef9                timedLoopWait
+                0x00001f39                delay
+                0x00001f4c                createStack
+                0x00001f93                CreateIdleProc
+                0x0000204b                kernelInit
+                0x000020dc                kernelAddProc
+                0x0000224c                kernelLoop
+                0x00002275                Scheduler
+                0x0000249a                kernelClock
+ .text          0x00002547     0x1d26 ./src/lcd_panel.o
+                0x00002547                Validate_Input
+                0x00002736                SECTA_Glyph_Map
+                0x000028a3                SECTB_Glyph_Map
+                0x00002b47                SECTC_Glyph_Map
+                0x00002d3e                SECTD_Glyph_Map
+                0x00002e93                SECTF_Glyph_Map
+                0x00003423                Symbol_Map
+                0x00003972                Init_Display_Panel
+                0x00003983                Clear_Display
+                0x000039b4                Init_Maps
+                0x00003b8f                Display_Panel_String
+                0x00003e8f                Display_Panel_Delay
+                0x00003f01                Lcd_Off
+                0x000040a6                Lcd_On
+ .text          0x0000426d      0x1ab ./src/r_cg_adc.o
+                0x0000426d                R_ADC_Create
+                0x0000434b                R_ADC_Start
+                0x00004376                R_ADC_Stop
+                0x000043b6                R_ADC_Set_Operation_On
+                0x000043cc                R_ADC_Set_Operation_Off
+                0x000043e2                R_ADC_Get_Result
+ .text          0x00004418       0x44 ./src/r_cg_adc_user.o
+                0x00004418                INT_AD
+ .text          0x0000445c       0xab ./src/r_cg_cgc.o
+                0x0000445c                R_CGC_Create
+ .text          0x00004507      0x202 ./src/r_cg_intc.o
+                0x00004507                R_INTC_Create
+                0x00004607                R_INTC0_Start
+                0x00004632                R_INTC0_Stop
+                0x0000465d                R_INTC3_Start
+                0x00004688                R_INTC3_Stop
+                0x000046b3                R_INTC4_Start
+                0x000046de                R_INTC4_Stop
+ .text          0x00004709       0xb4 ./src/r_cg_intc_user.o
+                0x00004709                INT_P0
+                0x00004745                INT_P3
+                0x00004781                INT_P4
+ .text          0x000047bd      0x16c ./src/r_cg_it.o
+                0x000047bd                R_IT_Create
+                0x000047c2                R_IT_Start
+                0x0000483e                R_IT_enable_interrupts
+                0x00004869                R_IT_Stop
+                0x000048ba                R_IT_Set_Power_Off
+                0x000048d0                IT_Change_Timer_Condition
+ .text          0x00004929       0xbf ./src/r_cg_it_user.o
+                0x00004929                R_IT_Create_UserInit
+                0x000049ad                INT_IT
+ .text          0x000049e8      0x392 ./src/r_cg_lcd.o
+                0x000049e8                R_LCD_Create
+                0x00004cdb                R_LCD_Start
+                0x00004cf1                R_LCD_Stop
+                0x00004d07                R_LCD_Set_Voltage_On
+                0x00004d4f                R_LCD_Set_Voltage_Off
+ .text          0x00004d7a        0x0 ./src/r_cg_rtc.o
+ .text          0x00004d7a        0x1 ./src/r_cg_rtc_user.o
+                0x00004d7a                INT_RTC
+ .text          0x00004d7b      0x4cc ./src/r_cg_serial.o
+                0x00004d7b                R_SAU0_Create
+                0x00004da7                R_UART0_Create
+                0x00005030                R_UART0_Start
+                0x00005105                R_UART0_Stop
+                0x000051a6                R_UART0_Send
+ .text          0x00005247      0x487 ./src/r_cg_timer.o
+                0x00005247                R_TAU0_Create
+                0x000054e8                R_TAU0_Channel0_Start
+                0x00005539                R_TAU0_Channel0_Stop
+                0x0000558a                R_TAU0_Channel1_Higher8bits_Start
+                0x000055db                R_TAU0_Channel1_Higher8bits_Stop
+                0x0000562c                R_TAU0_Channel2_Start
+                0x0000567d                R_TAU0_Channel2_Stop
+ .text          0x000056ce      0x357 ./src/r_cg_timer_user.o
+                0x000056ce                INT_TM00
+                0x000057ae                INT_TM01H
+                0x000058b7                INT_TM02
+ .text          0x00005a25       0x4a ./src/r_systeminit.o
+                0x00005a25                R_Systeminit
+ .text          0x00005a6f       0x60 ./src/reset_program.o
+                0x00005a71                PowerON_Reset
+ .text          0x00005acf        0x0 ./src/vector_table.o
+ .text          0x00005acf        0x0 libSist_Op_stable.a(strlen.o)
+ .text          0x00005acf        0x0 libSist_Op_stable.a(strncpy.o)
+ .text          0x00005acf      0x279 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o)
+                0x00005acf                __divsf3
+ .text          0x00005d48      0x139 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_si_to_sf.o)
+                0x00005d48                __floatsisf
+ .text          0x00005e81      0x10d /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_sf_to_si.o)
+                0x00005e81                __fixsfsi
+ .text          0x00005f8e        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_thenan_sf.o)
+ .text          0x00005f8e      0x19e /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(divmodhi.o)
+                0x00006047                __udivhi3
+                0x0000604b                __umodhi3
+                0x0000604f                __divhi3
+                0x000060c1                __modhi3
+ .text          0x0000612c       0xdd /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clzsi2.o)
+                0x0000612c                __clzsi2
+ .text          0x00006209      0x389 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_pack_sf.o)
+                0x00006209                __pack_f
+ .text          0x00006592      0x171 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_unpack_sf.o)
+                0x00006592                __unpack_f
+ .text          0x00006703        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clz.o)
+ *(.text.*)
+ .text.strlen   0x00006703       0x25 libSist_Op_stable.a(strlen.o)
+                0x00006703                strlen
+ .text.strncpy  0x00006728       0x77 libSist_Op_stable.a(strncpy.o)
+                0x00006728                strncpy
+                0x0000679f                etext = .
+                0x000067a0                . = ALIGN (0x2)
+ *fill*         0x0000679f        0x1 
+
+.plt            0x000067a0       0xf0
+ .plt           0x000067a0       0xf0 ./src/Sist_Op_stable.o
+
+.init
+ *(.init)
+
+.fini
+ *(.fini)
+
+.got
+ *(.got)
+ *(.got.plt)
+
+.rodata         0x00006890      0x114
+                0x00006890                . = ALIGN (0x2)
+ *(.rodata)
+ .rodata        0x00006890        0x9 ./src/Sist_Op_stable.o
+ *fill*         0x00006899        0x1 
+ .rodata        0x0000689a        0xa /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_thenan_sf.o)
+                0x0000689a                __thenan_sf
+ .rodata        0x000068a4      0x100 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clz.o)
+                0x000068a4                __clz_tab
+ *(.rodata.*)
+                0x000069a4                _erodata = .
+
+.eh_frame_hdr
+ *(.eh_frame_hdr)
+
+.eh_frame
+ *(.eh_frame)
+
+.jcr
+ *(.jcr)
+
+.tors           0x000069a4        0x0
+                0x000069a4                __CTOR_LIST__ = .
+                0x000069a4                . = ALIGN (0x2)
+                0x000069a4                ___ctors = .
+ *(.ctors)
+                0x000069a4                ___ctors_end = .
+                0x000069a4                __CTOR_END__ = .
+                0x000069a4                __DTOR_LIST__ = .
+                0x000069a4                ___dtors = .
+ *(.dtors)
+                0x000069a4                ___dtors_end = .
+                0x000069a4                __DTOR_END__ = .
+                0x000069a4                . = ALIGN (0x2)
+                0x000069a4                _mdata = .
+
+.data           0x000ff900       0xdc load address 0x000069a4
+                0x000ff900                . = ALIGN (0x2)
+                0x000ff900                _data = .
+ *(.data)
+ .data          0x000ff900       0x16 ./src/Sist_Op_stable.o
+                0x000ff912                count_stop
+                0x000ff913                count_reset
+                0x000ff914                count_relogio
+ .data          0x000ff916       0x12 ./src/ctrdrv.o
+ .data          0x000ff928        0x0 ./src/drvADC.o
+ .data          0x000ff928        0x0 ./src/drvBot.o
+ .data          0x000ff928        0x0 ./src/drvInterrupt.o
+ .data          0x000ff928        0x0 ./src/drvLcd.o
+ .data          0x000ff928        0x0 ./src/drvLed.o
+ .data          0x000ff928       0x12 ./src/drvPID.o
+ .data          0x000ff93a        0x0 ./src/drvPWM.o
+ .data          0x000ff93a       0x10 ./src/drvSer.o
+                0x000ff93a                g_tx_buff
+ .data          0x000ff94a        0x0 ./src/drvTimer.o
+ .data          0x000ff94a        0x0 ./src/hardware_setup.o
+ .data          0x000ff94a        0x0 ./src/interrupt_handlers.o
+ .data          0x000ff94a       0x12 ./src/kernel.o
+ .data          0x000ff95c        0x0 ./src/lcd_panel.o
+ .data          0x000ff95c        0x0 ./src/r_cg_adc.o
+ .data          0x000ff95c        0x2 ./src/r_cg_adc_user.o
+                0x000ff95c                g_adc_value
+ .data          0x000ff95e        0x0 ./src/r_cg_cgc.o
+ .data          0x000ff95e        0x0 ./src/r_cg_intc.o
+ .data          0x000ff95e        0x1 ./src/r_cg_intc_user.o
+                0x000ff95e                g_switch_press
+ .data          0x000ff95f        0x0 ./src/r_cg_it.o
+ .data          0x000ff95f        0x0 ./src/r_cg_it_user.o
+ .data          0x000ff95f        0x0 ./src/r_cg_lcd.o
+ .data          0x000ff95f        0x0 ./src/r_cg_rtc.o
+ .data          0x000ff95f        0x0 ./src/r_cg_rtc_user.o
+ .data          0x000ff95f        0x0 ./src/r_cg_serial.o
+ .data          0x000ff95f        0x0 ./src/r_cg_timer.o
+ *fill*         0x000ff95f        0x1 
+ .data          0x000ff960       0x7c ./src/r_cg_timer_user.o
+                0x000ff960                g_scroll_data
+                0x000ff9d8                g_scroll_data_pointer
+                0x000ff9da                g_enable_scroll
+ .data          0x000ff9dc        0x0 ./src/r_systeminit.o
+ .data          0x000ff9dc        0x0 ./src/reset_program.o
+ .data          0x000ff9dc        0x0 ./src/vector_table.o
+ .data          0x000ff9dc        0x0 libSist_Op_stable.a(strlen.o)
+ .data          0x000ff9dc        0x0 libSist_Op_stable.a(strncpy.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_si_to_sf.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_sf_to_si.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_thenan_sf.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(divmodhi.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clzsi2.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_pack_sf.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_unpack_sf.o)
+ .data          0x000ff9dc        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clz.o)
+ *(.data.*)
+                0x000ff9dc                . = ALIGN (0x2)
+                0x000ff9dc                _edata = .
+
+.bss            0x000ff9dc      0x3de load address 0x00006a80
+                0x000ff9dc                . = ALIGN (0x2)
+                0x000ff9dc                _bss = .
+ *(.bss)
+ .bss           0x000ff9dc        0xe ./src/Sist_Op_stable.o
+ .bss           0x000ff9ea       0x2a ./src/ctrdrv.o
+ .bss           0x000ffa14        0xe ./src/drvADC.o
+ .bss           0x000ffa22        0xa ./src/drvBot.o
+ .bss           0x000ffa2c        0x6 ./src/drvInterrupt.o
+ .bss           0x000ffa32       0x1c ./src/drvLcd.o
+ .bss           0x000ffa4e        0xc ./src/drvLed.o
+ .bss           0x000ffa5a       0x36 ./src/drvPID.o
+ .bss           0x000ffa90        0xc ./src/drvPWM.o
+ .bss           0x000ffa9c       0x1a ./src/drvSer.o
+ .bss           0x000ffab6        0xa ./src/drvTimer.o
+ .bss           0x000ffac0        0x0 ./src/hardware_setup.o
+ .bss           0x000ffac0        0x0 ./src/interrupt_handlers.o
+ .bss           0x000ffac0      0x19c ./src/kernel.o
+ .bss           0x000ffc5c        0x0 ./src/lcd_panel.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_adc.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_adc_user.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_cgc.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_intc.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_intc_user.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_it.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_it_user.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_lcd.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_rtc.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_rtc_user.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_serial.o
+ .bss           0x000ffc5c        0x0 ./src/r_cg_timer.o
+ .bss           0x000ffc5c        0x8 ./src/r_cg_timer_user.o
+ .bss           0x000ffc64        0x0 ./src/r_systeminit.o
+ .bss           0x000ffc64        0x0 ./src/reset_program.o
+ .bss           0x000ffc64        0x0 ./src/vector_table.o
+ .bss           0x000ffc64        0x0 libSist_Op_stable.a(strlen.o)
+ .bss           0x000ffc64        0x0 libSist_Op_stable.a(strncpy.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_si_to_sf.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_sf_to_si.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_thenan_sf.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(divmodhi.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clzsi2.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_pack_sf.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_unpack_sf.o)
+ .bss           0x000ffc64        0x0 /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clz.o)
+ *(.bss.**)
+                0x000ffc64                . = ALIGN (0x2)
+ *(COMMON)
+ COMMON         0x000ffc64        0x8 ./src/drvSer.o
+                0x000ffc64                g_uart0_tx_count
+                0x000ffc66                gp_uart0_rx_address
+                0x000ffc68                g_uart0_rx_count
+                0x000ffc6a                gp_uart0_tx_address
+ COMMON         0x000ffc6c       0xaa ./src/kernel.o
+                0x000ffc6c                pool
+                0x000ffd0c                RRactualTask
+                0x000ffd0e                p_fcn
+                0x000ffd10                SP_dummy
+                0x000ffd14                actualTask
+                0x000ffd15                lastTask
+ COMMON         0x000ffd16       0xa2 ./src/lcd_panel.o
+                0x000ffd16                SECTB_map
+                0x000ffd3e                SECTC_map
+                0x000ffd90                SECTA_map
+ COMMON         0x000ffdb8        0x2 ./src/r_cg_serial.o
+                0x000ffdb8                g_uart0_rx_length
+                0x000ffdba                . = ALIGN (0x2)
+                0x000ffdba                _ebss = .
+                0x000ffdba                _end = .
+
+.stack          0x000ffe00        0x0
+                0x000ffe00                _stack = .
+LOAD ./src/Sist_Op_stable.o
+LOAD ./src/ctrdrv.o
+LOAD ./src/drvADC.o
+LOAD ./src/drvBot.o
+LOAD ./src/drvInterrupt.o
+LOAD ./src/drvLcd.o
+LOAD ./src/drvLed.o
+LOAD ./src/drvPID.o
+LOAD ./src/drvPWM.o
+LOAD ./src/drvSer.o
+LOAD ./src/drvTimer.o
+LOAD ./src/hardware_setup.o
+LOAD ./src/interrupt_handlers.o
+LOAD ./src/kernel.o
+LOAD ./src/lcd_panel.o
+LOAD ./src/r_cg_adc.o
+LOAD ./src/r_cg_adc_user.o
+LOAD ./src/r_cg_cgc.o
+LOAD ./src/r_cg_intc.o
+LOAD ./src/r_cg_intc_user.o
+LOAD ./src/r_cg_it.o
+LOAD ./src/r_cg_it_user.o
+LOAD ./src/r_cg_lcd.o
+LOAD ./src/r_cg_rtc.o
+LOAD ./src/r_cg_rtc_user.o
+LOAD ./src/r_cg_serial.o
+LOAD ./src/r_cg_timer.o
+LOAD ./src/r_cg_timer_user.o
+LOAD ./src/r_systeminit.o
+LOAD ./src/reset_program.o
+LOAD ./src/vector_table.o
+LOAD libSist_Op_stable.a
+START GROUP
+LOAD /home/luisp/IC/project/Sist_Op_stable/HardwareDebug/libSist_Op_stable.a
+LOAD /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a
+END GROUP
+OUTPUT(Sist_Op_stable.x elf32-rl78)
+
+.debug_frame    0x00000000     0x1054
+ .debug_frame   0x00000000       0xb4 ./src/Sist_Op_stable.o
+ .debug_frame   0x000000b4       0x50 ./src/ctrdrv.o
+ .debug_frame   0x00000104       0x80 ./src/drvADC.o
+ .debug_frame   0x00000184       0x60 ./src/drvBot.o
+ .debug_frame   0x000001e4       0x58 ./src/drvInterrupt.o
+ .debug_frame   0x0000023c      0x108 ./src/drvLcd.o
+ .debug_frame   0x00000344       0x74 ./src/drvLed.o
+ .debug_frame   0x000003b8       0xb8 ./src/drvPID.o
+ .debug_frame   0x00000470       0xa0 ./src/drvPWM.o
+ .debug_frame   0x00000510       0xf8 ./src/drvSer.o
+ .debug_frame   0x00000608       0x58 ./src/drvTimer.o
+ .debug_frame   0x00000660       0x24 ./src/hardware_setup.o
+ .debug_frame   0x00000684      0x27c ./src/interrupt_handlers.o
+ .debug_frame   0x00000900       0xf4 ./src/kernel.o
+ .debug_frame   0x000009f4      0x154 ./src/lcd_panel.o
+ .debug_frame   0x00000b48       0x74 ./src/r_cg_adc.o
+ .debug_frame   0x00000bbc       0x44 ./src/r_cg_adc_user.o
+ .debug_frame   0x00000c00       0x28 ./src/r_cg_cgc.o
+ .debug_frame   0x00000c28       0x84 ./src/r_cg_intc.o
+ .debug_frame   0x00000cac       0x8c ./src/r_cg_intc_user.o
+ .debug_frame   0x00000d38       0x74 ./src/r_cg_it.o
+ .debug_frame   0x00000dac       0x50 ./src/r_cg_it_user.o
+ .debug_frame   0x00000dfc       0x6c ./src/r_cg_lcd.o
+ .debug_frame   0x00000e68       0x24 ./src/r_cg_rtc_user.o
+ .debug_frame   0x00000e8c       0x70 ./src/r_cg_serial.o
+ .debug_frame   0x00000efc       0x90 ./src/r_cg_timer.o
+ .debug_frame   0x00000f8c       0xa4 ./src/r_cg_timer_user.o
+ .debug_frame   0x00001030       0x24 ./src/r_systeminit.o
+
+.debug_info     0x00000000     0x5d4b
+ .debug_info    0x00000000      0x62a ./src/Sist_Op_stable.o
+ .debug_info    0x0000062a      0x228 ./src/ctrdrv.o
+ .debug_info    0x00000852      0x22e ./src/drvADC.o
+ .debug_info    0x00000a80      0x2d3 ./src/drvBot.o
+ .debug_info    0x00000d53      0x1b0 ./src/drvInterrupt.o
+ .debug_info    0x00000f03      0x3d9 ./src/drvLcd.o
+ .debug_info    0x000012dc      0x36f ./src/drvLed.o
+ .debug_info    0x0000164b      0x49c ./src/drvPID.o
+ .debug_info    0x00001ae7      0x58c ./src/drvPWM.o
+ .debug_info    0x00002073      0x4e6 ./src/drvSer.o
+ .debug_info    0x00002559      0x1bd ./src/drvTimer.o
+ .debug_info    0x00002716       0x6a ./src/hardware_setup.o
+ .debug_info    0x00002780      0x20e ./src/interrupt_handlers.o
+ .debug_info    0x0000298e      0x64c ./src/kernel.o
+ .debug_info    0x00002fda      0x578 ./src/lcd_panel.o
+ .debug_info    0x00003552      0x42b ./src/r_cg_adc.o
+ .debug_info    0x0000397d      0x1d1 ./src/r_cg_adc_user.o
+ .debug_info    0x00003b4e      0x16f ./src/r_cg_cgc.o
+ .debug_info    0x00003cbd      0x3af ./src/r_cg_intc.o
+ .debug_info    0x0000406c      0x202 ./src/r_cg_intc_user.o
+ .debug_info    0x0000426e      0x321 ./src/r_cg_it.o
+ .debug_info    0x0000458f      0x316 ./src/r_cg_it_user.o
+ .debug_info    0x000048a5      0x642 ./src/r_cg_lcd.o
+ .debug_info    0x00004ee7       0x21 ./src/r_cg_rtc.o
+ .debug_info    0x00004f08       0x40 ./src/r_cg_rtc_user.o
+ .debug_info    0x00004f48      0x36d ./src/r_cg_serial.o
+ .debug_info    0x000052b5      0x401 ./src/r_cg_timer.o
+ .debug_info    0x000056b6      0x3d1 ./src/r_cg_timer_user.o
+ .debug_info    0x00005a87      0x17a ./src/r_systeminit.o
+ .debug_info    0x00005c01       0x81 ./src/reset_program.o
+ .debug_info    0x00005c82       0xc9 ./src/vector_table.o
+
+.debug_abbrev   0x00000000     0x1e5d
+ .debug_abbrev  0x00000000      0x154 ./src/Sist_Op_stable.o
+ .debug_abbrev  0x00000154      0x101 ./src/ctrdrv.o
+ .debug_abbrev  0x00000255      0x105 ./src/drvADC.o
+ .debug_abbrev  0x0000035a      0x145 ./src/drvBot.o
+ .debug_abbrev  0x0000049f       0xe7 ./src/drvInterrupt.o
+ .debug_abbrev  0x00000586      0x105 ./src/drvLcd.o
+ .debug_abbrev  0x0000068b      0x152 ./src/drvLed.o
+ .debug_abbrev  0x000007dd      0x144 ./src/drvPID.o
+ .debug_abbrev  0x00000921      0x1d8 ./src/drvPWM.o
+ .debug_abbrev  0x00000af9      0x1e6 ./src/drvSer.o
+ .debug_abbrev  0x00000cdf      0x105 ./src/drvTimer.o
+ .debug_abbrev  0x00000de4       0x3a ./src/hardware_setup.o
+ .debug_abbrev  0x00000e1e       0x2f ./src/interrupt_handlers.o
+ .debug_abbrev  0x00000e4d      0x26f ./src/kernel.o
+ .debug_abbrev  0x000010bc      0x228 ./src/lcd_panel.o
+ .debug_abbrev  0x000012e4      0x109 ./src/r_cg_adc.o
+ .debug_abbrev  0x000013ed       0xab ./src/r_cg_adc_user.o
+ .debug_abbrev  0x00001498       0x9d ./src/r_cg_cgc.o
+ .debug_abbrev  0x00001535       0xd0 ./src/r_cg_intc.o
+ .debug_abbrev  0x00001605       0xb2 ./src/r_cg_intc_user.o
+ .debug_abbrev  0x000016b7      0x102 ./src/r_cg_it.o
+ .debug_abbrev  0x000017b9      0x10b ./src/r_cg_it_user.o
+ .debug_abbrev  0x000018c4       0xec ./src/r_cg_lcd.o
+ .debug_abbrev  0x000019b0       0x13 ./src/r_cg_rtc.o
+ .debug_abbrev  0x000019c3       0x2f ./src/r_cg_rtc_user.o
+ .debug_abbrev  0x000019f2      0x14d ./src/r_cg_serial.o
+ .debug_abbrev  0x00001b3f       0xe8 ./src/r_cg_timer.o
+ .debug_abbrev  0x00001c27      0x104 ./src/r_cg_timer_user.o
+ .debug_abbrev  0x00001d2b       0xc8 ./src/r_systeminit.o
+ .debug_abbrev  0x00001df3       0x14 ./src/reset_program.o
+ .debug_abbrev  0x00001e07       0x56 ./src/vector_table.o
+
+.debug_loc      0x00000000     0x1566
+ .debug_loc     0x00000000      0x110 ./src/Sist_Op_stable.o
+ .debug_loc     0x00000110       0x51 ./src/ctrdrv.o
+ .debug_loc     0x00000161       0x66 ./src/drvADC.o
+ .debug_loc     0x000001c7       0x66 ./src/drvBot.o
+ .debug_loc     0x0000022d       0x22 ./src/drvInterrupt.o
+ .debug_loc     0x0000024f      0x132 ./src/drvLcd.o
+ .debug_loc     0x00000381       0x88 ./src/drvLed.o
+ .debug_loc     0x00000409       0x95 ./src/drvPID.o
+ .debug_loc     0x0000049e       0xbc ./src/drvPWM.o
+ .debug_loc     0x0000055a      0x222 ./src/drvSer.o
+ .debug_loc     0x0000077c       0x22 ./src/drvTimer.o
+ .debug_loc     0x0000079e      0x646 ./src/interrupt_handlers.o
+ .debug_loc     0x00000de4      0x127 ./src/kernel.o
+ .debug_loc     0x00000f0b      0x110 ./src/lcd_panel.o
+ .debug_loc     0x0000101b       0x97 ./src/r_cg_adc_user.o
+ .debug_loc     0x000010b2       0x22 ./src/r_cg_cgc.o
+ .debug_loc     0x000010d4      0x150 ./src/r_cg_intc_user.o
+ .debug_loc     0x00001224       0x8a ./src/r_cg_it_user.o
+ .debug_loc     0x000012ae       0x44 ./src/r_cg_lcd.o
+ .debug_loc     0x000012f2       0x66 ./src/r_cg_serial.o
+ .debug_loc     0x00001358       0x49 ./src/r_cg_timer.o
+ .debug_loc     0x000013a1      0x1c5 ./src/r_cg_timer_user.o
+
+.debug_aranges  0x00000000      0x3d0
+ .debug_aranges
+                0x00000000       0x20 ./src/Sist_Op_stable.o
+ .debug_aranges
+                0x00000020       0x20 ./src/ctrdrv.o
+ .debug_aranges
+                0x00000040       0x20 ./src/drvADC.o
+ .debug_aranges
+                0x00000060       0x20 ./src/drvBot.o
+ .debug_aranges
+                0x00000080       0x20 ./src/drvInterrupt.o
+ .debug_aranges
+                0x000000a0       0x20 ./src/drvLcd.o
+ .debug_aranges
+                0x000000c0       0x20 ./src/drvLed.o
+ .debug_aranges
+                0x000000e0       0x20 ./src/drvPID.o
+ .debug_aranges
+                0x00000100       0x20 ./src/drvPWM.o
+ .debug_aranges
+                0x00000120       0x20 ./src/drvSer.o
+ .debug_aranges
+                0x00000140       0x20 ./src/drvTimer.o
+ .debug_aranges
+                0x00000160       0x20 ./src/hardware_setup.o
+ .debug_aranges
+                0x00000180       0x20 ./src/interrupt_handlers.o
+ .debug_aranges
+                0x000001a0       0x20 ./src/kernel.o
+ .debug_aranges
+                0x000001c0       0x20 ./src/lcd_panel.o
+ .debug_aranges
+                0x000001e0       0x20 ./src/r_cg_adc.o
+ .debug_aranges
+                0x00000200       0x20 ./src/r_cg_adc_user.o
+ .debug_aranges
+                0x00000220       0x20 ./src/r_cg_cgc.o
+ .debug_aranges
+                0x00000240       0x20 ./src/r_cg_intc.o
+ .debug_aranges
+                0x00000260       0x20 ./src/r_cg_intc_user.o
+ .debug_aranges
+                0x00000280       0x20 ./src/r_cg_it.o
+ .debug_aranges
+                0x000002a0       0x20 ./src/r_cg_it_user.o
+ .debug_aranges
+                0x000002c0       0x20 ./src/r_cg_lcd.o
+ .debug_aranges
+                0x000002e0       0x18 ./src/r_cg_rtc.o
+ .debug_aranges
+                0x000002f8       0x20 ./src/r_cg_rtc_user.o
+ .debug_aranges
+                0x00000318       0x20 ./src/r_cg_serial.o
+ .debug_aranges
+                0x00000338       0x20 ./src/r_cg_timer.o
+ .debug_aranges
+                0x00000358       0x20 ./src/r_cg_timer_user.o
+ .debug_aranges
+                0x00000378       0x20 ./src/r_systeminit.o
+ .debug_aranges
+                0x00000398       0x20 ./src/reset_program.o
+ .debug_aranges
+                0x000003b8       0x18 ./src/vector_table.o
+
+.debug_ranges   0x00000000       0x18
+ .debug_ranges  0x00000000       0x18 ./src/Sist_Op_stable.o
+
+.debug_macro    0x00000000     0x3ef4
+ .debug_macro   0x00000000       0xd2 ./src/Sist_Op_stable.o
+ .debug_macro   0x000000d2      0x4de ./src/Sist_Op_stable.o
+ .debug_macro   0x000005b0      0xd37 ./src/Sist_Op_stable.o
+ .debug_macro   0x000012e7      0x7ce ./src/Sist_Op_stable.o
+ .debug_macro   0x00001ab5       0x70 ./src/Sist_Op_stable.o
+ .debug_macro   0x00001b25       0xa0 ./src/Sist_Op_stable.o
+ .debug_macro   0x00001bc5       0x10 ./src/Sist_Op_stable.o
+ .debug_macro   0x00001bd5       0xc6 ./src/ctrdrv.o
+ .debug_macro   0x00001c9b       0x6c ./src/drvADC.o
+ .debug_macro   0x00001d07      0x181 ./src/drvADC.o
+ .debug_macro   0x00001e88       0x63 ./src/drvBot.o
+ .debug_macro   0x00001eeb       0x63 ./src/drvInterrupt.o
+ .debug_macro   0x00001f4e       0x6c ./src/drvLcd.o
+ .debug_macro   0x00001fba      0x2d4 ./src/drvLcd.o
+ .debug_macro   0x0000228e       0x63 ./src/drvLed.o
+ .debug_macro   0x000022f1       0xbc ./src/drvPID.o
+ .debug_macro   0x000023ad       0x6c ./src/drvPWM.o
+ .debug_macro   0x00002419      0x636 ./src/drvPWM.o
+ .debug_macro   0x00002a4f       0x8b ./src/drvSer.o
+ .debug_macro   0x00002ada      0x4a4 ./src/drvSer.o
+ .debug_macro   0x00002f7e       0x16 ./src/drvSer.o
+ .debug_macro   0x00002f94       0x72 ./src/drvTimer.o
+ .debug_macro   0x00003006       0x22 ./src/drvTimer.o
+ .debug_macro   0x00003028       0x46 ./src/hardware_setup.o
+ .debug_macro   0x0000306e       0x1b ./src/interrupt_handlers.o
+ .debug_macro   0x00003089       0xe4 ./src/kernel.o
+ .debug_macro   0x0000316d       0x56 ./src/lcd_panel.o
+ .debug_macro   0x000031c3      0x1e9 ./src/lcd_panel.o
+ .debug_macro   0x000033ac       0x66 ./src/r_cg_adc.o
+ .debug_macro   0x00003412      0x17b ./src/r_cg_adc.o
+ .debug_macro   0x0000358d       0x62 ./src/r_cg_adc_user.o
+ .debug_macro   0x000035ef       0x66 ./src/r_cg_cgc.o
+ .debug_macro   0x00003655      0x20f ./src/r_cg_cgc.o
+ .debug_macro   0x00003864       0x60 ./src/r_cg_intc.o
+ .debug_macro   0x000038c4      0x114 ./src/r_cg_intc.o
+ .debug_macro   0x000039d8       0x60 ./src/r_cg_intc_user.o
+ .debug_macro   0x00003a38       0x58 ./src/r_cg_it.o
+ .debug_macro   0x00003a90       0x28 ./src/r_cg_it.o
+ .debug_macro   0x00003ab8       0x58 ./src/r_cg_it_user.o
+ .debug_macro   0x00003b10       0x77 ./src/r_cg_lcd.o
+ .debug_macro   0x00003b87       0x11 ./src/r_cg_rtc.o
+ .debug_macro   0x00003b98       0x11 ./src/r_cg_rtc_user.o
+ .debug_macro   0x00003ba9       0x60 ./src/r_cg_serial.o
+ .debug_macro   0x00003c09       0x60 ./src/r_cg_timer.o
+ .debug_macro   0x00003c69       0xa5 ./src/r_cg_timer_user.o
+ .debug_macro   0x00003d0e      0x130 ./src/r_cg_timer_user.o
+ .debug_macro   0x00003e3e       0x8f ./src/r_systeminit.o
+ .debug_macro   0x00003ecd       0x27 ./src/vector_table.o
+
+.debug_line     0x00000000     0x22dd
+ .debug_line    0x00000000      0x231 ./src/Sist_Op_stable.o
+ .debug_line    0x00000231      0x160 ./src/ctrdrv.o
+ .debug_line    0x00000391       0xe8 ./src/drvADC.o
+ .debug_line    0x00000479       0xf0 ./src/drvBot.o
+ .debug_line    0x00000569       0xd8 ./src/drvInterrupt.o
+ .debug_line    0x00000641      0x12a ./src/drvLcd.o
+ .debug_line    0x0000076b      0x112 ./src/drvLed.o
+ .debug_line    0x0000087d      0x1a8 ./src/drvPID.o
+ .debug_line    0x00000a25      0x123 ./src/drvPWM.o
+ .debug_line    0x00000b48      0x177 ./src/drvSer.o
+ .debug_line    0x00000cbf       0xdc ./src/drvTimer.o
+ .debug_line    0x00000d9b       0xab ./src/hardware_setup.o
+ .debug_line    0x00000e46       0x98 ./src/interrupt_handlers.o
+ .debug_line    0x00000ede      0x276 ./src/kernel.o
+ .debug_line    0x00001154      0x44b ./src/lcd_panel.o
+ .debug_line    0x0000159f       0xf3 ./src/r_cg_adc.o
+ .debug_line    0x00001692       0xc8 ./src/r_cg_adc_user.o
+ .debug_line    0x0000175a       0xd1 ./src/r_cg_cgc.o
+ .debug_line    0x0000182b       0xfa ./src/r_cg_intc.o
+ .debug_line    0x00001925       0xcb ./src/r_cg_intc_user.o
+ .debug_line    0x000019f0       0xe2 ./src/r_cg_it.o
+ .debug_line    0x00001ad2       0xc9 ./src/r_cg_it_user.o
+ .debug_line    0x00001b9b      0x131 ./src/r_cg_lcd.o
+ .debug_line    0x00001ccc       0x32 ./src/r_cg_rtc.o
+ .debug_line    0x00001cfe       0x4a ./src/r_cg_rtc_user.o
+ .debug_line    0x00001d48      0x13a ./src/r_cg_serial.o
+ .debug_line    0x00001e82      0x12d ./src/r_cg_timer.o
+ .debug_line    0x00001faf      0x17f ./src/r_cg_timer_user.o
+ .debug_line    0x0000212e       0xeb ./src/r_systeminit.o
+ .debug_line    0x00002219       0x76 ./src/reset_program.o
+ .debug_line    0x0000228f       0x4e ./src/vector_table.o
+
+.debug_str      0x00000000    0x100d2
+ .debug_str     0x00000000     0x8bd4 ./src/Sist_Op_stable.o
+                               0x8c48 (size before relaxing)
+ .debug_str     0x00008bd4       0x6e ./src/ctrdrv.o
+                               0x8a24 (size before relaxing)
+ .debug_str     0x00008c42      0x799 ./src/drvADC.o
+                               0x90a0 (size before relaxing)
+ .debug_str     0x000093db       0x65 ./src/drvBot.o
+                               0x897b (size before relaxing)
+ .debug_str     0x00009440       0x4e ./src/drvInterrupt.o
+                               0x8949 (size before relaxing)
+ .debug_str     0x0000948e      0x7dc ./src/drvLcd.o
+                               0x915a (size before relaxing)
+ .debug_str     0x00009c6a       0x56 ./src/drvLed.o
+                               0x898e (size before relaxing)
+ .debug_str     0x00009cc0       0xed ./src/drvPID.o
+                               0x8ad5 (size before relaxing)
+ .debug_str     0x00009dad     0x21a2 ./src/drvPWM.o
+                               0xaaea (size before relaxing)
+ .debug_str     0x0000bf4f     0x17e9 ./src/drvSer.o
+                               0xa15e (size before relaxing)
+ .debug_str     0x0000d738       0xfb ./src/drvTimer.o
+                               0x89f8 (size before relaxing)
+ .debug_str     0x0000d833       0x36 ./src/hardware_setup.o
+                               0x872d (size before relaxing)
+ .debug_str     0x0000d869       0xd4 ./src/interrupt_handlers.o
+                               0x1823 (size before relaxing)
+ .debug_str     0x0000d93d      0x1c5 ./src/kernel.o
+                               0x8c11 (size before relaxing)
+ .debug_str     0x0000db02      0xc2e ./src/lcd_panel.o
+                               0x9ac1 (size before relaxing)
+ .debug_str     0x0000e730       0x95 ./src/r_cg_adc.o
+                               0x90d0 (size before relaxing)
+ .debug_str     0x0000e7c5       0x2a ./src/r_cg_adc_user.o
+                               0x9012 (size before relaxing)
+ .debug_str     0x0000e7ef      0x824 ./src/r_cg_cgc.o
+                               0x90b5 (size before relaxing)
+ .debug_str     0x0000f013      0x677 ./src/r_cg_intc.o
+                               0x8f43 (size before relaxing)
+ .debug_str     0x0000f68a       0x3c ./src/r_cg_intc_user.o
+                               0x8ec7 (size before relaxing)
+ .debug_str     0x0000f6c6       0x75 ./src/r_cg_it.o
+                               0x89f5 (size before relaxing)
+ .debug_str     0x0000f73b       0x32 ./src/r_cg_it_user.o
+                               0x89c4 (size before relaxing)
+ .debug_str     0x0000f76d       0xf5 ./src/r_cg_lcd.o
+                               0x9c11 (size before relaxing)
+ .debug_str     0x0000f862       0x12 ./src/r_cg_rtc.o
+                               0x174b (size before relaxing)
+ .debug_str     0x0000f874       0x1f ./src/r_cg_rtc_user.o
+                               0x1758 (size before relaxing)
+ .debug_str     0x0000f893       0x93 ./src/r_cg_serial.o
+                               0xa026 (size before relaxing)
+ .debug_str     0x0000f926       0xbb ./src/r_cg_timer.o
+                               0xaa8e (size before relaxing)
+ .debug_str     0x0000f9e1      0x624 ./src/r_cg_timer_user.o
+                               0xcc15 (size before relaxing)
+ .debug_str     0x00010005       0x38 ./src/r_systeminit.o
+                               0x9e81 (size before relaxing)
+ .debug_str     0x0001003d       0x95 ./src/vector_table.o
+                               0x1803 (size before relaxing)
+
+.comment        0x00000000      0x118
+ .comment       0x00000000       0x8d ./src/Sist_Op_stable.o
+                                 0x8e (size before relaxing)
+ .comment       0x00000000       0x8e ./src/ctrdrv.o
+ .comment       0x00000000       0x8e ./src/drvADC.o
+ .comment       0x00000000       0x8e ./src/drvBot.o
+ .comment       0x00000000       0x8e ./src/drvInterrupt.o
+ .comment       0x00000000       0x8e ./src/drvLcd.o
+ .comment       0x00000000       0x8e ./src/drvLed.o
+ .comment       0x00000000       0x8e ./src/drvPID.o
+ .comment       0x00000000       0x8e ./src/drvPWM.o
+ .comment       0x00000000       0x8e ./src/drvSer.o
+ .comment       0x00000000       0x8e ./src/drvTimer.o
+ .comment       0x00000000       0x8e ./src/hardware_setup.o
+ .comment       0x00000000       0x8e ./src/interrupt_handlers.o
+ .comment       0x00000000       0x8e ./src/kernel.o
+ .comment       0x00000000       0x8e ./src/lcd_panel.o
+ .comment       0x00000000       0x8e ./src/r_cg_adc.o
+ .comment       0x00000000       0x8e ./src/r_cg_adc_user.o
+ .comment       0x00000000       0x8e ./src/r_cg_cgc.o
+ .comment       0x00000000       0x8e ./src/r_cg_intc.o
+ .comment       0x00000000       0x8e ./src/r_cg_intc_user.o
+ .comment       0x00000000       0x8e ./src/r_cg_it.o
+ .comment       0x00000000       0x8e ./src/r_cg_it_user.o
+ .comment       0x00000000       0x8e ./src/r_cg_lcd.o
+ .comment       0x00000000       0x8e ./src/r_cg_rtc.o
+ .comment       0x00000000       0x8e ./src/r_cg_rtc_user.o
+ .comment       0x00000000       0x8e ./src/r_cg_serial.o
+ .comment       0x00000000       0x8e ./src/r_cg_timer.o
+ .comment       0x00000000       0x8e ./src/r_cg_timer_user.o
+ .comment       0x00000000       0x8e ./src/r_systeminit.o
+ .comment       0x00000000       0x8e ./src/vector_table.o
+ .comment       0x00000000       0x8e libSist_Op_stable.a(strlen.o)
+ .comment       0x00000000       0x8e libSist_Op_stable.a(strncpy.o)
+ .comment       0x0000008d       0x8b /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_div_sf.o)
+                                 0x8c (size before relaxing)
+ .comment       0x00000000       0x8c /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_si_to_sf.o)
+ .comment       0x00000000       0x8c /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_sf_to_si.o)
+ .comment       0x00000000       0x8c /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_thenan_sf.o)
+ .comment       0x00000000       0x8e /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clzsi2.o)
+ .comment       0x00000000       0x8c /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_pack_sf.o)
+ .comment       0x00000000       0x8c /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_unpack_sf.o)
+ .comment       0x00000000       0x8e /home/luisp/IC/project/4.8-GNURL78_v14.02//libgcc.a(_clz.o)

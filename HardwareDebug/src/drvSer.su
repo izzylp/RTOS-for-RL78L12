@@ -1,0 +1,8 @@
+drvSer.c:60:6:initSerial	0	static
+drvSer.c:67:6:INT_SR0	26	static
+drvSer.c:78:6:INT_ST0	18	static
+drvSer.c:103:6:serRead	8	static
+drvSer.c:120:6:serAvailable	2	static
+drvSer.c:159:6:serSend	30	dynamic
+drvSer.c:176:6:serSendLn	30	dynamic
+drvSer.c:195:9:getSerDriver	2	static

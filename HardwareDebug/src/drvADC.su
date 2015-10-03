@@ -1,0 +1,6 @@
+drvADC.c:15:6:initADC	0	static
+drvADC.c:22:6:adcStart	0	static
+drvADC.c:28:6:adcSGet	2	static
+drvADC.c:35:6:adcGet	2	static
+drvADC.c:41:6:adcStop	0	static
+drvADC.c:48:9:getADCDriver	2	static

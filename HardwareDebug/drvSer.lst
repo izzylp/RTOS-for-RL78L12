@@ -1,0 +1,1062 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.global	_g_tx_buff
+  28                             	.data
+  31                             	_g_tx_buff:
+  32 0000 00 00 00 00 00 00 00 00 		.zero	16
+  32      00 00 00 00 00 00 00 00 
+  33                             		.local	_g_rx_buffer
+  34                             		.comm	_g_rx_buffer,12,1
+  35                             		.comm	_g_uart0_rx_count,2,2
+  36                             		.comm	_gp_uart0_rx_address,2,2
+  37                             		.comm	_gp_uart0_tx_address,2,2
+  38                             		.comm	_g_uart0_tx_count,2,2
+  39                             		.local	_thisDriver
+  40                             		.comm	_thisDriver,6,2
+  41                             		.local	_this_functions
+  42                             		.comm	_this_functions,8,2
+  43                             	.text
+  44                             		.global	_initSer
+  46                             	_initSer:
+  47                             	.LFB0:
+  48                             		.file 1 "../src/drvSer.c"
+   1:../src/drvSer.c **** /*
+   2:../src/drvSer.c ****  * drvSer.c
+   3:../src/drvSer.c ****  *
+   4:../src/drvSer.c ****  *  Created on: 30/07/2014
+   5:../src/drvSer.c ****  *      Author: Luis
+   6:../src/drvSer.c ****  */
+   7:../src/drvSer.c **** 
+   8:../src/drvSer.c **** #include "drvSer.h"
+   9:../src/drvSer.c **** #include "r_cg_macrodriver.h"
+  10:../src/drvSer.c **** #include "r_cg_userdefine.h"
+  11:../src/drvSer.c **** #include "r_cg_serial.h"
+  12:../src/drvSer.c **** #include "interrupt_handlers.h"
+  13:../src/drvSer.c **** #include <string.h>
+  14:../src/drvSer.c **** 
+  15:../src/drvSer.c **** /* UART receive buffer size  */
+  16:../src/drvSer.c **** #define RX_BUFF_SIZE	10
+  17:../src/drvSer.c **** #define RxBuffLen	((uint8_t)(g_rx_buffer.wrPtr - g_rx_buffer.rdPtr))
+  18:../src/drvSer.c **** 
+  19:../src/drvSer.c **** /*
+  20:../src/drvSer.c ****  * UART está configurada para operar em 38400 bps.
+  21:../src/drvSer.c ****  * Utilizando dois canais (um de transmissão e o outro de recepção).
+  22:../src/drvSer.c ****  * 8 bits de dados, 1 bit de parada,
+  23:../src/drvSer.c ****  * controle por software e sem pareamento.
+  24:../src/drvSer.c ****  */
+  25:../src/drvSer.c **** 
+  26:../src/drvSer.c **** typedef struct _Comms_Buffer
+  27:../src/drvSer.c **** {
+  28:../src/drvSer.c ****     /* Read Pointer */
+  29:../src/drvSer.c ****     uint8_t rdPtr;
+  30:../src/drvSer.c **** 
+  31:../src/drvSer.c ****     /* Write Pointer */
+  32:../src/drvSer.c ****     uint8_t wrPtr;
+  33:../src/drvSer.c **** 
+  34:../src/drvSer.c ****     /* The Buffer */
+  35:../src/drvSer.c ****     volatile uint8_t buffer[RX_BUFF_SIZE];
+  36:../src/drvSer.c **** }
+  37:../src/drvSer.c **** /* Declare a structure of type _Comms_Buffer */
+  38:../src/drvSer.c **** Comms_Buffer;
+  39:../src/drvSer.c **** 
+  40:../src/drvSer.c **** /* UART0 Tx buffer */
+  41:../src/drvSer.c **** uint8_t  g_tx_buff[16] = {0};
+  42:../src/drvSer.c **** 
+  43:../src/drvSer.c **** /* UART0 Rx buffer */
+  44:../src/drvSer.c **** static Comms_Buffer g_rx_buffer = {0};
+  45:../src/drvSer.c **** 
+  46:../src/drvSer.c **** /* uart0 receive data number */
+  47:../src/drvSer.c **** volatile uint16_t  g_uart0_rx_count;
+  48:../src/drvSer.c **** 
+  49:../src/drvSer.c **** /* uart0 receive buffer address */
+  50:../src/drvSer.c **** volatile uint8_t * gp_uart0_rx_address;
+  51:../src/drvSer.c **** 
+  52:../src/drvSer.c **** /*  uart0 send buffer address  */
+  53:../src/drvSer.c **** volatile uint8_t * gp_uart0_tx_address;
+  54:../src/drvSer.c **** 
+  55:../src/drvSer.c **** /*  uart0 send data number  */
+  56:../src/drvSer.c **** volatile uint16_t  g_uart0_tx_count;
+  57:../src/drvSer.c **** 
+  58:../src/drvSer.c **** static driver thisDriver;
+  59:../src/drvSer.c **** static ptrFuncDrv this_functions[SER_END];
+  60:../src/drvSer.c **** 
+  61:../src/drvSer.c **** char initSer(void *parameters);
+  62:../src/drvSer.c **** void INT_SR0(void);
+  63:../src/drvSer.c **** void INT_ST0(void);
+  64:../src/drvSer.c **** char SerRead(void *parameters);
+  65:../src/drvSer.c **** char SerAvailable(void *parameters);
+  66:../src/drvSer.c **** char SerSend(void *parameters);
+  67:../src/drvSer.c **** char SerSendLn(void *parameters);
+  68:../src/drvSer.c **** 
+  69:../src/drvSer.c **** char initSer(void *parameters)
+  70:../src/drvSer.c **** {
+  49                             		.loc 1 70 0
+  71:../src/drvSer.c **** 	R_SAU0_Create();
+  50                             		.loc 1 71 0
+  51 0000 FC 00 00 00             		call	!!%code(_R_SAU0_Create)
+  72:../src/drvSer.c **** 	//R_UART0_Create();
+  73:../src/drvSer.c **** 	R_UART0_Start();
+  52                             		.loc 1 73 0
+  53 0004 FC 00 00 00             		call	!!%code(_R_UART0_Start)
+  74:../src/drvSer.c **** 
+  75:../src/drvSer.c ****         return SUCESSO;
+  54                             		.loc 1 75 0
+  55 0008 CD F0 00                		mov	r8, #0
+  76:../src/drvSer.c **** }
+  56                             		.loc 1 76 0
+  57 000b D7                      		ret
+  58                             	.LFE0:
+  60                             		.global	___modhi3
+  61                             		.global	_INT_SR0
+  63                             	_INT_SR0:
+  64                             	.LFB1:
+  77:../src/drvSer.c **** 
+  78:../src/drvSer.c **** void INT_SR0(void)
+  79:../src/drvSer.c **** {
+  65                             		.loc 1 79 0
+  66                             		; start of function
+  67                             		; push 18: ax bc de hl r8 r10 r12 r14 r22
+  68                             		; locals: 4 bytes
+  69                             		; outgoing: 4 bytes
+  70 000c 61 CF                   		sel	rb0
+  71 000e C1                      		push	ax
+  72                             	.LCFI0:
+  73 000f C3                      		push	bc
+  74                             	.LCFI1:
+  75 0010 C5                      		push	de
+  76                             	.LCFI2:
+  77 0011 C7                      		push	hl
+  78                             	.LCFI3:
+  79 0012 61 DF                   		sel	rb1
+  80 0014 C1                      		push	ax ; r8
+  81                             	.LCFI4:
+  82 0015 C3                      		push	bc ; r10
+  83                             	.LCFI5:
+  84 0016 C5                      		push	de ; r12
+  85                             	.LCFI6:
+  86 0017 C7                      		push	hl ; r14
+  87                             	.LCFI7:
+  88 0018 61 EF                   		sel	rb2
+  89 001a C7                      		push	hl ; r22
+  90                             	.LCFI8:
+  91 001b 61 CF                   		sel	rb0
+  92 001d 20 08                   		subw	sp, #8
+  93                             	.LCFI9:
+  80:../src/drvSer.c ****         if ((g_rx_buffer.wrPtr+1)%RX_BUFF_SIZE != g_rx_buffer.rdPtr) {
+  94                             		.loc 1 80 0
+  95 001f 8F 01 00                		mov	a, !_g_rx_buffer+1
+  96 0022 9D F0                   		mov	r8, a
+  97 0024 CD F1 00                		mov	r9, #0
+  98 0027 A6 F0                   		incw	r8
+  99 0029 AD F0                   		movw	ax, r8
+ 100 002b B8 00                   		movw	[sp], ax
+ 101 002d 30 0A 00                		movw	ax, #10
+ 102 0030 B8 02                   		movw	[sp+2], ax
+ 103 0032 FC 00 00 00             		call	!!___modhi3
+ 104 0036 AD F0                   		movw	ax, r8
+ 105 0038 B8 06                   		movw	[sp+6], ax
+ 106 003a 8F 00 00                		mov	a, !_g_rx_buffer
+ 107 003d 9D F0                   		mov	r8, a
+ 108 003f CD F1 00                		mov	r9, #0
+ 109 0042 A8 06                   		movw	ax, [sp+6]
+ 110 0044 46 F0                   		cmpw	ax, r8 
+ 111 0046 61 F8                   		sknz 
+ 112 0048 EC 8C 00 00             		br	!!.L4
+  81:../src/drvSer.c ****                 g_rx_buffer.buffer[g_rx_buffer.wrPtr] = RXD0;
+ 113                             		.loc 1 81 0
+ 114 004c 8F 01 00                		mov	a, !_g_rx_buffer+1
+ 115 004f 9D F0                   		mov	r8, a
+ 116 0051 CD F1 00                		mov	r9, #0
+ 117 0054 C9 F2 12 FF             		movw	r10, #-238
+ 118 0058 AD F2                   		movw	ax, r10
+ 119 005a BD F4                   		movw	r12, ax
+ 120 005c FA F4                   		movw	hl, r12
+ 121 005e 8B                      		mov	a, [hl]
+ 122 005f 9D F2                   		mov	r10, a
+ 123 0061 AD F0                   		movw	ax, r8
+ 124 0063 04 02 00                		addw	ax, #_g_rx_buffer+2
+ 125 0066 16                      		movw	hl, ax
+ 126 0067 8D F2                   		mov	a, r10
+ 127 0069 9B                      		mov	[hl], a
+  82:../src/drvSer.c ****                 g_rx_buffer.wrPtr = (g_rx_buffer.wrPtr+1)%RX_BUFF_SIZE;
+ 128                             		.loc 1 82 0
+ 129 006a 8F 01 00                		mov	a, !_g_rx_buffer+1
+ 130 006d 9D F0                   		mov	r8, a
+ 131 006f CD F1 00                		mov	r9, #0
+ 132 0072 A6 F0                   		incw	r8
+ 133 0074 AD F0                   		movw	ax, r8
+ 134 0076 B8 00                   		movw	[sp], ax
+ 135 0078 30 0A 00                		movw	ax, #10
+ 136 007b B8 02                   		movw	[sp+2], ax
+ 137 007d FC 00 00 00             		call	!!___modhi3
+ 138 0081 AD F0                   		movw	ax, r8
+ 139 0083 B8 04                   		movw	[sp+4], ax
+ 140 0085 88 04                   		mov	a, [sp+4]
+ 141 0087 9D F0                   		mov	r8, a
+ 142 0089 9F 01 00                		mov	!_g_rx_buffer+1, a
+ 143                             	.L4:
+  83:../src/drvSer.c ****         }
+  84:../src/drvSer.c ****         /* Clear the receive flag */
+  85:../src/drvSer.c ****         SRIF0 = CLEAR_FLAG;
+ 144                             		.loc 1 85 0
+ 145 008c C9 F0 E1 FF             		movw	r8, #-31
+ 146 0090 AD F0                   		movw	ax, r8
+ 147 0092 BD F4                   		movw	r12, ax
+ 148 0094 FA F4                   		movw	hl, r12
+ 149 0096 8B                      		mov	a, [hl]
+ 150 0097 9D F2                   		mov	r10, a
+ 151 0099 5A F2 F7                		and	r10, #-9
+ 152 009c AD F0                   		movw	ax, r8
+ 153 009e 8D F2                   		mov	a, r10
+ 154 00a0 9B                      		mov	[hl], a
+  86:../src/drvSer.c **** }
+ 155                             		.loc 1 86 0
+ 156 00a1 10 08                   		addw	sp, #8
+ 157 00a3 61 EF                   		sel	rb2
+ 158 00a5 C6                      		pop	hl ; r22
+ 159 00a6 61 DF                   		sel	rb1
+ 160 00a8 C6                      		pop	hl ; r14
+ 161 00a9 C4                      		pop	de ; r12
+ 162 00aa C2                      		pop	bc ; r10
+ 163 00ab C0                      		pop	ax ; r8
+ 164 00ac 61 CF                   		sel	rb0
+ 165 00ae C6                      		pop	hl
+ 166 00af C4                      		pop	de
+ 167 00b0 C2                      		pop	bc
+ 168 00b1 C0                      		pop	ax
+ 169 00b2 61 FC                   		reti
+ 170                             	.LFE1:
+ 172                             		.global	_INT_ST0
+ 174                             	_INT_ST0:
+ 175                             	.LFB2:
+  87:../src/drvSer.c **** 
+  88:../src/drvSer.c **** void INT_ST0(void)
+  89:../src/drvSer.c **** {
+ 176                             		.loc 1 89 0
+ 177                             		; start of function
+ 178                             		; push 14: ax bc de hl r8 r10 r12
+ 179                             		; locals: 4 bytes
+ 180 00b4 61 CF                   		sel	rb0
+ 181 00b6 C1                      		push	ax
+ 182                             	.LCFI10:
+ 183 00b7 C3                      		push	bc
+ 184                             	.LCFI11:
+ 185 00b8 C5                      		push	de
+ 186                             	.LCFI12:
+ 187 00b9 C7                      		push	hl
+ 188                             	.LCFI13:
+ 189 00ba 61 DF                   		sel	rb1
+ 190 00bc C1                      		push	ax ; r8
+ 191                             	.LCFI14:
+ 192 00bd C3                      		push	bc ; r10
+ 193                             	.LCFI15:
+ 194 00be C5                      		push	de ; r12
+ 195                             	.LCFI16:
+ 196 00bf 61 CF                   		sel	rb0
+ 197 00c1 20 04                   		subw	sp, #4
+ 198                             	.LCFI17:
+  90:../src/drvSer.c ****         /* Check if the count is greater than 0 */
+  91:../src/drvSer.c ****         if (g_uart0_tx_count > 0U) {
+ 199                             		.loc 1 91 0
+ 200 00c3 AF 00 00                		movw	ax, !_g_uart0_tx_count
+ 201 00c6 BD F0                   		movw	r8, ax
+ 202 00c8 44 00 00                		cmpw	ax, #0 
+ 203 00cb 61 F8                   		sknz 
+ 204 00cd EC 07 01 00             		br	!!.L5
+  92:../src/drvSer.c ****                 /* Send the byte in the address pointed to */
+  93:../src/drvSer.c ****                 TXD0 = *gp_uart0_tx_address;
+ 205                             		.loc 1 93 0
+ 206 00d1 C9 F2 10 FF             		movw	r10, #-240
+ 207 00d5 AF 00 00                		movw	ax, !_gp_uart0_tx_address
+ 208 00d8 BD F0                   		movw	r8, ax
+ 209 00da BD F4                   		movw	r12, ax
+ 210 00dc FA F4                   		movw	hl, r12
+ 211 00de 8B                      		mov	a, [hl]
+ 212 00df 9D F0                   		mov	r8, a
+ 213 00e1 AD F2                   		movw	ax, r10
+ 214 00e3 BD F4                   		movw	r12, ax
+ 215 00e5 FA F4                   		movw	hl, r12
+ 216 00e7 8D F0                   		mov	a, r8
+ 217 00e9 9B                      		mov	[hl], a
+  94:../src/drvSer.c ****                 gp_uart0_tx_address++;
+ 218                             		.loc 1 94 0
+ 219 00ea AF 00 00                		movw	ax, !_gp_uart0_tx_address
+ 220 00ed BD F0                   		movw	r8, ax
+ 221 00ef A6 F0                   		incw	r8
+ 222 00f1 AD F0                   		movw	ax, r8
+ 223 00f3 BF 00 00                		movw	!_gp_uart0_tx_address, ax
+  95:../src/drvSer.c ****                 g_uart0_tx_count--;
+ 224                             		.loc 1 95 0
+ 225 00f6 AF 00 00                		movw	ax, !_g_uart0_tx_count
+ 226 00f9 BD F0                   		movw	r8, ax
+ 227 00fb B8 02                   		movw	[sp+2], ax
+ 228 00fd BD F4                   		movw	r12, ax
+ 229 00ff B8 00                   		movw	[sp], ax
+ 230 0101 B1                      		decw	ax
+ 231 0102 BD F0                   		movw	r8, ax
+ 232 0104 BF 00 00                		movw	!_g_uart0_tx_count, ax
+ 233                             	.L5:
+  96:../src/drvSer.c ****         }
+  97:../src/drvSer.c **** }
+ 234                             		.loc 1 97 0
+ 235 0107 10 04                   		addw	sp, #4
+ 236 0109 61 DF                   		sel	rb1
+ 237 010b C4                      		pop	de ; r12
+ 238 010c C2                      		pop	bc ; r10
+ 239 010d C0                      		pop	ax ; r8
+ 240 010e 61 CF                   		sel	rb0
+ 241 0110 C6                      		pop	hl
+ 242 0111 C4                      		pop	de
+ 243 0112 C2                      		pop	bc
+ 244 0113 C0                      		pop	ax
+ 245 0114 61 FC                   		reti
+ 246                             	.LFE2:
+ 248                             		.global	_SerRead
+ 250                             	_SerRead:
+ 251                             	.LFB3:
+  98:../src/drvSer.c **** 
+  99:../src/drvSer.c **** /*static void uart_init_tx_buffers(void)
+ 100:../src/drvSer.c **** {
+ 101:../src/drvSer.c ****      Declare a count variable
+ 102:../src/drvSer.c ****     uint8_t j = 0;
+ 103:../src/drvSer.c **** 
+ 104:../src/drvSer.c ****      Clear transmit buffer
+ 105:../src/drvSer.c ****     for (j = 0; j < 16; j++)
+ 106:../src/drvSer.c ****     {
+ 107:../src/drvSer.c ****          Clear the buffer element pointed by j
+ 108:../src/drvSer.c ****         g_tx_buff[j] = 0U;
+ 109:../src/drvSer.c ****     }
+ 110:../src/drvSer.c **** }*/
+ 111:../src/drvSer.c **** 
+ 112:../src/drvSer.c **** char SerRead(void *parameters)
+ 113:../src/drvSer.c **** {
+ 252                             		.loc 1 113 0
+ 253                             		; start of function
+ 254                             		; locals: 4 bytes
+ 255                             		; outgoing: 4 bytes
+ 256 0116 20 08                   		subw	sp, #8
+ 257                             	.LCFI18:
+ 114:../src/drvSer.c ****         uint8_t *byte_read;
+ 115:../src/drvSer.c **** 
+ 116:../src/drvSer.c ****         /* Declare temporary buffers */
+ 117:../src/drvSer.c ****         uint8_t itemp;
+ 118:../src/drvSer.c **** 
+ 119:../src/drvSer.c ****         byte_read = (uint8_t *) parameters;
+ 258                             		.loc 1 119 0
+ 259 0118 A8 0C                   		movw	ax, [sp+12]
+ 260 011a BD F0                   		movw	r8, ax
+ 261 011c B8 06                   		movw	[sp+6], ax
+ 120:../src/drvSer.c **** 
+ 121:../src/drvSer.c ****         if (g_rx_buffer.wrPtr == g_rx_buffer.rdPtr)
+ 262                             		.loc 1 121 0
+ 263 011e 8F 01 00                		mov	a, !_g_rx_buffer+1
+ 264 0121 9D F1                   		mov	r9, a
+ 265 0123 8F 00 00                		mov	a, !_g_rx_buffer
+ 266 0126 9D F0                   		mov	r8, a
+ 267 0128 8D F1                   		mov	a, r9
+ 268 012a 4B F0                   		cmp	a, r8 
+ 269 012c 61 E8                   		skz 
+ 270 012e EC 39 01 00             		br	!!.L8
+ 122:../src/drvSer.c ****                 return 0;
+ 271                             		.loc 1 122 0
+ 272 0132 CD F0 00                		mov	r8, #0
+ 273 0135 EC 7A 01 00             		br	!!.L9
+ 274                             	.L8:
+ 123:../src/drvSer.c **** 
+ 124:../src/drvSer.c ****         *byte_read = g_rx_buffer.buffer[g_rx_buffer.rdPtr];
+ 275                             		.loc 1 124 0
+ 276 0139 8F 00 00                		mov	a, !_g_rx_buffer
+ 277 013c 9D F0                   		mov	r8, a
+ 278 013e CD F1 00                		mov	r9, #0
+ 279 0141 AD F0                   		movw	ax, r8
+ 280 0143 04 02 00                		addw	ax, #_g_rx_buffer+2
+ 281 0146 16                      		movw	hl, ax
+ 282 0147 8B                      		mov	a, [hl]
+ 283 0148 9D F2                   		mov	r10, a
+ 284 014a A8 06                   		movw	ax, [sp+6]
+ 285 014c BD F0                   		movw	r8, ax
+ 286 014e BD F4                   		movw	r12, ax
+ 287 0150 FA F4                   		movw	hl, r12
+ 288 0152 8D F2                   		mov	a, r10
+ 289 0154 9B                      		mov	[hl], a
+ 125:../src/drvSer.c ****         g_rx_buffer.rdPtr = (g_rx_buffer.rdPtr+1) % RX_BUFF_SIZE;
+ 290                             		.loc 1 125 0
+ 291 0155 8F 00 00                		mov	a, !_g_rx_buffer
+ 292 0158 9D F0                   		mov	r8, a
+ 293 015a CD F1 00                		mov	r9, #0
+ 294 015d A6 F0                   		incw	r8
+ 295 015f AD F0                   		movw	ax, r8
+ 296 0161 B8 00                   		movw	[sp], ax
+ 297 0163 30 0A 00                		movw	ax, #10
+ 298 0166 B8 02                   		movw	[sp+2], ax
+ 299 0168 FC 00 00 00             		call	!!___modhi3
+ 300 016c AD F0                   		movw	ax, r8
+ 301 016e B8 04                   		movw	[sp+4], ax
+ 302 0170 88 04                   		mov	a, [sp+4]
+ 303 0172 9D F0                   		mov	r8, a
+ 304 0174 9F 00 00                		mov	!_g_rx_buffer, a
+ 126:../src/drvSer.c **** 
+ 127:../src/drvSer.c ****         return SUCESSO;
+ 305                             		.loc 1 127 0
+ 306 0177 CD F0 00                		mov	r8, #0
+ 307                             	.L9:
+ 128:../src/drvSer.c **** }
+ 308                             		.loc 1 128 0
+ 309 017a 10 08                   		addw	sp, #8
+ 310 017c D7                      		ret
+ 311                             	.LFE3:
+ 313                             		.global	_SerAvailable
+ 315                             	_SerAvailable:
+ 316                             	.LFB4:
+ 129:../src/drvSer.c **** 
+ 130:../src/drvSer.c **** char SerAvailable(void *parameters)
+ 131:../src/drvSer.c **** {
+ 317                             		.loc 1 131 0
+ 318                             		; start of function
+ 319                             		; locals: 2 bytes
+ 320 017d 20 02                   		subw	sp, #2
+ 321                             	.LCFI19:
+ 132:../src/drvSer.c **** 	char *ret = (char *) parameters;
+ 322                             		.loc 1 132 0
+ 323 017f A8 06                   		movw	ax, [sp+6]
+ 324 0181 BD F0                   		movw	r8, ax
+ 325 0183 B8 00                   		movw	[sp], ax
+ 133:../src/drvSer.c **** 	*ret = RxBuffLen;
+ 326                             		.loc 1 133 0
+ 327 0185 8F 01 00                		mov	a, !_g_rx_buffer+1
+ 328 0188 9D F1                   		mov	r9, a
+ 329 018a 8F 00 00                		mov	a, !_g_rx_buffer
+ 330 018d 9D F0                   		mov	r8, a
+ 331 018f 76                      		mov	l, a
+ 332 0190 8D F1                   		mov	a, r9
+ 333 0192 61 2E                   		sub	a, l
+ 334 0194 9D F2                   		mov	r10, a
+ 335 0196 A8 00                   		movw	ax, [sp]
+ 336 0198 BD F0                   		movw	r8, ax
+ 337 019a BD F4                   		movw	r12, ax
+ 338 019c FA F4                   		movw	hl, r12
+ 339 019e 8D F2                   		mov	a, r10
+ 340 01a0 9B                      		mov	[hl], a
+ 134:../src/drvSer.c ****     /* Delay count variable */
+ 135:../src/drvSer.c ****     //uint32_t Timeout = 10000u;
+ 136:../src/drvSer.c **** 
+ 137:../src/drvSer.c ****     /* Wait for a byte reception or a timeout */
+ 138:../src/drvSer.c ****     //while ((CLEAR_FLAG == RxBuffLen) && (Timeout > CLEAR_FLAG))
+ 139:../src/drvSer.c ****     //{
+ 140:../src/drvSer.c ****          /* Count down until timeout */
+ 141:../src/drvSer.c ****     //     Timeout--;
+ 142:../src/drvSer.c ****     //}
+ 143:../src/drvSer.c **** 
+ 144:../src/drvSer.c ****     /* Return length of the Rx buffer */
+ 145:../src/drvSer.c ****     //return RxBuffLen;
+ 146:../src/drvSer.c ****         return SUCESSO;
+ 341                             		.loc 1 146 0
+ 342 01a1 CD F0 00                		mov	r8, #0
+ 147:../src/drvSer.c **** }
+ 343                             		.loc 1 147 0
+ 344 01a4 10 02                   		addw	sp, #2
+ 345 01a6 D7                      		ret
+ 346                             	.LFE4:
+ 348                             		.global	_SerSend
+ 350                             	_SerSend:
+ 351                             	.LFB5:
+ 148:../src/drvSer.c **** 
+ 149:../src/drvSer.c **** char SerSend(void *parameters)
+ 150:../src/drvSer.c **** {
+ 352                             		.loc 1 150 0
+ 353                             		; start of function
+ 354                             		; push 6: r16 r18 r22
+ 355                             		; $fp points here (r22)
+ 356                             		; locals: 18 bytes
+ 357                             		; outgoing: 6 bytes
+ 358 01a7 61 EF                   		sel	rb2
+ 359 01a9 C1                      		push	ax ; r16
+ 360                             	.LCFI20:
+ 361 01aa C3                      		push	bc ; r18
+ 362                             	.LCFI21:
+ 363 01ab C7                      		push	hl ; r22
+ 364                             	.LCFI22:
+ 365 01ac 61 CF                   		sel	rb0
+ 366 01ae AE F8                   		movw	ax, sp
+ 367                             	.LCFI23:
+ 368 01b0 BD EE                   		movw	r22, ax
+ 369                             	.LCFI24:
+ 370 01b2 20 18                   		subw	sp, #24
+ 151:../src/drvSer.c **** 	char *buffer;
+ 152:../src/drvSer.c **** 	uint8_t size;
+ 153:../src/drvSer.c **** 	uint8_t new_size;
+ 154:../src/drvSer.c **** 
+ 155:../src/drvSer.c **** 	buffer = (char *) parameters;
+ 156:../src/drvSer.c **** 	size = strlen(buffer);
+ 157:../src/drvSer.c **** 	new_size = size+1;
+ 158:../src/drvSer.c **** 
+ 159:../src/drvSer.c **** 	char new_buffer[new_size];
+ 160:../src/drvSer.c **** 	strncpy(new_buffer, buffer, size);
+ 161:../src/drvSer.c **** 	new_buffer[size] = ASCII_CARRIAGE_RETURN;
+ 162:../src/drvSer.c **** 
+ 163:../src/drvSer.c **** 	R_UART0_Send(new_buffer, new_size);
+ 164:../src/drvSer.c **** 
+ 165:../src/drvSer.c ****         return SUCESSO;
+ 166:../src/drvSer.c **** }
+ 371                             		.loc 1 166 0
+ 372 01b4 AE F8                   		movw	ax, sp
+ 373 01b6 BD F0                   		movw	r8, ax
+ 374 01b8 AD EE                   		movw	ax, r22
+ 375 01ba 04 EE FF                		addw	ax, #-18
+ 376 01bd 16                      		movw	hl, ax
+ 377 01be AD F0                   		movw	ax, r8
+ 378 01c0 BB                      		movw	[hl], ax
+ 379 01c1 BD F2                   		movw	r10, ax
+ 380 01c3 AD EE                   		movw	ax, r22
+ 381 01c5 04 F0 FF                		addw	ax, #-16
+ 382 01c8 16                      		movw	hl, ax
+ 383 01c9 AD F2                   		movw	ax, r10
+ 384 01cb BB                      		movw	[hl], ax
+ 385 01cc AD EE                   		movw	ax, r22
+ 386 01ce 04 F0 FF                		addw	ax, #-16
+ 387 01d1 16                      		movw	hl, ax
+ 388 01d2 AB                      		movw	ax, [hl]
+ 389 01d3 BD F0                   		movw	r8, ax
+ 390 01d5 AD EE                   		movw	ax, r22
+ 391 01d7 04 F6 FF                		addw	ax, #-10
+ 392 01da 16                      		movw	hl, ax
+ 393 01db AD F0                   		movw	ax, r8
+ 394 01dd BB                      		movw	[hl], ax
+ 155:../src/drvSer.c **** 	buffer = (char *) parameters;
+ 395                             		.loc 1 155 0
+ 396 01de FA EE                   		movw	hl, r22
+ 397 01e0 AC 0A                   		movw	ax, [hl+10]
+ 398 01e2 BD F0                   		movw	r8, ax
+ 399 01e4 AD EE                   		movw	ax, r22
+ 400 01e6 04 FE FF                		addw	ax, #-2
+ 401 01e9 16                      		movw	hl, ax
+ 402 01ea AD F0                   		movw	ax, r8
+ 403 01ec BB                      		movw	[hl], ax
+ 156:../src/drvSer.c **** 	size = strlen(buffer);
+ 404                             		.loc 1 156 0
+ 405 01ed AD EE                   		movw	ax, r22
+ 406 01ef 04 FE FF                		addw	ax, #-2
+ 407 01f2 16                      		movw	hl, ax
+ 408 01f3 AB                      		movw	ax, [hl]
+ 409 01f4 BD F0                   		movw	r8, ax
+ 410 01f6 B8 00                   		movw	[sp], ax
+ 411 01f8 FC 00 00 00             		call	!!%code(_strlen)
+ 412 01fc AD EE                   		movw	ax, r22
+ 413 01fe 04 FD FF                		addw	ax, #-3
+ 414 0201 16                      		movw	hl, ax
+ 415 0202 8D F0                   		mov	a, r8
+ 416 0204 9B                      		mov	[hl], a
+ 157:../src/drvSer.c **** 	new_size = size+1;
+ 417                             		.loc 1 157 0
+ 418 0205 AD EE                   		movw	ax, r22
+ 419 0207 04 FC FF                		addw	ax, #-4
+ 420 020a 12                      		movw	bc, ax
+ 421 020b AD EE                   		movw	ax, r22
+ 422 020d 04 FD FF                		addw	ax, #-3
+ 423 0210 14                      		movw	de, ax
+ 424 0211 89                      		mov	a, [de]
+ 425 0212 81                      		inc	a
+ 426 0213 48 00 00                		mov	[bc], a
+ 159:../src/drvSer.c **** 	char new_buffer[new_size];
+ 427                             		.loc 1 159 0
+ 428 0216 AD EE                   		movw	ax, r22
+ 429 0218 04 FC FF                		addw	ax, #-4
+ 430 021b 16                      		movw	hl, ax
+ 431 021c 8B                      		mov	a, [hl]
+ 432 021d 9D F0                   		mov	r8, a
+ 433 021f 70                      		mov	x, a 
+ 434 0220 51 00                   		mov	a, #0
+ 435 0222 BD F2                   		movw	r10, ax
+ 436 0224 B6 F2                   		decw	r10
+ 437 0226 AD EE                   		movw	ax, r22
+ 438 0228 04 FA FF                		addw	ax, #-6
+ 439 022b 16                      		movw	hl, ax
+ 440 022c AD F2                   		movw	ax, r10
+ 441 022e BB                      		movw	[hl], ax
+ 442 022f AD EE                   		movw	ax, r22
+ 443 0231 04 F2 FF                		addw	ax, #-14
+ 444 0234 16                      		movw	hl, ax
+ 445 0235 8D F0                   		mov	a, r8
+ 446 0237 9B                      		mov	[hl], a
+ 447 0238 AD EE                   		movw	ax, r22
+ 448 023a 04 F3 FF                		addw	ax, #-13
+ 449 023d 16                      		movw	hl, ax
+ 450 023e F1                      		clrb	a
+ 451 023f 9B                      		mov	[hl], a
+ 452 0240 AD EE                   		movw	ax, r22
+ 453 0242 04 F4 FF                		addw	ax, #-12
+ 454 0245 16                      		movw	hl, ax
+ 455 0246 F1                      		clrb	a
+ 456 0247 9B                      		mov	[hl], a
+ 457 0248 AD EE                   		movw	ax, r22
+ 458 024a 04 F5 FF                		addw	ax, #-11
+ 459 024d 16                      		movw	hl, ax
+ 460 024e F1                      		clrb	a
+ 461 024f 9B                      		mov	[hl], a
+ 462 0250 8D F0                   		mov	a, r8
+ 463 0252 9D E8                   		mov	r16, a
+ 464 0254 CD E9 00                		mov	r17, #0
+ 465 0257 CD EA 00                		mov	r18, #0
+ 466 025a CD EB 00                		mov	r19, #0
+ 467 025d CD F1 00                		mov	r9, #0
+ 468 0260 A6 F0                   		incw	r8
+ 469 0262 AD F0                   		movw	ax, r8
+ 470 0264 31 1E                   		shrw	ax, 1
+ 471 0266 BD F0                   		movw	r8, ax
+ 472 0268 01                      		addw	ax, ax
+ 473 0269 BD F0                   		movw	r8, ax
+ 474 026b AE F8                   		movw	ax, sp
+ 475 026d BD F2                   		movw	r10, ax
+ 476 026f 26 F0                   		subw	ax, r8
+ 477 0271 BD F2                   		movw	r10, ax
+ 478 0273 BE F8                   		movw	sp, ax
+ 479 0275 04 06 00                		addw	ax, #6
+ 480 0278 BD F0                   		movw	r8, ax
+ 481 027a 04 00 00                		addw	ax, #0
+ 482 027d BD F0                   		movw	r8, ax
+ 483 027f AD EE                   		movw	ax, r22
+ 484 0281 04 F8 FF                		addw	ax, #-8
+ 485 0284 16                      		movw	hl, ax
+ 486 0285 AD F0                   		movw	ax, r8
+ 487 0287 BB                      		movw	[hl], ax
+ 160:../src/drvSer.c **** 	strncpy(new_buffer, buffer, size);
+ 488                             		.loc 1 160 0
+ 489 0288 AD EE                   		movw	ax, r22
+ 490 028a 04 F8 FF                		addw	ax, #-8
+ 491 028d 16                      		movw	hl, ax
+ 492 028e AB                      		movw	ax, [hl]
+ 493 028f BD F0                   		movw	r8, ax
+ 494 0291 AD EE                   		movw	ax, r22
+ 495 0293 04 FD FF                		addw	ax, #-3
+ 496 0296 16                      		movw	hl, ax
+ 497 0297 8B                      		mov	a, [hl]
+ 498 0298 70                      		mov	x, a 
+ 499 0299 51 00                   		mov	a, #0
+ 500 029b BD F2                   		movw	r10, ax
+ 501 029d AD F0                   		movw	ax, r8
+ 502 029f B8 00                   		movw	[sp], ax
+ 503 02a1 AD EE                   		movw	ax, r22
+ 504 02a3 04 FE FF                		addw	ax, #-2
+ 505 02a6 16                      		movw	hl, ax
+ 506 02a7 AB                      		movw	ax, [hl]
+ 507 02a8 BD F0                   		movw	r8, ax
+ 508 02aa B8 02                   		movw	[sp+2], ax
+ 509 02ac AD F2                   		movw	ax, r10
+ 510 02ae B8 04                   		movw	[sp+4], ax
+ 511 02b0 FC 00 00 00             		call	!!%code(_strncpy)
+ 161:../src/drvSer.c **** 	new_buffer[size] = ASCII_CARRIAGE_RETURN;
+ 512                             		.loc 1 161 0
+ 513 02b4 AD EE                   		movw	ax, r22
+ 514 02b6 04 FD FF                		addw	ax, #-3
+ 515 02b9 16                      		movw	hl, ax
+ 516 02ba 8B                      		mov	a, [hl]
+ 517 02bb 70                      		mov	x, a 
+ 518 02bc 51 00                   		mov	a, #0
+ 519 02be BD F2                   		movw	r10, ax
+ 520 02c0 AD EE                   		movw	ax, r22
+ 521 02c2 04 F8 FF                		addw	ax, #-8
+ 522 02c5 16                      		movw	hl, ax
+ 523 02c6 AB                      		movw	ax, [hl]
+ 524 02c7 BD F0                   		movw	r8, ax
+ 525 02c9 06 F2                   		addw	ax, r10
+ 526 02cb BD F0                   		movw	r8, ax
+ 527 02cd BD F2                   		movw	r10, ax
+ 528 02cf FA F2                   		movw	hl, r10
+ 529 02d1 51 0D                   		mov	a, #13
+ 530 02d3 9B                      		mov	[hl], a
+ 163:../src/drvSer.c **** 	R_UART0_Send(new_buffer, new_size);
+ 531                             		.loc 1 163 0
+ 532 02d4 AD EE                   		movw	ax, r22
+ 533 02d6 04 F8 FF                		addw	ax, #-8
+ 534 02d9 16                      		movw	hl, ax
+ 535 02da AB                      		movw	ax, [hl]
+ 536 02db BD F0                   		movw	r8, ax
+ 537 02dd AD EE                   		movw	ax, r22
+ 538 02df 04 FC FF                		addw	ax, #-4
+ 539 02e2 16                      		movw	hl, ax
+ 540 02e3 8B                      		mov	a, [hl]
+ 541 02e4 70                      		mov	x, a 
+ 542 02e5 51 00                   		mov	a, #0
+ 543 02e7 BD F2                   		movw	r10, ax
+ 544 02e9 AD F0                   		movw	ax, r8
+ 545 02eb B8 00                   		movw	[sp], ax
+ 546 02ed AD F2                   		movw	ax, r10
+ 547 02ef B8 02                   		movw	[sp+2], ax
+ 548 02f1 FC 00 00 00             		call	!!%code(_R_UART0_Send)
+ 165:../src/drvSer.c ****         return SUCESSO;
+ 549                             		.loc 1 165 0
+ 550 02f5 CD F0 00                		mov	r8, #0
+ 551 02f8 AD EE                   		movw	ax, r22
+ 552 02fa 04 F6 FF                		addw	ax, #-10
+ 553 02fd 16                      		movw	hl, ax
+ 554 02fe AB                      		movw	ax, [hl]
+ 555 02ff BD F2                   		movw	r10, ax
+ 556 0301 BE F8                   		movw	sp, ax
+ 557                             		.loc 1 166 0
+ 558 0303 AD EE                   		movw	ax, r22
+ 559 0305 04 EE FF                		addw	ax, #-18
+ 560 0308 16                      		movw	hl, ax
+ 561 0309 AB                      		movw	ax, [hl]
+ 562 030a BD F2                   		movw	r10, ax
+ 563 030c BE F8                   		movw	sp, ax
+ 564 030e AD EE                   		movw	ax, r22
+ 565 0310 BE F8                   		movw	sp, ax
+ 566 0312 61 EF                   		sel	rb2
+ 567 0314 C6                      		pop	hl ; r22
+ 568 0315 C2                      		pop	bc ; r18
+ 569 0316 C0                      		pop	ax ; r16
+ 570 0317 61 CF                   		sel	rb0
+ 571 0319 D7                      		ret
+ 572                             	.LFE5:
+ 574                             		.global	_SerSendLn
+ 576                             	_SerSendLn:
+ 577                             	.LFB6:
+ 167:../src/drvSer.c **** 
+ 168:../src/drvSer.c **** char SerSendLn(void *parameters)
+ 169:../src/drvSer.c **** {
+ 578                             		.loc 1 169 0
+ 579                             		; start of function
+ 580                             		; push 6: r16 r18 r22
+ 581                             		; $fp points here (r22)
+ 582                             		; locals: 18 bytes
+ 583                             		; outgoing: 6 bytes
+ 584 031a 61 EF                   		sel	rb2
+ 585 031c C1                      		push	ax ; r16
+ 586                             	.LCFI25:
+ 587 031d C3                      		push	bc ; r18
+ 588                             	.LCFI26:
+ 589 031e C7                      		push	hl ; r22
+ 590                             	.LCFI27:
+ 591 031f 61 CF                   		sel	rb0
+ 592 0321 AE F8                   		movw	ax, sp
+ 593                             	.LCFI28:
+ 594 0323 BD EE                   		movw	r22, ax
+ 595                             	.LCFI29:
+ 596 0325 20 18                   		subw	sp, #24
+ 170:../src/drvSer.c **** 	char *buffer;
+ 171:../src/drvSer.c **** 	uint8_t size;
+ 172:../src/drvSer.c **** 	uint8_t new_size;
+ 173:../src/drvSer.c **** 
+ 174:../src/drvSer.c **** 	buffer = (char *) parameters;
+ 175:../src/drvSer.c **** 	size = strlen(buffer);
+ 176:../src/drvSer.c **** 	new_size = size+2;
+ 177:../src/drvSer.c **** 
+ 178:../src/drvSer.c **** 	char new_buffer[new_size];
+ 179:../src/drvSer.c **** 	strncpy(new_buffer, buffer, size);
+ 180:../src/drvSer.c **** 	new_buffer[size] = ASCII_CARRIAGE_RETURN;
+ 181:../src/drvSer.c **** 	new_buffer[size+1] = ASCII_NEW_LINE;
+ 182:../src/drvSer.c **** 
+ 183:../src/drvSer.c **** 	R_UART0_Send(new_buffer, new_size);
+ 184:../src/drvSer.c **** 
+ 185:../src/drvSer.c ****         return SUCESSO;
+ 186:../src/drvSer.c **** }
+ 597                             		.loc 1 186 0
+ 598 0327 AE F8                   		movw	ax, sp
+ 599 0329 BD F0                   		movw	r8, ax
+ 600 032b AD EE                   		movw	ax, r22
+ 601 032d 04 EE FF                		addw	ax, #-18
+ 602 0330 16                      		movw	hl, ax
+ 603 0331 AD F0                   		movw	ax, r8
+ 604 0333 BB                      		movw	[hl], ax
+ 605 0334 BD F2                   		movw	r10, ax
+ 606 0336 AD EE                   		movw	ax, r22
+ 607 0338 04 F0 FF                		addw	ax, #-16
+ 608 033b 16                      		movw	hl, ax
+ 609 033c AD F2                   		movw	ax, r10
+ 610 033e BB                      		movw	[hl], ax
+ 611 033f AD EE                   		movw	ax, r22
+ 612 0341 04 F0 FF                		addw	ax, #-16
+ 613 0344 16                      		movw	hl, ax
+ 614 0345 AB                      		movw	ax, [hl]
+ 615 0346 BD F0                   		movw	r8, ax
+ 616 0348 AD EE                   		movw	ax, r22
+ 617 034a 04 F6 FF                		addw	ax, #-10
+ 618 034d 16                      		movw	hl, ax
+ 619 034e AD F0                   		movw	ax, r8
+ 620 0350 BB                      		movw	[hl], ax
+ 174:../src/drvSer.c **** 	buffer = (char *) parameters;
+ 621                             		.loc 1 174 0
+ 622 0351 FA EE                   		movw	hl, r22
+ 623 0353 AC 0A                   		movw	ax, [hl+10]
+ 624 0355 BD F0                   		movw	r8, ax
+ 625 0357 AD EE                   		movw	ax, r22
+ 626 0359 04 FE FF                		addw	ax, #-2
+ 627 035c 16                      		movw	hl, ax
+ 628 035d AD F0                   		movw	ax, r8
+ 629 035f BB                      		movw	[hl], ax
+ 175:../src/drvSer.c **** 	size = strlen(buffer);
+ 630                             		.loc 1 175 0
+ 631 0360 AD EE                   		movw	ax, r22
+ 632 0362 04 FE FF                		addw	ax, #-2
+ 633 0365 16                      		movw	hl, ax
+ 634 0366 AB                      		movw	ax, [hl]
+ 635 0367 BD F0                   		movw	r8, ax
+ 636 0369 B8 00                   		movw	[sp], ax
+ 637 036b FC 00 00 00             		call	!!%code(_strlen)
+ 638 036f AD EE                   		movw	ax, r22
+ 639 0371 04 FD FF                		addw	ax, #-3
+ 640 0374 16                      		movw	hl, ax
+ 641 0375 8D F0                   		mov	a, r8
+ 642 0377 9B                      		mov	[hl], a
+ 176:../src/drvSer.c **** 	new_size = size+2;
+ 643                             		.loc 1 176 0
+ 644 0378 AD EE                   		movw	ax, r22
+ 645 037a 04 FC FF                		addw	ax, #-4
+ 646 037d 12                      		movw	bc, ax
+ 647 037e AD EE                   		movw	ax, r22
+ 648 0380 04 FD FF                		addw	ax, #-3
+ 649 0383 14                      		movw	de, ax
+ 650 0384 89                      		mov	a, [de]
+ 651 0385 0C 02                   		add	a, #2
+ 652 0387 48 00 00                		mov	[bc], a
+ 178:../src/drvSer.c **** 	char new_buffer[new_size];
+ 653                             		.loc 1 178 0
+ 654 038a AD EE                   		movw	ax, r22
+ 655 038c 04 FC FF                		addw	ax, #-4
+ 656 038f 16                      		movw	hl, ax
+ 657 0390 8B                      		mov	a, [hl]
+ 658 0391 9D F0                   		mov	r8, a
+ 659 0393 70                      		mov	x, a 
+ 660 0394 51 00                   		mov	a, #0
+ 661 0396 BD F2                   		movw	r10, ax
+ 662 0398 B6 F2                   		decw	r10
+ 663 039a AD EE                   		movw	ax, r22
+ 664 039c 04 FA FF                		addw	ax, #-6
+ 665 039f 16                      		movw	hl, ax
+ 666 03a0 AD F2                   		movw	ax, r10
+ 667 03a2 BB                      		movw	[hl], ax
+ 668 03a3 AD EE                   		movw	ax, r22
+ 669 03a5 04 F2 FF                		addw	ax, #-14
+ 670 03a8 16                      		movw	hl, ax
+ 671 03a9 8D F0                   		mov	a, r8
+ 672 03ab 9B                      		mov	[hl], a
+ 673 03ac AD EE                   		movw	ax, r22
+ 674 03ae 04 F3 FF                		addw	ax, #-13
+ 675 03b1 16                      		movw	hl, ax
+ 676 03b2 F1                      		clrb	a
+ 677 03b3 9B                      		mov	[hl], a
+ 678 03b4 AD EE                   		movw	ax, r22
+ 679 03b6 04 F4 FF                		addw	ax, #-12
+ 680 03b9 16                      		movw	hl, ax
+ 681 03ba F1                      		clrb	a
+ 682 03bb 9B                      		mov	[hl], a
+ 683 03bc AD EE                   		movw	ax, r22
+ 684 03be 04 F5 FF                		addw	ax, #-11
+ 685 03c1 16                      		movw	hl, ax
+ 686 03c2 F1                      		clrb	a
+ 687 03c3 9B                      		mov	[hl], a
+ 688 03c4 8D F0                   		mov	a, r8
+ 689 03c6 9D E8                   		mov	r16, a
+ 690 03c8 CD E9 00                		mov	r17, #0
+ 691 03cb CD EA 00                		mov	r18, #0
+ 692 03ce CD EB 00                		mov	r19, #0
+ 693 03d1 CD F1 00                		mov	r9, #0
+ 694 03d4 A6 F0                   		incw	r8
+ 695 03d6 AD F0                   		movw	ax, r8
+ 696 03d8 31 1E                   		shrw	ax, 1
+ 697 03da BD F0                   		movw	r8, ax
+ 698 03dc 01                      		addw	ax, ax
+ 699 03dd BD F0                   		movw	r8, ax
+ 700 03df AE F8                   		movw	ax, sp
+ 701 03e1 BD F2                   		movw	r10, ax
+ 702 03e3 26 F0                   		subw	ax, r8
+ 703 03e5 BD F2                   		movw	r10, ax
+ 704 03e7 BE F8                   		movw	sp, ax
+ 705 03e9 04 06 00                		addw	ax, #6
+ 706 03ec BD F0                   		movw	r8, ax
+ 707 03ee 04 00 00                		addw	ax, #0
+ 708 03f1 BD F0                   		movw	r8, ax
+ 709 03f3 AD EE                   		movw	ax, r22
+ 710 03f5 04 F8 FF                		addw	ax, #-8
+ 711 03f8 16                      		movw	hl, ax
+ 712 03f9 AD F0                   		movw	ax, r8
+ 713 03fb BB                      		movw	[hl], ax
+ 179:../src/drvSer.c **** 	strncpy(new_buffer, buffer, size);
+ 714                             		.loc 1 179 0
+ 715 03fc AD EE                   		movw	ax, r22
+ 716 03fe 04 F8 FF                		addw	ax, #-8
+ 717 0401 16                      		movw	hl, ax
+ 718 0402 AB                      		movw	ax, [hl]
+ 719 0403 BD F0                   		movw	r8, ax
+ 720 0405 AD EE                   		movw	ax, r22
+ 721 0407 04 FD FF                		addw	ax, #-3
+ 722 040a 16                      		movw	hl, ax
+ 723 040b 8B                      		mov	a, [hl]
+ 724 040c 70                      		mov	x, a 
+ 725 040d 51 00                   		mov	a, #0
+ 726 040f BD F2                   		movw	r10, ax
+ 727 0411 AD F0                   		movw	ax, r8
+ 728 0413 B8 00                   		movw	[sp], ax
+ 729 0415 AD EE                   		movw	ax, r22
+ 730 0417 04 FE FF                		addw	ax, #-2
+ 731 041a 16                      		movw	hl, ax
+ 732 041b AB                      		movw	ax, [hl]
+ 733 041c BD F0                   		movw	r8, ax
+ 734 041e B8 02                   		movw	[sp+2], ax
+ 735 0420 AD F2                   		movw	ax, r10
+ 736 0422 B8 04                   		movw	[sp+4], ax
+ 737 0424 FC 00 00 00             		call	!!%code(_strncpy)
+ 180:../src/drvSer.c **** 	new_buffer[size] = ASCII_CARRIAGE_RETURN;
+ 738                             		.loc 1 180 0
+ 739 0428 AD EE                   		movw	ax, r22
+ 740 042a 04 FD FF                		addw	ax, #-3
+ 741 042d 16                      		movw	hl, ax
+ 742 042e 8B                      		mov	a, [hl]
+ 743 042f 70                      		mov	x, a 
+ 744 0430 51 00                   		mov	a, #0
+ 745 0432 BD F2                   		movw	r10, ax
+ 746 0434 AD EE                   		movw	ax, r22
+ 747 0436 04 F8 FF                		addw	ax, #-8
+ 748 0439 16                      		movw	hl, ax
+ 749 043a AB                      		movw	ax, [hl]
+ 750 043b BD F0                   		movw	r8, ax
+ 751 043d 06 F2                   		addw	ax, r10
+ 752 043f BD F0                   		movw	r8, ax
+ 753 0441 BD F2                   		movw	r10, ax
+ 754 0443 FA F2                   		movw	hl, r10
+ 755 0445 51 0D                   		mov	a, #13
+ 756 0447 9B                      		mov	[hl], a
+ 181:../src/drvSer.c **** 	new_buffer[size+1] = ASCII_NEW_LINE;
+ 757                             		.loc 1 181 0
+ 758 0448 AD EE                   		movw	ax, r22
+ 759 044a 04 FD FF                		addw	ax, #-3
+ 760 044d 16                      		movw	hl, ax
+ 761 044e 8B                      		mov	a, [hl]
+ 762 044f 70                      		mov	x, a 
+ 763 0450 51 00                   		mov	a, #0
+ 764 0452 BD F0                   		movw	r8, ax
+ 765 0454 A1                      		incw	ax
+ 766 0455 BD F2                   		movw	r10, ax
+ 767 0457 AD EE                   		movw	ax, r22
+ 768 0459 04 F8 FF                		addw	ax, #-8
+ 769 045c 16                      		movw	hl, ax
+ 770 045d AB                      		movw	ax, [hl]
+ 771 045e BD F0                   		movw	r8, ax
+ 772 0460 06 F2                   		addw	ax, r10
+ 773 0462 BD F0                   		movw	r8, ax
+ 774 0464 BD F2                   		movw	r10, ax
+ 775 0466 FA F2                   		movw	hl, r10
+ 776 0468 51 0A                   		mov	a, #10
+ 777 046a 9B                      		mov	[hl], a
+ 183:../src/drvSer.c **** 	R_UART0_Send(new_buffer, new_size);
+ 778                             		.loc 1 183 0
+ 779 046b AD EE                   		movw	ax, r22
+ 780 046d 04 F8 FF                		addw	ax, #-8
+ 781 0470 16                      		movw	hl, ax
+ 782 0471 AB                      		movw	ax, [hl]
+ 783 0472 BD F0                   		movw	r8, ax
+ 784 0474 AD EE                   		movw	ax, r22
+ 785 0476 04 FC FF                		addw	ax, #-4
+ 786 0479 16                      		movw	hl, ax
+ 787 047a 8B                      		mov	a, [hl]
+ 788 047b 70                      		mov	x, a 
+ 789 047c 51 00                   		mov	a, #0
+ 790 047e BD F2                   		movw	r10, ax
+ 791 0480 AD F0                   		movw	ax, r8
+ 792 0482 B8 00                   		movw	[sp], ax
+ 793 0484 AD F2                   		movw	ax, r10
+ 794 0486 B8 02                   		movw	[sp+2], ax
+ 795 0488 FC 00 00 00             		call	!!%code(_R_UART0_Send)
+ 185:../src/drvSer.c ****         return SUCESSO;
+ 796                             		.loc 1 185 0
+ 797 048c CD F0 00                		mov	r8, #0
+ 798 048f AD EE                   		movw	ax, r22
+ 799 0491 04 F6 FF                		addw	ax, #-10
+ 800 0494 16                      		movw	hl, ax
+ 801 0495 AB                      		movw	ax, [hl]
+ 802 0496 BD F2                   		movw	r10, ax
+ 803 0498 BE F8                   		movw	sp, ax
+ 804                             		.loc 1 186 0
+ 805 049a AD EE                   		movw	ax, r22
+ 806 049c 04 EE FF                		addw	ax, #-18
+ 807 049f 16                      		movw	hl, ax
+ 808 04a0 AB                      		movw	ax, [hl]
+ 809 04a1 BD F2                   		movw	r10, ax
+ 810 04a3 BE F8                   		movw	sp, ax
+ 811 04a5 AD EE                   		movw	ax, r22
+ 812 04a7 BE F8                   		movw	sp, ax
+ 813 04a9 61 EF                   		sel	rb2
+ 814 04ab C6                      		pop	hl ; r22
+ 815 04ac C2                      		pop	bc ; r18
+ 816 04ad C0                      		pop	ax ; r16
+ 817 04ae 61 CF                   		sel	rb0
+ 818 04b0 D7                      		ret
+ 819                             	.LFE6:
+ 821                             		.global	_getSerDriver
+ 823                             	_getSerDriver:
+ 824                             	.LFB7:
+ 187:../src/drvSer.c **** 
+ 188:../src/drvSer.c **** /* Função para acesso ao driver */
+ 189:../src/drvSer.c **** driver *getSerDriver(void)
+ 190:../src/drvSer.c **** {
+ 825                             		.loc 1 190 0
+ 826                             		; start of function
+ 827                             		; locals: 2 bytes
+ 828 04b1 20 02                   		subw	sp, #2
+ 829                             	.LCFI30:
+ 191:../src/drvSer.c **** 	thisDriver.drv_init = initSer;
+ 830                             		.loc 1 191 0
+ 831 04b3 30 00 00                		movw	ax, #%code(_initSer)
+ 832 04b6 BF 10 00                		movw	!_thisDriver+4, ax
+ 192:../src/drvSer.c **** 
+ 193:../src/drvSer.c ****         /* Funções do driver */
+ 194:../src/drvSer.c **** 	this_functions[SER_READ] = SerRead;
+ 833                             		.loc 1 194 0
+ 834 04b9 30 00 00                		movw	ax, #%code(_SerRead)
+ 835 04bc BF 12 00                		movw	!_this_functions, ax
+ 195:../src/drvSer.c **** 	this_functions[SER_SEND] = SerSend;
+ 836                             		.loc 1 195 0
+ 837 04bf 30 00 00                		movw	ax, #%code(_SerSend)
+ 838 04c2 BF 14 00                		movw	!_this_functions+2, ax
+ 196:../src/drvSer.c **** 	this_functions[SER_SEND_LN] = SerSendLn;
+ 839                             		.loc 1 196 0
+ 840 04c5 30 00 00                		movw	ax, #%code(_SerSendLn)
+ 841 04c8 BF 16 00                		movw	!_this_functions+4, ax
+ 197:../src/drvSer.c **** 	this_functions[SER_AVAILABLE] = SerAvailable;
+ 842                             		.loc 1 197 0
+ 843 04cb 30 00 00                		movw	ax, #%code(_SerAvailable)
+ 844 04ce BF 18 00                		movw	!_this_functions+6, ax
+ 198:../src/drvSer.c **** 
+ 199:../src/drvSer.c **** 	thisDriver.drv_func = this_functions;
+ 845                             		.loc 1 199 0
+ 846 04d1 30 12 00                		movw	ax, #_this_functions
+ 847 04d4 BF 0E 00                		movw	!_thisDriver+2, ax
+ 200:../src/drvSer.c **** 	return &thisDriver;
+ 848                             		.loc 1 200 0
+ 849 04d7 30 0C 00                		movw	ax, #_thisDriver
+ 850 04da B8 00                   		movw	[sp], ax
+ 851 04dc BD F0                   		movw	r8, ax
+ 201:../src/drvSer.c **** }
+ 852                             		.loc 1 201 0
+ 853 04de 10 02                   		addw	sp, #2
+ 854 04e0 D7                      		ret
+ 855                             	.LFE7:
+ 1063                             	.Letext0:
+ 1064                             		.file 2 "../src/dd_types.h"
+ 1065                             		.file 3 "../src/iodefine.h"
+ 1066                             		.file 4 "../src/r_cg_macrodriver.h"
+ 1067                             		.file 5 "../src/drvSer.h"

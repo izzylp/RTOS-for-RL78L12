@@ -1,0 +1,7 @@
+r_cg_intc.c:55:6:R_INTC_Create	0	static
+r_cg_intc.c:89:6:R_INTC0_Start	0	static
+r_cg_intc.c:107:6:R_INTC0_Stop	0	static
+r_cg_intc.c:125:6:R_INTC3_Start	0	static
+r_cg_intc.c:143:6:R_INTC3_Stop	0	static
+r_cg_intc.c:161:6:R_INTC4_Start	0	static
+r_cg_intc.c:179:6:R_INTC4_Stop	0	static

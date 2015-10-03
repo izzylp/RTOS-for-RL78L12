@@ -1,0 +1,5 @@
+r_cg_serial.c:71:6:R_SAU0_Create	0	static
+r_cg_serial.c:98:6:R_UART0_Create	2	static
+r_cg_serial.c:169:6:R_UART0_Start	2	static
+r_cg_serial.c:202:6:R_UART0_Stop	0	static
+r_cg_serial.c:236:11:R_UART0_Send	8	static

@@ -1,0 +1,541 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.local	_thisDriver
+  28                             		.comm	_thisDriver,6,2
+  29                             		.local	_this_functions
+  30                             		.comm	_this_functions,6,2
+  31                             		.global	_initLed
+  33                             	_initLed:
+  34                             	.LFB0:
+  35                             		.file 1 "../src/drvLed.c"
+   1:../src/drvLed.c **** #include "drvLed.h"
+   2:../src/drvLed.c **** #include "r_cg_userdefine.h"
+   3:../src/drvLed.c **** #include "r_cg_macrodriver.h"
+   4:../src/drvLed.c **** 
+   5:../src/drvLed.c **** static driver thisDriver;
+   6:../src/drvLed.c **** static ptrFuncDrv this_functions[LED_END];
+   7:../src/drvLed.c **** 
+   8:../src/drvLed.c **** char initLed(void *parameters);
+   9:../src/drvLed.c **** char ligaLed(void *parameters);
+  10:../src/drvLed.c **** char desligaLed(void *parameters);
+  11:../src/drvLed.c **** char toggleLed(void *parameters);
+  12:../src/drvLed.c **** 
+  13:../src/drvLed.c **** char initLed(void *parameters)
+  14:../src/drvLed.c **** {
+  36                             		.loc 1 14 0
+  15:../src/drvLed.c **** 	LED1_DIR = 0u;
+  37                             		.loc 1 15 0
+  38 0000 C9 F0 22 FF             		movw	r8, #-222
+  39 0004 AD F0                   		movw	ax, r8
+  40 0006 BD F4                   		movw	r12, ax
+  41 0008 FA F4                   		movw	hl, r12
+  42 000a 8B                      		mov	a, [hl]
+  43 000b 9D F2                   		mov	r10, a
+  44 000d 5A F2 FD                		and	r10, #-3
+  45 0010 AD F0                   		movw	ax, r8
+  46 0012 8D F2                   		mov	a, r10
+  47 0014 9B                      		mov	[hl], a
+  16:../src/drvLed.c **** 	LED2_DIR = 0u;
+  48                             		.loc 1 16 0
+  49 0015 C9 F0 2C FF             		movw	r8, #-212
+  50 0019 AD F0                   		movw	ax, r8
+  51 001b BD F4                   		movw	r12, ax
+  52 001d FA F4                   		movw	hl, r12
+  53 001f 8B                      		mov	a, [hl]
+  54 0020 9D F2                   		mov	r10, a
+  55 0022 5A F2 DF                		and	r10, #-33
+  56 0025 AD F0                   		movw	ax, r8
+  57 0027 8D F2                   		mov	a, r10
+  58 0029 9B                      		mov	[hl], a
+  17:../src/drvLed.c **** 
+  18:../src/drvLed.c **** 	LED0 = 1u;
+  59                             		.loc 1 18 0
+  60 002a C9 F0 0D FF             		movw	r8, #-243
+  61 002e AD F0                   		movw	ax, r8
+  62 0030 BD F4                   		movw	r12, ax
+  63 0032 FA F4                   		movw	hl, r12
+  64 0034 8B                      		mov	a, [hl]
+  65 0035 9D F2                   		mov	r10, a
+  66 0037 6A F2 01                		or	r10, #1
+  67 003a AD F0                   		movw	ax, r8
+  68 003c 8D F2                   		mov	a, r10
+  69 003e 9B                      		mov	[hl], a
+  19:../src/drvLed.c **** 	LED1 = 1u;
+  70                             		.loc 1 19 0
+  71 003f C9 F0 02 FF             		movw	r8, #-254
+  72 0043 AD F0                   		movw	ax, r8
+  73 0045 BD F4                   		movw	r12, ax
+  74 0047 FA F4                   		movw	hl, r12
+  75 0049 8B                      		mov	a, [hl]
+  76 004a 9D F2                   		mov	r10, a
+  77 004c 6A F2 02                		or	r10, #2
+  78 004f AD F0                   		movw	ax, r8
+  79 0051 8D F2                   		mov	a, r10
+  80 0053 9B                      		mov	[hl], a
+  20:../src/drvLed.c **** 	LED2 = 1u;
+  81                             		.loc 1 20 0
+  82 0054 C9 F0 0C FF             		movw	r8, #-244
+  83 0058 AD F0                   		movw	ax, r8
+  84 005a BD F4                   		movw	r12, ax
+  85 005c FA F4                   		movw	hl, r12
+  86 005e 8B                      		mov	a, [hl]
+  87 005f 9D F2                   		mov	r10, a
+  88 0061 6A F2 20                		or	r10, #32
+  89 0064 AD F0                   		movw	ax, r8
+  90 0066 8D F2                   		mov	a, r10
+  91 0068 9B                      		mov	[hl], a
+  21:../src/drvLed.c **** 
+  22:../src/drvLed.c **** 	return SUCESSO;
+  92                             		.loc 1 22 0
+  93 0069 CD F0 00                		mov	r8, #0
+  23:../src/drvLed.c **** }
+  94                             		.loc 1 23 0
+  95 006c D7                      		ret
+  96                             	.LFE0:
+  98                             		.global	_ligaLed
+ 100                             	_ligaLed:
+ 101                             	.LFB1:
+  24:../src/drvLed.c **** 
+  25:../src/drvLed.c **** char ligaLed(void *parameters)
+  26:../src/drvLed.c **** {
+ 102                             		.loc 1 26 0
+ 103                             		; start of function
+ 104                             		; locals: 2 bytes
+ 105 006d 20 02                   		subw	sp, #2
+ 106                             	.LCFI0:
+  27:../src/drvLed.c **** 	uint8_t led;
+  28:../src/drvLed.c **** 	led = *(uint8_t *) parameters;
+ 107                             		.loc 1 28 0
+ 108 006f A8 06                   		movw	ax, [sp+6]
+ 109 0071 BD F0                   		movw	r8, ax
+ 110 0073 BD F2                   		movw	r10, ax
+ 111 0075 FA F2                   		movw	hl, r10
+ 112 0077 8B                      		mov	a, [hl]
+ 113 0078 9D F0                   		mov	r8, a
+ 114 007a 98 01                   		mov	[sp+1], a
+  29:../src/drvLed.c **** 	switch (led) {
+ 115                             		.loc 1 29 0
+ 116 007c 70                      		mov	x, a 
+ 117 007d 51 00                   		mov	a, #0
+ 118 007f BD F0                   		movw	r8, ax
+ 119 0081 44 01 00                		cmpw	ax, #1 
+ 120 0084 61 F8                   		sknz 
+ 121 0086 EC BD 00 00             		br	!!.L5
+ 122 008a AD F0                   		movw	ax, r8
+ 123 008c 44 02 00                		cmpw	ax, #2 
+ 124 008f 61 F8                   		sknz 
+ 125 0091 EC D6 00 00             		br	!!.L6
+ 126 0095 AD F0                   		movw	ax, r8
+ 127 0097 44 00 00                		cmpw	ax, #0 
+ 128 009a 61 F8                   		sknz 
+ 129 009c EC A4 00 00             		br	!!.L7
+  30:../src/drvLed.c **** 	case 0:
+  31:../src/drvLed.c **** 		LED0 = LED_TURN_ON;
+  32:../src/drvLed.c **** 		break;
+  33:../src/drvLed.c **** 	case 1:
+  34:../src/drvLed.c **** 		LED1 = LED_TURN_ON;
+  35:../src/drvLed.c **** 		break;
+  36:../src/drvLed.c **** 	case 2:
+  37:../src/drvLed.c **** 		LED2 = LED_TURN_ON;
+  38:../src/drvLed.c **** 		break;
+  39:../src/drvLed.c ****         default:
+  40:../src/drvLed.c ****                 break;
+ 130                             		.loc 1 40 0
+ 131 00a0 EC EC 00 00             		br	!!.L8
+ 132                             	.L7:
+  31:../src/drvLed.c **** 		LED0 = LED_TURN_ON;
+ 133                             		.loc 1 31 0
+ 134 00a4 C9 F0 0D FF             		movw	r8, #-243
+ 135 00a8 AD F0                   		movw	ax, r8
+ 136 00aa BD F4                   		movw	r12, ax
+ 137 00ac FA F4                   		movw	hl, r12
+ 138 00ae 8B                      		mov	a, [hl]
+ 139 00af 9D F2                   		mov	r10, a
+ 140 00b1 5A F2 FE                		and	r10, #-2
+ 141 00b4 AD F0                   		movw	ax, r8
+ 142 00b6 8D F2                   		mov	a, r10
+ 143 00b8 9B                      		mov	[hl], a
+  32:../src/drvLed.c **** 		break;
+ 144                             		.loc 1 32 0
+ 145 00b9 EC EC 00 00             		br	!!.L8
+ 146                             	.L5:
+  34:../src/drvLed.c **** 		LED1 = LED_TURN_ON;
+ 147                             		.loc 1 34 0
+ 148 00bd C9 F0 02 FF             		movw	r8, #-254
+ 149 00c1 AD F0                   		movw	ax, r8
+ 150 00c3 BD F4                   		movw	r12, ax
+ 151 00c5 FA F4                   		movw	hl, r12
+ 152 00c7 8B                      		mov	a, [hl]
+ 153 00c8 9D F2                   		mov	r10, a
+ 154 00ca 5A F2 FD                		and	r10, #-3
+ 155 00cd AD F0                   		movw	ax, r8
+ 156 00cf 8D F2                   		mov	a, r10
+ 157 00d1 9B                      		mov	[hl], a
+  35:../src/drvLed.c **** 		break;
+ 158                             		.loc 1 35 0
+ 159 00d2 EC EC 00 00             		br	!!.L8
+ 160                             	.L6:
+  37:../src/drvLed.c **** 		LED2 = LED_TURN_ON;
+ 161                             		.loc 1 37 0
+ 162 00d6 C9 F0 0C FF             		movw	r8, #-244
+ 163 00da AD F0                   		movw	ax, r8
+ 164 00dc BD F4                   		movw	r12, ax
+ 165 00de FA F4                   		movw	hl, r12
+ 166 00e0 8B                      		mov	a, [hl]
+ 167 00e1 9D F2                   		mov	r10, a
+ 168 00e3 5A F2 DF                		and	r10, #-33
+ 169 00e6 AD F0                   		movw	ax, r8
+ 170 00e8 8D F2                   		mov	a, r10
+ 171 00ea 9B                      		mov	[hl], a
+  38:../src/drvLed.c **** 		break;
+ 172                             		.loc 1 38 0
+ 173 00eb 00                      		nop
+ 174                             	.L8:
+  41:../src/drvLed.c **** 	}
+  42:../src/drvLed.c **** 	return SUCESSO;
+ 175                             		.loc 1 42 0
+ 176 00ec CD F0 00                		mov	r8, #0
+  43:../src/drvLed.c **** }
+ 177                             		.loc 1 43 0
+ 178 00ef 10 02                   		addw	sp, #2
+ 179 00f1 D7                      		ret
+ 180                             	.LFE1:
+ 182                             		.global	_desligaLed
+ 184                             	_desligaLed:
+ 185                             	.LFB2:
+  44:../src/drvLed.c **** 
+  45:../src/drvLed.c **** char desligaLed(void *parameters)
+  46:../src/drvLed.c **** {
+ 186                             		.loc 1 46 0
+ 187                             		; start of function
+ 188                             		; locals: 2 bytes
+ 189 00f2 20 02                   		subw	sp, #2
+ 190                             	.LCFI1:
+  47:../src/drvLed.c **** 	uint8_t led;
+  48:../src/drvLed.c **** 	led = *(uint8_t *) parameters;
+ 191                             		.loc 1 48 0
+ 192 00f4 A8 06                   		movw	ax, [sp+6]
+ 193 00f6 BD F0                   		movw	r8, ax
+ 194 00f8 BD F2                   		movw	r10, ax
+ 195 00fa FA F2                   		movw	hl, r10
+ 196 00fc 8B                      		mov	a, [hl]
+ 197 00fd 9D F0                   		mov	r8, a
+ 198 00ff 98 01                   		mov	[sp+1], a
+  49:../src/drvLed.c **** 	switch (led) {
+ 199                             		.loc 1 49 0
+ 200 0101 70                      		mov	x, a 
+ 201 0102 51 00                   		mov	a, #0
+ 202 0104 BD F0                   		movw	r8, ax
+ 203 0106 44 01 00                		cmpw	ax, #1 
+ 204 0109 61 F8                   		sknz 
+ 205 010b EC 42 01 00             		br	!!.L12
+ 206 010f AD F0                   		movw	ax, r8
+ 207 0111 44 02 00                		cmpw	ax, #2 
+ 208 0114 61 F8                   		sknz 
+ 209 0116 EC 5B 01 00             		br	!!.L13
+ 210 011a AD F0                   		movw	ax, r8
+ 211 011c 44 00 00                		cmpw	ax, #0 
+ 212 011f 61 F8                   		sknz 
+ 213 0121 EC 29 01 00             		br	!!.L14
+  50:../src/drvLed.c **** 	case 0:
+  51:../src/drvLed.c **** 		LED0 = LED_TURN_OFF;
+  52:../src/drvLed.c **** 		break;
+  53:../src/drvLed.c **** 	case 1:
+  54:../src/drvLed.c **** 		LED1 = LED_TURN_OFF;
+  55:../src/drvLed.c **** 		break;
+  56:../src/drvLed.c **** 	case 2:
+  57:../src/drvLed.c **** 		LED2 = LED_TURN_OFF;
+  58:../src/drvLed.c **** 		break;
+  59:../src/drvLed.c ****         default:
+  60:../src/drvLed.c ****                 break;
+ 214                             		.loc 1 60 0
+ 215 0125 EC 71 01 00             		br	!!.L15
+ 216                             	.L14:
+  51:../src/drvLed.c **** 		LED0 = LED_TURN_OFF;
+ 217                             		.loc 1 51 0
+ 218 0129 C9 F0 0D FF             		movw	r8, #-243
+ 219 012d AD F0                   		movw	ax, r8
+ 220 012f BD F4                   		movw	r12, ax
+ 221 0131 FA F4                   		movw	hl, r12
+ 222 0133 8B                      		mov	a, [hl]
+ 223 0134 9D F2                   		mov	r10, a
+ 224 0136 6A F2 01                		or	r10, #1
+ 225 0139 AD F0                   		movw	ax, r8
+ 226 013b 8D F2                   		mov	a, r10
+ 227 013d 9B                      		mov	[hl], a
+  52:../src/drvLed.c **** 		break;
+ 228                             		.loc 1 52 0
+ 229 013e EC 71 01 00             		br	!!.L15
+ 230                             	.L12:
+  54:../src/drvLed.c **** 		LED1 = LED_TURN_OFF;
+ 231                             		.loc 1 54 0
+ 232 0142 C9 F0 02 FF             		movw	r8, #-254
+ 233 0146 AD F0                   		movw	ax, r8
+ 234 0148 BD F4                   		movw	r12, ax
+ 235 014a FA F4                   		movw	hl, r12
+ 236 014c 8B                      		mov	a, [hl]
+ 237 014d 9D F2                   		mov	r10, a
+ 238 014f 6A F2 02                		or	r10, #2
+ 239 0152 AD F0                   		movw	ax, r8
+ 240 0154 8D F2                   		mov	a, r10
+ 241 0156 9B                      		mov	[hl], a
+  55:../src/drvLed.c **** 		break;
+ 242                             		.loc 1 55 0
+ 243 0157 EC 71 01 00             		br	!!.L15
+ 244                             	.L13:
+  57:../src/drvLed.c **** 		LED2 = LED_TURN_OFF;
+ 245                             		.loc 1 57 0
+ 246 015b C9 F0 0C FF             		movw	r8, #-244
+ 247 015f AD F0                   		movw	ax, r8
+ 248 0161 BD F4                   		movw	r12, ax
+ 249 0163 FA F4                   		movw	hl, r12
+ 250 0165 8B                      		mov	a, [hl]
+ 251 0166 9D F2                   		mov	r10, a
+ 252 0168 6A F2 20                		or	r10, #32
+ 253 016b AD F0                   		movw	ax, r8
+ 254 016d 8D F2                   		mov	a, r10
+ 255 016f 9B                      		mov	[hl], a
+  58:../src/drvLed.c **** 		break;
+ 256                             		.loc 1 58 0
+ 257 0170 00                      		nop
+ 258                             	.L15:
+  61:../src/drvLed.c **** 	}
+  62:../src/drvLed.c **** 	return SUCESSO;
+ 259                             		.loc 1 62 0
+ 260 0171 CD F0 00                		mov	r8, #0
+  63:../src/drvLed.c **** }
+ 261                             		.loc 1 63 0
+ 262 0174 10 02                   		addw	sp, #2
+ 263 0176 D7                      		ret
+ 264                             	.LFE2:
+ 266                             		.global	_toggleLed
+ 268                             	_toggleLed:
+ 269                             	.LFB3:
+  64:../src/drvLed.c **** 
+  65:../src/drvLed.c **** char toggleLed(void *parameters)
+  66:../src/drvLed.c **** {
+ 270                             		.loc 1 66 0
+ 271                             		; start of function
+ 272                             		; locals: 2 bytes
+ 273 0177 20 02                   		subw	sp, #2
+ 274                             	.LCFI2:
+  67:../src/drvLed.c **** 	uint8_t led;
+  68:../src/drvLed.c **** 	led = *(uint8_t *) parameters;
+ 275                             		.loc 1 68 0
+ 276 0179 A8 06                   		movw	ax, [sp+6]
+ 277 017b BD F0                   		movw	r8, ax
+ 278 017d BD F2                   		movw	r10, ax
+ 279 017f FA F2                   		movw	hl, r10
+ 280 0181 8B                      		mov	a, [hl]
+ 281 0182 9D F0                   		mov	r8, a
+ 282 0184 98 01                   		mov	[sp+1], a
+  69:../src/drvLed.c **** 	switch (led) {
+ 283                             		.loc 1 69 0
+ 284 0186 70                      		mov	x, a 
+ 285 0187 51 00                   		mov	a, #0
+ 286 0189 BD F0                   		movw	r8, ax
+ 287 018b 44 01 00                		cmpw	ax, #1 
+ 288 018e 61 F8                   		sknz 
+ 289 0190 EC E6 01 00             		br	!!.L19
+ 290 0194 AD F0                   		movw	ax, r8
+ 291 0196 44 02 00                		cmpw	ax, #2 
+ 292 0199 61 F8                   		sknz 
+ 293 019b EC 28 02 00             		br	!!.L20
+ 294 019f AD F0                   		movw	ax, r8
+ 295 01a1 44 00 00                		cmpw	ax, #0 
+ 296 01a4 61 F8                   		sknz 
+ 297 01a6 EC AE 01 00             		br	!!.L21
+  70:../src/drvLed.c **** 	case 0:
+  71:../src/drvLed.c **** 		LED0 = ~LED0;
+  72:../src/drvLed.c **** 		break;
+  73:../src/drvLed.c **** 	case 1:
+  74:../src/drvLed.c **** 		LED1 = ~LED1;
+  75:../src/drvLed.c **** 		break;
+  76:../src/drvLed.c **** 	case 2:
+  77:../src/drvLed.c **** 		LED2 = ~LED2;
+  78:../src/drvLed.c **** 		break;
+  79:../src/drvLed.c ****         default:
+  80:../src/drvLed.c ****                 break;
+ 298                             		.loc 1 80 0
+ 299 01aa EC 67 02 00             		br	!!.L22
+ 300                             	.L21:
+  71:../src/drvLed.c **** 		LED0 = ~LED0;
+ 301                             		.loc 1 71 0
+ 302 01ae C9 F0 0D FF             		movw	r8, #-243
+ 303 01b2 C9 F2 0D FF             		movw	r10, #-243
+ 304 01b6 AD F2                   		movw	ax, r10
+ 305 01b8 BD F4                   		movw	r12, ax
+ 306 01ba FA F4                   		movw	hl, r12
+ 307 01bc 8B                      		mov	a, [hl]
+ 308 01bd 9D F2                   		mov	r10, a
+ 309 01bf 5A F2 01                		and	r10, #1
+ 310 01c2 7A F2 FF                		xor	r10, #-1
+ 311 01c5 5A F2 01                		and	r10, #1
+ 312 01c8 5A F2 01                		and	r10, #1
+ 313 01cb AD F0                   		movw	ax, r8
+ 314 01cd BD F4                   		movw	r12, ax
+ 315 01cf FA F4                   		movw	hl, r12
+ 316 01d1 8B                      		mov	a, [hl]
+ 317 01d2 9D F3                   		mov	r11, a
+ 318 01d4 5A F3 FE                		and	r11, #-2
+ 319 01d7 8D F3                   		mov	a, r11
+ 320 01d9 6B F2                   		or	a, r10
+ 321 01db 9D F2                   		mov	r10, a
+ 322 01dd AD F0                   		movw	ax, r8
+ 323 01df 8D F2                   		mov	a, r10
+ 324 01e1 9B                      		mov	[hl], a
+  72:../src/drvLed.c **** 		break;
+ 325                             		.loc 1 72 0
+ 326 01e2 EC 67 02 00             		br	!!.L22
+ 327                             	.L19:
+  74:../src/drvLed.c **** 		LED1 = ~LED1;
+ 328                             		.loc 1 74 0
+ 329 01e6 C9 F2 02 FF             		movw	r10, #-254
+ 330 01ea C9 F0 02 FF             		movw	r8, #-254
+ 331 01ee AD F0                   		movw	ax, r8
+ 332 01f0 BD F4                   		movw	r12, ax
+ 333 01f2 FA F4                   		movw	hl, r12
+ 334 01f4 8B                      		mov	a, [hl]
+ 335 01f5 9D F0                   		mov	r8, a
+ 336 01f7 31 1A                   		shr	a, 1
+ 337 01f9 9D F0                   		mov	r8, a
+ 338 01fb 5A F0 01                		and	r8, #1
+ 339 01fe 7A F0 FF                		xor	r8, #-1
+ 340 0201 5A F0 01                		and	r8, #1
+ 341 0204 5A F0 01                		and	r8, #1
+ 342 0207 8D F0                   		mov	a, r8
+ 343 0209 61 01                   		add	a, a
+ 344 020b 9D F0                   		mov	r8, a
+ 345 020d AD F2                   		movw	ax, r10
+ 346 020f BD F4                   		movw	r12, ax
+ 347 0211 FA F4                   		movw	hl, r12
+ 348 0213 8B                      		mov	a, [hl]
+ 349 0214 9D F1                   		mov	r9, a
+ 350 0216 5A F1 FD                		and	r9, #-3
+ 351 0219 8D F1                   		mov	a, r9
+ 352 021b 6B F0                   		or	a, r8
+ 353 021d 9D F0                   		mov	r8, a
+ 354 021f AD F2                   		movw	ax, r10
+ 355 0221 8D F0                   		mov	a, r8
+ 356 0223 9B                      		mov	[hl], a
+  75:../src/drvLed.c **** 		break;
+ 357                             		.loc 1 75 0
+ 358 0224 EC 67 02 00             		br	!!.L22
+ 359                             	.L20:
+  77:../src/drvLed.c **** 		LED2 = ~LED2;
+ 360                             		.loc 1 77 0
+ 361 0228 C9 F2 0C FF             		movw	r10, #-244
+ 362 022c C9 F0 0C FF             		movw	r8, #-244
+ 363 0230 AD F0                   		movw	ax, r8
+ 364 0232 BD F4                   		movw	r12, ax
+ 365 0234 FA F4                   		movw	hl, r12
+ 366 0236 8B                      		mov	a, [hl]
+ 367 0237 9D F0                   		mov	r8, a
+ 368 0239 31 5A                   		shr	a, 5
+ 369 023b 9D F0                   		mov	r8, a
+ 370 023d 5A F0 01                		and	r8, #1
+ 371 0240 7A F0 FF                		xor	r8, #-1
+ 372 0243 5A F0 01                		and	r8, #1
+ 373 0246 5A F0 01                		and	r8, #1
+ 374 0249 8D F0                   		mov	a, r8
+ 375 024b 31 59                   		shl	a, 5
+ 376 024d 9D F0                   		mov	r8, a
+ 377 024f AD F2                   		movw	ax, r10
+ 378 0251 BD F4                   		movw	r12, ax
+ 379 0253 FA F4                   		movw	hl, r12
+ 380 0255 8B                      		mov	a, [hl]
+ 381 0256 9D F1                   		mov	r9, a
+ 382 0258 5A F1 DF                		and	r9, #-33
+ 383 025b 8D F1                   		mov	a, r9
+ 384 025d 6B F0                   		or	a, r8
+ 385 025f 9D F0                   		mov	r8, a
+ 386 0261 AD F2                   		movw	ax, r10
+ 387 0263 8D F0                   		mov	a, r8
+ 388 0265 9B                      		mov	[hl], a
+  78:../src/drvLed.c **** 		break;
+ 389                             		.loc 1 78 0
+ 390 0266 00                      		nop
+ 391                             	.L22:
+  81:../src/drvLed.c **** 	}
+  82:../src/drvLed.c **** 	return SUCESSO;
+ 392                             		.loc 1 82 0
+ 393 0267 CD F0 00                		mov	r8, #0
+  83:../src/drvLed.c **** }
+ 394                             		.loc 1 83 0
+ 395 026a 10 02                   		addw	sp, #2
+ 396 026c D7                      		ret
+ 397                             	.LFE3:
+ 399                             		.global	_getLedDriver
+ 401                             	_getLedDriver:
+ 402                             	.LFB4:
+  84:../src/drvLed.c **** 
+  85:../src/drvLed.c **** /* Função para acesso ao driver */
+  86:../src/drvLed.c **** driver* getLedDriver(void)
+  87:../src/drvLed.c **** {
+ 403                             		.loc 1 87 0
+ 404                             		; start of function
+ 405                             		; locals: 2 bytes
+ 406 026d 20 02                   		subw	sp, #2
+ 407                             	.LCFI3:
+  88:../src/drvLed.c **** 	thisDriver.drv_init = initLed;
+ 408                             		.loc 1 88 0
+ 409 026f 30 00 00                		movw	ax, #%code(_initLed)
+ 410 0272 BF 04 00                		movw	!_thisDriver+4, ax
+  89:../src/drvLed.c **** 	
+  90:../src/drvLed.c ****         /* Funções do driver */
+  91:../src/drvLed.c **** 	this_functions[LED_ON] = ligaLed;
+ 411                             		.loc 1 91 0
+ 412 0275 30 00 00                		movw	ax, #%code(_ligaLed)
+ 413 0278 BF 06 00                		movw	!_this_functions, ax
+  92:../src/drvLed.c **** 	this_functions[LED_OFF] = desligaLed;
+ 414                             		.loc 1 92 0
+ 415 027b 30 00 00                		movw	ax, #%code(_desligaLed)
+ 416 027e BF 08 00                		movw	!_this_functions+2, ax
+  93:../src/drvLed.c **** 	this_functions[LED_TOG] = toggleLed;
+ 417                             		.loc 1 93 0
+ 418 0281 30 00 00                		movw	ax, #%code(_toggleLed)
+ 419 0284 BF 0A 00                		movw	!_this_functions+4, ax
+  94:../src/drvLed.c **** 
+  95:../src/drvLed.c **** 	thisDriver.drv_func = this_functions;
+ 420                             		.loc 1 95 0
+ 421 0287 30 06 00                		movw	ax, #_this_functions
+ 422 028a BF 02 00                		movw	!_thisDriver+2, ax
+  96:../src/drvLed.c **** 	return &thisDriver;
+ 423                             		.loc 1 96 0
+ 424 028d 30 00 00                		movw	ax, #_thisDriver
+ 425 0290 B8 00                   		movw	[sp], ax
+ 426 0292 BD F0                   		movw	r8, ax
+  97:../src/drvLed.c **** }
+ 427                             		.loc 1 97 0
+ 428 0294 10 02                   		addw	sp, #2
+ 429 0296 D7                      		ret
+ 430                             	.LFE4:
+ 506                             	.Letext0:
+ 507                             		.file 2 "../src/dd_types.h"
+ 508                             		.file 3 "../src/iodefine.h"
+ 509                             		.file 4 "../src/r_cg_macrodriver.h"
+ 510                             		.file 5 "../src/drvLed.h"

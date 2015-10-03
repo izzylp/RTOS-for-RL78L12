@@ -1,0 +1,6 @@
+file Sist_Op_stable.x
+target sim
+load
+break main
+handle SIGTRAP nostop
+run

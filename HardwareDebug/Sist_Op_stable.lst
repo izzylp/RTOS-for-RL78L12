@@ -1,0 +1,1084 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             	.data
+  28                             		.balign 2
+  31                             	_drvGetFunc:
+  32 0000 00 00                   		.short	%code(_getLedDriver)
+  33 0002 00 00                   		.short	%code(_getLcdDriver)
+  34 0004 00 00                   		.short	%code(_getBotDriver)
+  35 0006 00 00                   		.short	%code(_getADCDriver)
+  36 0008 00 00                   		.short	%code(_getSerDriver)
+  37 000a 00 00                   		.short	%code(_getPWMDriver)
+  38 000c 00 00                   		.short	%code(_getPIDDriver)
+  39 000e 00 00                   		.short	%code(_getTimDriver)
+  40 0010 00 00                   		.short	%code(_getIntDriver)
+  41                             		.global	_count_stop
+  44                             	_count_stop:
+  45 0012 01                      		.byte	1
+  46                             		.global	_count_reset
+  49                             	_count_reset:
+  50 0013 00                      		.zero	1
+  51                             		.global	_count_relogio
+  52                             		.balign 2
+  55                             	_count_relogio:
+  56 0014 00 00                   		.zero	2
+  57                             		.global	___divhi3
+  58                             		.global	___modhi3
+  59                             	.text
+  60                             		.global	_procRelogio
+  62                             	_procRelogio:
+  63                             	.LFB0:
+  64                             		.file 1 "../src/Sist_Op_stable.c"
+   1:../src/Sist_Op_stable.c **** #include "kernel.h"
+   2:../src/Sist_Op_stable.c **** #include "ctrdrv.h"
+   3:../src/Sist_Op_stable.c **** 
+   4:../src/Sist_Op_stable.c **** #define PRECISAO 3
+   5:../src/Sist_Op_stable.c **** #define COMMAND_MAX_SIZE 10
+   6:../src/Sist_Op_stable.c **** 
+   7:../src/Sist_Op_stable.c **** uint8_t count_stop = 1;
+   8:../src/Sist_Op_stable.c **** uint8_t count_reset = 0;
+   9:../src/Sist_Op_stable.c **** int16_t count_relogio = 0;
+  10:../src/Sist_Op_stable.c **** 
+  11:../src/Sist_Op_stable.c **** char procRelogio(void)
+  12:../src/Sist_Op_stable.c **** {
+  65                             		.loc 1 12 0
+  66                             		; start of function
+  67                             		; locals: 20 bytes
+  68                             		; outgoing: 6 bytes
+  69 0000 20 1A                   		subw	sp, #26
+  70                             	.LCFI0:
+  13:../src/Sist_Op_stable.c ****         uint8_t lcd_digito[5] = {0, 0, ':', 0, 0};
+  71                             		.loc 1 13 0
+  72 0002 C8 15 00                		mov	[sp+21], #0
+  73 0005 C8 16 00                		mov	[sp+22], #0
+  74 0008 C8 17 3A                		mov	[sp+23], #58
+  75 000b C8 18 00                		mov	[sp+24], #0
+  76 000e C8 19 00                		mov	[sp+25], #0
+  77                             	.L3:
+  78                             	.LBB2:
+  14:../src/Sist_Op_stable.c ****         for (;;) {
+  15:../src/Sist_Op_stable.c ****                 timedLoopStart(PRECISAO);
+  79                             		.loc 1 15 0
+  80 0011 30 03 00                		movw	ax, #3
+  81 0014 B8 00                   		movw	[sp], ax
+  82 0016 FC 00 00 00             		call	!!%code(_timedLoopStart)
+  16:../src/Sist_Op_stable.c ****                 /* Relógio envia os 4 dígitos a serem mostrados. Ex: 1230 (12:30) */
+  17:../src/Sist_Op_stable.c ****                 if (count_stop == 0 && count_reset == 0) {
+  83                             		.loc 1 17 0
+  84 001a 8F 00 00                		mov	a, !_count_stop
+  85 001d 9D F0                   		mov	r8, a
+  86 001f D4 F0                   		cmp0	r8 
+  87 0021 61 E8                   		skz 
+  88 0023 EC 52 00 00             		br	!!.L2
+  89                             		.loc 1 17 0 is_stmt 0 discriminator 1
+  90 0027 8F 00 00                		mov	a, !_count_reset
+  91 002a 9D F0                   		mov	r8, a
+  92 002c D4 F0                   		cmp0	r8 
+  93 002e 61 E8                   		skz 
+  94 0030 EC 52 00 00             		br	!!.L2
+  18:../src/Sist_Op_stable.c ****                         /* Variável deve ser multiplicada pelo número de processos */
+  19:../src/Sist_Op_stable.c ****                         count_relogio += PRECISAO;
+  95                             		.loc 1 19 0 is_stmt 1
+  96 0034 AF 00 00                		movw	ax, !_count_relogio
+  97 0037 BD F0                   		movw	r8, ax
+  98 0039 04 03 00                		addw	ax, #3
+  99 003c BD F0                   		movw	r8, ax
+ 100 003e BF 00 00                		movw	!_count_relogio, ax
+  20:../src/Sist_Op_stable.c ****                         if (count_relogio >= 6000)
+ 101                             		.loc 1 20 0
+ 102 0041 BD F0                   		movw	r8, ax
+ 103 0043 44 6F 17                		cmpw	ax, #5999 
+ 104 0046 71 FF                   		xor1 CY,a.7
+ 105 0048 61 E3                   		skh 
+ 106 004a EC 52 00 00             		br	!!.L2
+  21:../src/Sist_Op_stable.c ****                                 count_relogio = 0;
+ 107                             		.loc 1 21 0
+ 108 004e F6                      		clrw	ax
+ 109 004f BF 00 00                		movw	!_count_relogio, ax
+ 110                             	.L2:
+  22:../src/Sist_Op_stable.c ****                 }
+  23:../src/Sist_Op_stable.c ****                 lcd_digito[0] = (count_relogio / 1000) % 10;
+ 111                             		.loc 1 23 0
+ 112 0052 AF 00 00                		movw	ax, !_count_relogio
+ 113 0055 BD F0                   		movw	r8, ax
+ 114 0057 B8 00                   		movw	[sp], ax
+ 115 0059 30 E8 03                		movw	ax, #1000
+ 116 005c B8 02                   		movw	[sp+2], ax
+ 117 005e FC 00 00 00             		call	!!___divhi3
+ 118 0062 AD F0                   		movw	ax, r8
+ 119 0064 B8 12                   		movw	[sp+18], ax
+ 120 0066 BD F0                   		movw	r8, ax
+ 121 0068 B8 00                   		movw	[sp], ax
+ 122 006a 30 0A 00                		movw	ax, #10
+ 123 006d B8 02                   		movw	[sp+2], ax
+ 124 006f FC 00 00 00             		call	!!___modhi3
+ 125 0073 AD F0                   		movw	ax, r8
+ 126 0075 B8 10                   		movw	[sp+16], ax
+ 127 0077 88 10                   		mov	a, [sp+16]
+ 128 0079 9D F0                   		mov	r8, a
+ 129 007b 98 15                   		mov	[sp+21], a
+  24:../src/Sist_Op_stable.c ****                 lcd_digito[1] = (count_relogio / 100) % 10;
+ 130                             		.loc 1 24 0
+ 131 007d AF 00 00                		movw	ax, !_count_relogio
+ 132 0080 BD F0                   		movw	r8, ax
+ 133 0082 B8 00                   		movw	[sp], ax
+ 134 0084 30 64 00                		movw	ax, #100
+ 135 0087 B8 02                   		movw	[sp+2], ax
+ 136 0089 FC 00 00 00             		call	!!___divhi3
+ 137 008d AD F0                   		movw	ax, r8
+ 138 008f B8 0E                   		movw	[sp+14], ax
+ 139 0091 BD F0                   		movw	r8, ax
+ 140 0093 B8 00                   		movw	[sp], ax
+ 141 0095 30 0A 00                		movw	ax, #10
+ 142 0098 B8 02                   		movw	[sp+2], ax
+ 143 009a FC 00 00 00             		call	!!___modhi3
+ 144 009e AD F0                   		movw	ax, r8
+ 145 00a0 B8 0C                   		movw	[sp+12], ax
+ 146 00a2 88 0C                   		mov	a, [sp+12]
+ 147 00a4 9D F0                   		mov	r8, a
+ 148 00a6 98 16                   		mov	[sp+22], a
+  25:../src/Sist_Op_stable.c ****                 lcd_digito[3] = (count_relogio / 10) % 10;
+ 149                             		.loc 1 25 0
+ 150 00a8 AF 00 00                		movw	ax, !_count_relogio
+ 151 00ab BD F0                   		movw	r8, ax
+ 152 00ad B8 00                   		movw	[sp], ax
+ 153 00af 30 0A 00                		movw	ax, #10
+ 154 00b2 B8 02                   		movw	[sp+2], ax
+ 155 00b4 FC 00 00 00             		call	!!___divhi3
+ 156 00b8 AD F0                   		movw	ax, r8
+ 157 00ba B8 0A                   		movw	[sp+10], ax
+ 158 00bc BD F0                   		movw	r8, ax
+ 159 00be B8 00                   		movw	[sp], ax
+ 160 00c0 30 0A 00                		movw	ax, #10
+ 161 00c3 B8 02                   		movw	[sp+2], ax
+ 162 00c5 FC 00 00 00             		call	!!___modhi3
+ 163 00c9 AD F0                   		movw	ax, r8
+ 164 00cb B8 08                   		movw	[sp+8], ax
+ 165 00cd 88 08                   		mov	a, [sp+8]
+ 166 00cf 9D F0                   		mov	r8, a
+ 167 00d1 98 18                   		mov	[sp+24], a
+  26:../src/Sist_Op_stable.c ****                 lcd_digito[4] = count_relogio % 10;
+ 168                             		.loc 1 26 0
+ 169 00d3 AF 00 00                		movw	ax, !_count_relogio
+ 170 00d6 BD F0                   		movw	r8, ax
+ 171 00d8 B8 00                   		movw	[sp], ax
+ 172 00da 30 0A 00                		movw	ax, #10
+ 173 00dd B8 02                   		movw	[sp+2], ax
+ 174 00df FC 00 00 00             		call	!!___modhi3
+ 175 00e3 AD F0                   		movw	ax, r8
+ 176 00e5 B8 06                   		movw	[sp+6], ax
+ 177 00e7 88 06                   		mov	a, [sp+6]
+ 178 00e9 9D F0                   		mov	r8, a
+ 179 00eb 98 19                   		mov	[sp+25], a
+  27:../src/Sist_Op_stable.c ****                 callDriver(DRV_LCD, LCD_SECB, (void *) lcd_digito);
+ 180                             		.loc 1 27 0
+ 181 00ed C8 00 01                		mov	[sp], #1
+ 182 00f0 C8 02 04                		mov	[sp+2], #4
+ 183 00f3 C9 F0 1A 00             		movw	r8, #26
+ 184 00f7 AE F8                   		movw	ax, sp
+ 185 00f9 BD F0                   		movw	r8, ax
+ 186 00fb 04 1A 00                		addw	ax, #26
+ 187 00fe BD F0                   		movw	r8, ax
+ 188 0100 04 FB FF                		addw	ax, #-5
+ 189 0103 B8 04                   		movw	[sp+4], ax
+ 190 0105 FC 00 00 00             		call	!!%code(_callDriver)
+  28:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 191                             		.loc 1 28 0
+ 192 0109 FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 193                             	.LBE2:
+  29:../src/Sist_Op_stable.c ****         }
+ 194                             		.loc 1 29 0
+ 195 010d EC 11 00 00             		br	!!.L3
+ 196                             	.LFE0:
+ 198                             		.global	_teclado
+ 200                             	_teclado:
+ 201                             	.LFB1:
+  30:../src/Sist_Op_stable.c **** }
+  31:../src/Sist_Op_stable.c **** 
+  32:../src/Sist_Op_stable.c **** char teclado(void)
+  33:../src/Sist_Op_stable.c **** {
+ 202                             		.loc 1 33 0
+ 203                             		; start of function
+ 204                             		; locals: 2 bytes
+ 205                             		; outgoing: 6 bytes
+ 206 0111 20 08                   		subw	sp, #8
+ 207                             	.LCFI1:
+ 208                             	.L9:
+ 209                             	.LBB3:
+  34:../src/Sist_Op_stable.c **** 	uint8_t tecla;
+  35:../src/Sist_Op_stable.c **** 
+  36:../src/Sist_Op_stable.c ****         for (;;) {
+  37:../src/Sist_Op_stable.c ****                 timedLoopStart(10);
+ 210                             		.loc 1 37 0
+ 211 0113 30 0A 00                		movw	ax, #10
+ 212 0116 B8 00                   		movw	[sp], ax
+ 213 0118 FC 00 00 00             		call	!!%code(_timedLoopStart)
+  38:../src/Sist_Op_stable.c ****                 callDriver(DRV_BOT, BOT_PUSH, (void *) &tecla);
+ 214                             		.loc 1 38 0
+ 215 011c C8 00 02                		mov	[sp], #2
+ 216 011f C8 02 00                		mov	[sp+2], #0
+ 217 0122 C9 F0 08 00             		movw	r8, #8
+ 218 0126 AE F8                   		movw	ax, sp
+ 219 0128 BD F0                   		movw	r8, ax
+ 220 012a 04 08 00                		addw	ax, #8
+ 221 012d BD F0                   		movw	r8, ax
+ 222 012f B1                      		decw	ax
+ 223 0130 B8 04                   		movw	[sp+4], ax
+ 224 0132 FC 00 00 00             		call	!!%code(_callDriver)
+  39:../src/Sist_Op_stable.c ****                 if (tecla == 0x04) 
+ 225                             		.loc 1 39 0
+ 226 0136 88 07                   		mov	a, [sp+7]
+ 227 0138 9D F0                   		mov	r8, a
+ 228 013a 4A F0 04                		cmp	r8, #4 
+ 229 013d 61 E8                   		skz 
+ 230 013f EC 46 01 00             		br	!!.L5
+  40:../src/Sist_Op_stable.c ****                         count_stop = 1;
+ 231                             		.loc 1 40 0
+ 232 0143 E5 00 00                		oneb	!_count_stop
+ 233                             	.L5:
+  41:../src/Sist_Op_stable.c ****                 if (tecla == 0x02) 
+ 234                             		.loc 1 41 0
+ 235 0146 88 07                   		mov	a, [sp+7]
+ 236 0148 9D F0                   		mov	r8, a
+ 237 014a 4A F0 02                		cmp	r8, #2 
+ 238 014d 61 E8                   		skz 
+ 239 014f EC 56 01 00             		br	!!.L6
+  42:../src/Sist_Op_stable.c ****                         count_stop = 0;
+ 240                             		.loc 1 42 0
+ 241 0153 F5 00 00                		clrb	!_count_stop
+ 242                             	.L6:
+  43:../src/Sist_Op_stable.c ****                 if (tecla == 0x01) {
+ 243                             		.loc 1 43 0
+ 244 0156 88 07                   		mov	a, [sp+7]
+ 245 0158 9D F0                   		mov	r8, a
+ 246 015a 4A F0 01                		cmp	r8, #1 
+ 247 015d 61 E8                   		skz 
+ 248 015f EC 6E 01 00             		br	!!.L7
+  44:../src/Sist_Op_stable.c ****                         count_reset = 1;
+ 249                             		.loc 1 44 0
+ 250 0163 E5 00 00                		oneb	!_count_reset
+  45:../src/Sist_Op_stable.c ****                         count_relogio = 0;
+ 251                             		.loc 1 45 0
+ 252 0166 F6                      		clrw	ax
+ 253 0167 BF 00 00                		movw	!_count_relogio, ax
+ 254 016a EC 71 01 00             		br	!!.L8
+ 255                             	.L7:
+  46:../src/Sist_Op_stable.c ****                 } else {
+  47:../src/Sist_Op_stable.c ****                         count_reset = 0;
+ 256                             		.loc 1 47 0
+ 257 016e F5 00 00                		clrb	!_count_reset
+ 258                             	.L8:
+  48:../src/Sist_Op_stable.c ****                 }
+  49:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 259                             		.loc 1 49 0
+ 260 0171 FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 261                             	.LBE3:
+  50:../src/Sist_Op_stable.c ****         }
+ 262                             		.loc 1 50 0
+ 263 0175 EC 13 01 00             		br	!!.L9
+ 264                             	.LFE1:
+ 266                             		.global	___udivhi3
+ 267                             		.global	___umodhi3
+ 268                             		.global	_temperatura
+ 270                             	_temperatura:
+ 271                             	.LFB2:
+  51:../src/Sist_Op_stable.c **** }
+  52:../src/Sist_Op_stable.c **** 
+  53:../src/Sist_Op_stable.c **** char temperatura(void)
+  54:../src/Sist_Op_stable.c **** {
+ 272                             		.loc 1 54 0
+ 273                             		; start of function
+ 274                             		; locals: 16 bytes
+ 275                             		; outgoing: 6 bytes
+ 276 0179 20 16                   		subw	sp, #22
+ 277                             	.LCFI2:
+  55:../src/Sist_Op_stable.c **** 	unsigned int adc_output;
+  56:../src/Sist_Op_stable.c ****         uint8_t lcd_digito[4] = {0, 0, '.', 0};
+ 278                             		.loc 1 56 0
+ 279 017b C8 10 00                		mov	[sp+16], #0
+ 280 017e C8 11 00                		mov	[sp+17], #0
+ 281 0181 C8 12 2E                		mov	[sp+18], #46
+ 282 0184 C8 13 00                		mov	[sp+19], #0
+ 283                             	.L11:
+ 284                             	.LBB4:
+  57:../src/Sist_Op_stable.c **** 
+  58:../src/Sist_Op_stable.c ****         for (;;) {
+  59:../src/Sist_Op_stable.c ****                 timedLoopStart(50);
+ 285                             		.loc 1 59 0 discriminator 1
+ 286 0187 30 32 00                		movw	ax, #50
+ 287 018a B8 00                   		movw	[sp], ax
+ 288 018c FC 00 00 00             		call	!!%code(_timedLoopStart)
+  60:../src/Sist_Op_stable.c ****                 callDriver(DRV_ADC, ADC_SGET, (void *) &adc_output);
+ 289                             		.loc 1 60 0 discriminator 1
+ 290 0190 C8 00 03                		mov	[sp], #3
+ 291 0193 C8 02 01                		mov	[sp+2], #1
+ 292 0196 C9 F0 16 00             		movw	r8, #22
+ 293 019a AE F8                   		movw	ax, sp
+ 294 019c BD F0                   		movw	r8, ax
+ 295 019e 04 16 00                		addw	ax, #22
+ 296 01a1 BD F0                   		movw	r8, ax
+ 297 01a3 04 FE FF                		addw	ax, #-2
+ 298 01a6 B8 04                   		movw	[sp+4], ax
+ 299 01a8 FC 00 00 00             		call	!!%code(_callDriver)
+  61:../src/Sist_Op_stable.c ****                 adc_output /= 2;
+ 300                             		.loc 1 61 0 discriminator 1
+ 301 01ac A8 14                   		movw	ax, [sp+20]
+ 302 01ae BD F0                   		movw	r8, ax
+ 303 01b0 31 1E                   		shrw	ax, 1
+ 304 01b2 BD F0                   		movw	r8, ax
+ 305 01b4 B8 14                   		movw	[sp+20], ax
+  62:../src/Sist_Op_stable.c ****                 lcd_digito[0] = (adc_output / 100) % 10;
+ 306                             		.loc 1 62 0 discriminator 1
+ 307 01b6 BD F0                   		movw	r8, ax
+ 308 01b8 B8 00                   		movw	[sp], ax
+ 309 01ba 30 64 00                		movw	ax, #100
+ 310 01bd B8 02                   		movw	[sp+2], ax
+ 311 01bf FC 00 00 00             		call	!!___udivhi3
+ 312 01c3 AD F0                   		movw	ax, r8
+ 313 01c5 B8 0E                   		movw	[sp+14], ax
+ 314 01c7 BD F0                   		movw	r8, ax
+ 315 01c9 B8 00                   		movw	[sp], ax
+ 316 01cb 30 0A 00                		movw	ax, #10
+ 317 01ce B8 02                   		movw	[sp+2], ax
+ 318 01d0 FC 00 00 00             		call	!!___umodhi3
+ 319 01d4 AD F0                   		movw	ax, r8
+ 320 01d6 B8 0C                   		movw	[sp+12], ax
+ 321 01d8 88 0C                   		mov	a, [sp+12]
+ 322 01da 9D F0                   		mov	r8, a
+ 323 01dc 98 10                   		mov	[sp+16], a
+  63:../src/Sist_Op_stable.c ****                 lcd_digito[1] = (adc_output / 10) % 10;
+ 324                             		.loc 1 63 0 discriminator 1
+ 325 01de A8 14                   		movw	ax, [sp+20]
+ 326 01e0 BD F0                   		movw	r8, ax
+ 327 01e2 B8 00                   		movw	[sp], ax
+ 328 01e4 30 0A 00                		movw	ax, #10
+ 329 01e7 B8 02                   		movw	[sp+2], ax
+ 330 01e9 FC 00 00 00             		call	!!___udivhi3
+ 331 01ed AD F0                   		movw	ax, r8
+ 332 01ef B8 0A                   		movw	[sp+10], ax
+ 333 01f1 BD F0                   		movw	r8, ax
+ 334 01f3 B8 00                   		movw	[sp], ax
+ 335 01f5 30 0A 00                		movw	ax, #10
+ 336 01f8 B8 02                   		movw	[sp+2], ax
+ 337 01fa FC 00 00 00             		call	!!___umodhi3
+ 338 01fe AD F0                   		movw	ax, r8
+ 339 0200 B8 08                   		movw	[sp+8], ax
+ 340 0202 88 08                   		mov	a, [sp+8]
+ 341 0204 9D F0                   		mov	r8, a
+ 342 0206 98 11                   		mov	[sp+17], a
+  64:../src/Sist_Op_stable.c ****                 lcd_digito[3] = adc_output % 10;
+ 343                             		.loc 1 64 0 discriminator 1
+ 344 0208 A8 14                   		movw	ax, [sp+20]
+ 345 020a BD F0                   		movw	r8, ax
+ 346 020c B8 00                   		movw	[sp], ax
+ 347 020e 30 0A 00                		movw	ax, #10
+ 348 0211 B8 02                   		movw	[sp+2], ax
+ 349 0213 FC 00 00 00             		call	!!___umodhi3
+ 350 0217 AD F0                   		movw	ax, r8
+ 351 0219 B8 06                   		movw	[sp+6], ax
+ 352 021b 88 06                   		mov	a, [sp+6]
+ 353 021d 9D F0                   		mov	r8, a
+ 354 021f 98 13                   		mov	[sp+19], a
+  65:../src/Sist_Op_stable.c ****                 callDriver(DRV_LCD, LCD_SECA, (void *) lcd_digito);
+ 355                             		.loc 1 65 0 discriminator 1
+ 356 0221 C8 00 01                		mov	[sp], #1
+ 357 0224 C8 02 03                		mov	[sp+2], #3
+ 358 0227 C9 F0 16 00             		movw	r8, #22
+ 359 022b AE F8                   		movw	ax, sp
+ 360 022d BD F0                   		movw	r8, ax
+ 361 022f 04 16 00                		addw	ax, #22
+ 362 0232 BD F0                   		movw	r8, ax
+ 363 0234 04 FA FF                		addw	ax, #-6
+ 364 0237 B8 04                   		movw	[sp+4], ax
+ 365 0239 FC 00 00 00             		call	!!%code(_callDriver)
+  66:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 366                             		.loc 1 66 0 discriminator 1
+ 367 023d FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 368                             	.LBE4:
+  67:../src/Sist_Op_stable.c ****         }
+ 369                             		.loc 1 67 0 discriminator 1
+ 370 0241 EC 87 01 00             		br	!!.L11
+ 371                             	.LFE2:
+ 373                             		.global	_pisca_leds
+ 375                             	_pisca_leds:
+ 376                             	.LFB3:
+  68:../src/Sist_Op_stable.c **** }
+  69:../src/Sist_Op_stable.c **** 
+  70:../src/Sist_Op_stable.c **** char pisca_leds(void)
+  71:../src/Sist_Op_stable.c **** {
+ 377                             		.loc 1 71 0
+ 378                             		; start of function
+ 379                             		; locals: 2 bytes
+ 380                             		; outgoing: 6 bytes
+ 381 0245 20 08                   		subw	sp, #8
+ 382                             	.LCFI3:
+  72:../src/Sist_Op_stable.c ****         uint8_t led = 0;
+ 383                             		.loc 1 72 0
+ 384 0247 C8 07 00                		mov	[sp+7], #0
+ 385                             	.L14:
+ 386                             	.LBB5:
+  73:../src/Sist_Op_stable.c ****         uint32_t delay;
+  74:../src/Sist_Op_stable.c ****         for (;;) {
+  75:../src/Sist_Op_stable.c **** 		timedLoopStart(100);
+ 387                             		.loc 1 75 0
+ 388 024a 30 64 00                		movw	ax, #100
+ 389 024d B8 00                   		movw	[sp], ax
+ 390 024f FC 00 00 00             		call	!!%code(_timedLoopStart)
+  76:../src/Sist_Op_stable.c **** 		if (led < 3) {
+ 391                             		.loc 1 76 0
+ 392 0253 88 07                   		mov	a, [sp+7]
+ 393 0255 9D F0                   		mov	r8, a
+ 394 0257 4A F0 02                		cmp	r8, #2 
+ 395 025a 61 F3                   		sknh 
+ 396 025c EC 92 02 00             		br	!!.L13
+  77:../src/Sist_Op_stable.c ****                         callDriver(DRV_LED, LED_TOG, (void *) &led);
+ 397                             		.loc 1 77 0
+ 398 0260 C8 00 00                		mov	[sp], #0
+ 399 0263 C8 02 02                		mov	[sp+2], #2
+ 400 0266 C9 F0 08 00             		movw	r8, #8
+ 401 026a AE F8                   		movw	ax, sp
+ 402 026c BD F0                   		movw	r8, ax
+ 403 026e 04 08 00                		addw	ax, #8
+ 404 0271 BD F0                   		movw	r8, ax
+ 405 0273 B1                      		decw	ax
+ 406 0274 B8 04                   		movw	[sp+4], ax
+ 407 0276 FC 00 00 00             		call	!!%code(_callDriver)
+  78:../src/Sist_Op_stable.c ****                         led++;
+ 408                             		.loc 1 78 0
+ 409 027a 88 07                   		mov	a, [sp+7]
+ 410 027c 9D F0                   		mov	r8, a
+ 411 027e A4 F0                   		inc	r8
+ 412 0280 8D F0                   		mov	a, r8
+ 413 0282 98 07                   		mov	[sp+7], a
+  79:../src/Sist_Op_stable.c ****                         if(led == 3) 
+ 414                             		.loc 1 79 0
+ 415 0284 9D F0                   		mov	r8, a
+ 416 0286 4A F0 03                		cmp	r8, #3 
+ 417 0289 61 E8                   		skz 
+ 418 028b EC 92 02 00             		br	!!.L13
+  80:../src/Sist_Op_stable.c ****                                 led = 0;
+ 419                             		.loc 1 80 0
+ 420 028f C8 07 00                		mov	[sp+7], #0
+ 421                             	.L13:
+  81:../src/Sist_Op_stable.c ****                 }
+  82:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 422                             		.loc 1 82 0
+ 423 0292 FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 424                             	.LBE5:
+  83:../src/Sist_Op_stable.c ****         }
+ 425                             		.loc 1 83 0
+ 426 0296 EC 4A 02 00             		br	!!.L14
+ 427                             	.LFE3:
+ 429                             		.global	_recebe_comando
+ 431                             	_recebe_comando:
+ 432                             	.LFB4:
+  84:../src/Sist_Op_stable.c **** }
+  85:../src/Sist_Op_stable.c **** 
+  86:../src/Sist_Op_stable.c **** char *recebe_comando(void)
+  87:../src/Sist_Op_stable.c **** {
+ 433                             		.loc 1 87 0
+ 434                             		; start of function
+ 435                             		; locals: 8 bytes
+ 436                             		; outgoing: 6 bytes
+ 437 029a 20 0E                   		subw	sp, #14
+ 438                             	.LCFI4:
+  88:../src/Sist_Op_stable.c **** 	char EOP = '>';
+ 439                             		.loc 1 88 0
+ 440 029c C8 0B 3E                		mov	[sp+11], #62
+  89:../src/Sist_Op_stable.c **** 	char SOP = '<';
+ 441                             		.loc 1 89 0
+ 442 029f C8 0A 3C                		mov	[sp+10], #60
+  90:../src/Sist_Op_stable.c **** 	char *ret = NULL;
+ 443                             		.loc 1 90 0
+ 444 02a2 F6                      		clrw	ax
+ 445 02a3 B8 0C                   		movw	[sp+12], ax
+  91:../src/Sist_Op_stable.c **** 	char in_char;
+  92:../src/Sist_Op_stable.c **** 	char data_is_available = 0;
+ 446                             		.loc 1 92 0
+ 447 02a5 C8 08 00                		mov	[sp+8], #0
+  93:../src/Sist_Op_stable.c **** 	static char ended = 0;
+  94:../src/Sist_Op_stable.c **** 	static char started = 0;
+  95:../src/Sist_Op_stable.c **** 	static char overflow = 0;
+  96:../src/Sist_Op_stable.c **** 	static unsigned char index = 0;
+  97:../src/Sist_Op_stable.c **** 	static char in_data[COMMAND_MAX_SIZE] = {0};
+  98:../src/Sist_Op_stable.c **** 
+  99:../src/Sist_Op_stable.c **** 	callDriver(DRV_SER, SER_AVAILABLE, (void *) &data_is_available);
+ 448                             		.loc 1 99 0
+ 449 02a8 C8 00 04                		mov	[sp], #4
+ 450 02ab C8 02 03                		mov	[sp+2], #3
+ 451 02ae C9 F0 0E 00             		movw	r8, #14
+ 452 02b2 AE F8                   		movw	ax, sp
+ 453 02b4 BD F0                   		movw	r8, ax
+ 454 02b6 04 0E 00                		addw	ax, #14
+ 455 02b9 BD F0                   		movw	r8, ax
+ 456 02bb 04 FA FF                		addw	ax, #-6
+ 457 02be B8 04                   		movw	[sp+4], ax
+ 458 02c0 FC 00 00 00             		call	!!%code(_callDriver)
+ 100:../src/Sist_Op_stable.c **** 
+ 101:../src/Sist_Op_stable.c **** 	if (!data_is_available)
+ 459                             		.loc 1 101 0
+ 460 02c4 88 08                   		mov	a, [sp+8]
+ 461 02c6 9D F0                   		mov	r8, a
+ 462 02c8 D4 F0                   		cmp0	r8 
+ 463 02ca 61 E8                   		skz 
+ 464 02cc EC D7 02 00             		br	!!.L16
+ 102:../src/Sist_Op_stable.c ****                 return NULL;
+ 465                             		.loc 1 102 0
+ 466 02d0 F6                      		clrw	ax
+ 467 02d1 B8 06                   		movw	[sp+6], ax
+ 468 02d3 EC E0 03 00             		br	!!.L25
+ 469                             	.L16:
+ 103:../src/Sist_Op_stable.c **** 
+ 104:../src/Sist_Op_stable.c **** 	callDriver(DRV_SER, SER_READ, (void *) &in_char);
+ 470                             		.loc 1 104 0
+ 471 02d7 C8 00 04                		mov	[sp], #4
+ 472 02da C8 02 00                		mov	[sp+2], #0
+ 473 02dd C9 F0 0E 00             		movw	r8, #14
+ 474 02e1 AE F8                   		movw	ax, sp
+ 475 02e3 BD F0                   		movw	r8, ax
+ 476 02e5 04 0E 00                		addw	ax, #14
+ 477 02e8 BD F0                   		movw	r8, ax
+ 478 02ea 04 FB FF                		addw	ax, #-5
+ 479 02ed B8 04                   		movw	[sp+4], ax
+ 480 02ef FC 00 00 00             		call	!!%code(_callDriver)
+ 105:../src/Sist_Op_stable.c **** 
+ 106:../src/Sist_Op_stable.c **** 	if (!ended) {
+ 481                             		.loc 1 106 0
+ 482 02f3 8F 00 00                		mov	a, !_ended.1969
+ 483 02f6 9D F0                   		mov	r8, a
+ 484 02f8 D4 F0                   		cmp0	r8 
+ 485 02fa 61 E8                   		skz 
+ 486 02fc EC 88 03 00             		br	!!.L18
+ 107:../src/Sist_Op_stable.c **** 		if (in_char == SOP) {
+ 487                             		.loc 1 107 0
+ 488 0300 88 09                   		mov	a, [sp+9]
+ 489 0302 9D F1                   		mov	r9, a
+ 490 0304 88 0A                   		mov	a, [sp+10]
+ 491 0306 9D F0                   		mov	r8, a
+ 492 0308 8D F1                   		mov	a, r9
+ 493 030a 4B F0                   		cmp	a, r8 
+ 494 030c 61 E8                   		skz 
+ 495 030e EC 2C 03 00             		br	!!.L19
+ 108:../src/Sist_Op_stable.c **** 			index = 0;
+ 496                             		.loc 1 108 0
+ 497 0312 F5 01 00                		clrb	!_index.1972
+ 109:../src/Sist_Op_stable.c **** 			in_data[index] = '\0';
+ 498                             		.loc 1 109 0
+ 499 0315 8F 01 00                		mov	a, !_index.1972
+ 500 0318 9D F0                   		mov	r8, a
+ 501 031a CD F1 00                		mov	r9, #0
+ 502 031d AD F0                   		movw	ax, r8
+ 503 031f 04 02 00                		addw	ax, #_in_data.1973
+ 504 0322 16                      		movw	hl, ax
+ 505 0323 F1                      		clrb	a
+ 506 0324 9B                      		mov	[hl], a
+ 110:../src/Sist_Op_stable.c **** 			started = 1;
+ 507                             		.loc 1 110 0
+ 508 0325 E5 0C 00                		oneb	!_started.1970
+ 509 0328 EC 88 03 00             		br	!!.L18
+ 510                             	.L19:
+ 111:../src/Sist_Op_stable.c **** 		} else if (in_char == EOP) {
+ 511                             		.loc 1 111 0
+ 512 032c 88 09                   		mov	a, [sp+9]
+ 513 032e 9D F1                   		mov	r9, a
+ 514 0330 88 0B                   		mov	a, [sp+11]
+ 515 0332 9D F0                   		mov	r8, a
+ 516 0334 8D F1                   		mov	a, r9
+ 517 0336 4B F0                   		cmp	a, r8 
+ 518 0338 61 E8                   		skz 
+ 519 033a EC 45 03 00             		br	!!.L20
+ 112:../src/Sist_Op_stable.c **** 			ended = 1;
+ 520                             		.loc 1 112 0
+ 521 033e E5 00 00                		oneb	!_ended.1969
+ 522 0341 EC 88 03 00             		br	!!.L18
+ 523                             	.L20:
+ 113:../src/Sist_Op_stable.c **** 		} else if (index < COMMAND_MAX_SIZE) {
+ 524                             		.loc 1 113 0
+ 525 0345 8F 01 00                		mov	a, !_index.1972
+ 526 0348 9D F0                   		mov	r8, a
+ 527 034a 4A F0 09                		cmp	r8, #9 
+ 528 034d 61 F3                   		sknh 
+ 529 034f EC 85 03 00             		br	!!.L21
+ 114:../src/Sist_Op_stable.c **** 			in_data[index] = in_char;
+ 530                             		.loc 1 114 0
+ 531 0353 8F 01 00                		mov	a, !_index.1972
+ 532 0356 9D F0                   		mov	r8, a
+ 533 0358 CD F1 00                		mov	r9, #0
+ 534 035b 88 09                   		mov	a, [sp+9]
+ 535 035d 9D F2                   		mov	r10, a
+ 536 035f AD F0                   		movw	ax, r8
+ 537 0361 04 02 00                		addw	ax, #_in_data.1973
+ 538 0364 16                      		movw	hl, ax
+ 539 0365 8D F2                   		mov	a, r10
+ 540 0367 9B                      		mov	[hl], a
+ 115:../src/Sist_Op_stable.c **** 			index++;
+ 541                             		.loc 1 115 0
+ 542 0368 8F 01 00                		mov	a, !_index.1972
+ 543 036b 9D F0                   		mov	r8, a
+ 544 036d A4 F0                   		inc	r8
+ 545 036f 8D F0                   		mov	a, r8
+ 546 0371 9F 01 00                		mov	!_index.1972, a
+ 116:../src/Sist_Op_stable.c **** 			in_data[index] = '\0';
+ 547                             		.loc 1 116 0
+ 548 0374 9D F0                   		mov	r8, a
+ 549 0376 CD F1 00                		mov	r9, #0
+ 550 0379 AD F0                   		movw	ax, r8
+ 551 037b 04 02 00                		addw	ax, #_in_data.1973
+ 552 037e 16                      		movw	hl, ax
+ 553 037f F1                      		clrb	a
+ 554 0380 9B                      		mov	[hl], a
+ 555 0381 EC 88 03 00             		br	!!.L18
+ 556                             	.L21:
+ 117:../src/Sist_Op_stable.c **** 		} else {
+ 118:../src/Sist_Op_stable.c **** 			overflow = 1;
+ 557                             		.loc 1 118 0
+ 558 0385 E5 0D 00                		oneb	!_overflow.1971
+ 559                             	.L18:
+ 119:../src/Sist_Op_stable.c **** 		}
+ 120:../src/Sist_Op_stable.c **** 	}
+ 121:../src/Sist_Op_stable.c **** 
+ 122:../src/Sist_Op_stable.c **** 	if (started && ended) {
+ 560                             		.loc 1 122 0
+ 561 0388 8F 0C 00                		mov	a, !_started.1970
+ 562 038b 9D F0                   		mov	r8, a
+ 563 038d D4 F0                   		cmp0	r8 
+ 564 038f 61 F8                   		sknz 
+ 565 0391 EC B4 03 00             		br	!!.L22
+ 566                             		.loc 1 122 0 is_stmt 0 discriminator 1
+ 567 0395 8F 00 00                		mov	a, !_ended.1969
+ 568 0398 9D F0                   		mov	r8, a
+ 569 039a D4 F0                   		cmp0	r8 
+ 570 039c 61 F8                   		sknz 
+ 571 039e EC B4 03 00             		br	!!.L22
+ 123:../src/Sist_Op_stable.c **** 		index = 0;
+ 572                             		.loc 1 123 0 is_stmt 1
+ 573 03a2 F5 01 00                		clrb	!_index.1972
+ 124:../src/Sist_Op_stable.c **** 		started = 0;
+ 574                             		.loc 1 124 0
+ 575 03a5 F5 0C 00                		clrb	!_started.1970
+ 125:../src/Sist_Op_stable.c **** 		ended = 0;
+ 576                             		.loc 1 125 0
+ 577 03a8 F5 00 00                		clrb	!_ended.1969
+ 126:../src/Sist_Op_stable.c **** 		ret = in_data;
+ 578                             		.loc 1 126 0
+ 579 03ab 30 02 00                		movw	ax, #_in_data.1973
+ 580 03ae B8 0C                   		movw	[sp+12], ax
+ 581 03b0 EC DA 03 00             		br	!!.L23
+ 582                             	.L22:
+ 127:../src/Sist_Op_stable.c **** 	} else if (ended || overflow) {
+ 583                             		.loc 1 127 0
+ 584 03b4 8F 00 00                		mov	a, !_ended.1969
+ 585 03b7 9D F0                   		mov	r8, a
+ 586 03b9 D4 F0                   		cmp0	r8 
+ 587 03bb 61 E8                   		skz 
+ 588 03bd EC CE 03 00             		br	!!.L24
+ 589                             		.loc 1 127 0 is_stmt 0 discriminator 1
+ 590 03c1 8F 0D 00                		mov	a, !_overflow.1971
+ 591 03c4 9D F0                   		mov	r8, a
+ 592 03c6 D4 F0                   		cmp0	r8 
+ 593 03c8 61 F8                   		sknz 
+ 594 03ca EC DA 03 00             		br	!!.L23
+ 595                             	.L24:
+ 128:../src/Sist_Op_stable.c **** 		ended = 0;
+ 596                             		.loc 1 128 0 is_stmt 1
+ 597 03ce F5 00 00                		clrb	!_ended.1969
+ 129:../src/Sist_Op_stable.c **** 		started = 0;
+ 598                             		.loc 1 129 0
+ 599 03d1 F5 0C 00                		clrb	!_started.1970
+ 130:../src/Sist_Op_stable.c **** 		overflow = 0;
+ 600                             		.loc 1 130 0
+ 601 03d4 F5 0D 00                		clrb	!_overflow.1971
+ 131:../src/Sist_Op_stable.c **** 		ret = NULL;
+ 602                             		.loc 1 131 0
+ 603 03d7 F6                      		clrw	ax
+ 604 03d8 B8 0C                   		movw	[sp+12], ax
+ 605                             	.L23:
+ 132:../src/Sist_Op_stable.c **** 	}
+ 133:../src/Sist_Op_stable.c **** 
+ 134:../src/Sist_Op_stable.c ****         return ret;
+ 606                             		.loc 1 134 0
+ 607 03da A8 0C                   		movw	ax, [sp+12]
+ 608 03dc BD F0                   		movw	r8, ax
+ 609 03de B8 06                   		movw	[sp+6], ax
+ 610                             	.L25:
+ 611 03e0 A8 06                   		movw	ax, [sp+6]
+ 612 03e2 BD F0                   		movw	r8, ax
+ 135:../src/Sist_Op_stable.c **** }
+ 613                             		.loc 1 135 0
+ 614 03e4 10 0E                   		addw	sp, #14
+ 615 03e6 D7                      		ret
+ 616                             	.LFE4:
+ 618                             		.section	.rodata
+ 619                             	.LC0:
+ 620 0000 4F 4B 00                		.string	"OK"
+ 621                             	.LC1:
+ 622 0003 4E 4F 54 4F 4B 00       		.string	"NOTOK"
+ 623                             	.text
+ 624                             		.global	_processa_comando
+ 626                             	_processa_comando:
+ 627                             	.LFB5:
+ 136:../src/Sist_Op_stable.c **** 
+ 137:../src/Sist_Op_stable.c **** char processa_comando(void)
+ 138:../src/Sist_Op_stable.c **** {
+ 628                             		.loc 1 138 0
+ 629                             		; start of function
+ 630                             		; locals: 6 bytes
+ 631                             		; outgoing: 6 bytes
+ 632 03e7 20 0C                   		subw	sp, #12
+ 633                             	.LCFI5:
+ 634                             	.L36:
+ 635                             	.LBB6:
+ 139:../src/Sist_Op_stable.c ****         uint8_t led;
+ 140:../src/Sist_Op_stable.c ****         uint8_t flag_sucesso;
+ 141:../src/Sist_Op_stable.c ****         char *comando;
+ 142:../src/Sist_Op_stable.c **** 
+ 143:../src/Sist_Op_stable.c ****         for (;;) {
+ 144:../src/Sist_Op_stable.c ****                 timedLoopStart(10);
+ 636                             		.loc 1 144 0
+ 637 03e9 30 0A 00                		movw	ax, #10
+ 638 03ec B8 00                   		movw	[sp], ax
+ 639 03ee FC 00 00 00             		call	!!%code(_timedLoopStart)
+ 145:../src/Sist_Op_stable.c ****                 comando = recebe_comando();
+ 640                             		.loc 1 145 0
+ 641 03f2 FC 00 00 00             		call	!!%code(_recebe_comando)
+ 642 03f6 AD F0                   		movw	ax, r8
+ 643 03f8 B8 08                   		movw	[sp+8], ax
+ 146:../src/Sist_Op_stable.c **** 
+ 147:../src/Sist_Op_stable.c ****                 if (comando == NULL) {
+ 644                             		.loc 1 147 0
+ 645 03fa 44 00 00                		cmpw	ax, #0 
+ 646 03fd 61 E8                   		skz 
+ 647 03ff EC 0C 04 00             		br	!!.L27
+ 648                             	.LBB7:
+ 148:../src/Sist_Op_stable.c ****                         timedLoopWait();
+ 649                             		.loc 1 148 0
+ 650 0403 FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 149:../src/Sist_Op_stable.c ****                         continue;
+ 651                             		.loc 1 149 0
+ 652 0407 00                      		nop
+ 653                             	.LBE7:
+ 654                             	.LBE6:
+ 150:../src/Sist_Op_stable.c ****                 }
+ 151:../src/Sist_Op_stable.c **** 
+ 152:../src/Sist_Op_stable.c ****                 switch (comando[0]) {
+ 153:../src/Sist_Op_stable.c ****                 case 'a':
+ 154:../src/Sist_Op_stable.c ****                         led = 0;
+ 155:../src/Sist_Op_stable.c ****                         flag_sucesso = 1;
+ 156:../src/Sist_Op_stable.c ****                         break;
+ 157:../src/Sist_Op_stable.c ****                 case 'b':
+ 158:../src/Sist_Op_stable.c ****                         led = 1;
+ 159:../src/Sist_Op_stable.c ****                         flag_sucesso = 1;
+ 160:../src/Sist_Op_stable.c ****                         break;
+ 161:../src/Sist_Op_stable.c ****                 case 'c':
+ 162:../src/Sist_Op_stable.c ****                         led = 2;
+ 163:../src/Sist_Op_stable.c ****                         flag_sucesso = 1;
+ 164:../src/Sist_Op_stable.c ****                         break;
+ 165:../src/Sist_Op_stable.c ****                 default:
+ 166:../src/Sist_Op_stable.c ****                         flag_sucesso = 0;
+ 167:../src/Sist_Op_stable.c ****                         break;
+ 168:../src/Sist_Op_stable.c ****                 }
+ 169:../src/Sist_Op_stable.c ****                 if (flag_sucesso) {
+ 170:../src/Sist_Op_stable.c ****                         callDriver(DRV_LED, LED_TOG, (void *) &led);
+ 171:../src/Sist_Op_stable.c ****                         callDriver(DRV_SER, SER_SEND_LN, "OK");
+ 172:../src/Sist_Op_stable.c ****                 } else {
+ 173:../src/Sist_Op_stable.c ****                         callDriver(DRV_SER, SER_SEND_LN, "NOTOK");
+ 174:../src/Sist_Op_stable.c ****                 }
+ 175:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 176:../src/Sist_Op_stable.c ****         }
+ 655                             		.loc 1 176 0
+ 656 0408 EC E9 03 00             		br	!!.L36
+ 657                             	.L27:
+ 658                             	.LBB8:
+ 152:../src/Sist_Op_stable.c ****                 switch (comando[0]) {
+ 659                             		.loc 1 152 0
+ 660 040c A8 08                   		movw	ax, [sp+8]
+ 661 040e BD F0                   		movw	r8, ax
+ 662 0410 BD F2                   		movw	r10, ax
+ 663 0412 FA F2                   		movw	hl, r10
+ 664 0414 8B                      		mov	a, [hl]
+ 665 0415 9D F0                   		mov	r8, a
+ 666 0417 CD F1 00                		mov	r9, #0
+ 667 041a AD F0                   		movw	ax, r8
+ 668 041c 44 62 00                		cmpw	ax, #98 
+ 669 041f 61 F8                   		sknz 
+ 670 0421 EC 45 04 00             		br	!!.L30
+ 671 0425 AD F0                   		movw	ax, r8
+ 672 0427 44 63 00                		cmpw	ax, #99 
+ 673 042a 61 F8                   		sknz 
+ 674 042c EC 4F 04 00             		br	!!.L31
+ 675 0430 AD F0                   		movw	ax, r8
+ 676 0432 44 61 00                		cmpw	ax, #97 
+ 677 0435 61 E8                   		skz 
+ 678 0437 EC 59 04 00             		br	!!.L37
+ 154:../src/Sist_Op_stable.c ****                         led = 0;
+ 679                             		.loc 1 154 0
+ 680 043b C8 07 00                		mov	[sp+7], #0
+ 155:../src/Sist_Op_stable.c ****                         flag_sucesso = 1;
+ 681                             		.loc 1 155 0
+ 682 043e C8 0B 01                		mov	[sp+11], #1
+ 156:../src/Sist_Op_stable.c ****                         break;
+ 683                             		.loc 1 156 0
+ 684 0441 EC 5D 04 00             		br	!!.L33
+ 685                             	.L30:
+ 158:../src/Sist_Op_stable.c ****                         led = 1;
+ 686                             		.loc 1 158 0
+ 687 0445 C8 07 01                		mov	[sp+7], #1
+ 159:../src/Sist_Op_stable.c ****                         flag_sucesso = 1;
+ 688                             		.loc 1 159 0
+ 689 0448 C8 0B 01                		mov	[sp+11], #1
+ 160:../src/Sist_Op_stable.c ****                         break;
+ 690                             		.loc 1 160 0
+ 691 044b EC 5D 04 00             		br	!!.L33
+ 692                             	.L31:
+ 162:../src/Sist_Op_stable.c ****                         led = 2;
+ 693                             		.loc 1 162 0
+ 694 044f C8 07 02                		mov	[sp+7], #2
+ 163:../src/Sist_Op_stable.c ****                         flag_sucesso = 1;
+ 695                             		.loc 1 163 0
+ 696 0452 C8 0B 01                		mov	[sp+11], #1
+ 164:../src/Sist_Op_stable.c ****                         break;
+ 697                             		.loc 1 164 0
+ 698 0455 EC 5D 04 00             		br	!!.L33
+ 699                             	.L37:
+ 166:../src/Sist_Op_stable.c ****                         flag_sucesso = 0;
+ 700                             		.loc 1 166 0
+ 701 0459 C8 0B 00                		mov	[sp+11], #0
+ 167:../src/Sist_Op_stable.c ****                         break;
+ 702                             		.loc 1 167 0
+ 703 045c 00                      		nop
+ 704                             	.L33:
+ 169:../src/Sist_Op_stable.c ****                 if (flag_sucesso) {
+ 705                             		.loc 1 169 0
+ 706 045d 88 0B                   		mov	a, [sp+11]
+ 707 045f D1                      		cmp0	a 
+ 708 0460 61 F8                   		sknz 
+ 709 0462 EC 95 04 00             		br	!!.L34
+ 170:../src/Sist_Op_stable.c ****                         callDriver(DRV_LED, LED_TOG, (void *) &led);
+ 710                             		.loc 1 170 0
+ 711 0466 C8 00 00                		mov	[sp], #0
+ 712 0469 C8 02 02                		mov	[sp+2], #2
+ 713 046c C9 F0 0C 00             		movw	r8, #12
+ 714 0470 AE F8                   		movw	ax, sp
+ 715 0472 BD F0                   		movw	r8, ax
+ 716 0474 04 0C 00                		addw	ax, #12
+ 717 0477 BD F0                   		movw	r8, ax
+ 718 0479 04 FB FF                		addw	ax, #-5
+ 719 047c B8 04                   		movw	[sp+4], ax
+ 720 047e FC 00 00 00             		call	!!%code(_callDriver)
+ 171:../src/Sist_Op_stable.c ****                         callDriver(DRV_SER, SER_SEND_LN, "OK");
+ 721                             		.loc 1 171 0
+ 722 0482 C8 00 04                		mov	[sp], #4
+ 723 0485 C8 02 02                		mov	[sp+2], #2
+ 724 0488 30 00 00                		movw	ax, #.LC0
+ 725 048b B8 04                   		movw	[sp+4], ax
+ 726 048d FC 00 00 00             		call	!!%code(_callDriver)
+ 727 0491 EC A4 04 00             		br	!!.L35
+ 728                             	.L34:
+ 173:../src/Sist_Op_stable.c ****                         callDriver(DRV_SER, SER_SEND_LN, "NOTOK");
+ 729                             		.loc 1 173 0
+ 730 0495 C8 00 04                		mov	[sp], #4
+ 731 0498 C8 02 02                		mov	[sp+2], #2
+ 732 049b 30 03 00                		movw	ax, #.LC1
+ 733 049e B8 04                   		movw	[sp+4], ax
+ 734 04a0 FC 00 00 00             		call	!!%code(_callDriver)
+ 735                             	.L35:
+ 175:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 736                             		.loc 1 175 0
+ 737 04a4 FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 738                             	.LBE8:
+ 739                             		.loc 1 176 0
+ 740 04a8 EC E9 03 00             		br	!!.L36
+ 741                             	.LFE5:
+ 743                             		.global	_PWM_func
+ 745                             	_PWM_func:
+ 746                             	.LFB6:
+ 177:../src/Sist_Op_stable.c **** }
+ 178:../src/Sist_Op_stable.c **** 
+ 179:../src/Sist_Op_stable.c **** char PWM_func(void)
+ 180:../src/Sist_Op_stable.c **** {
+ 747                             		.loc 1 180 0
+ 748                             		; start of function
+ 749                             		; locals: 2 bytes
+ 750                             		; outgoing: 6 bytes
+ 751 04ac 20 08                   		subw	sp, #8
+ 752                             	.LCFI6:
+ 181:../src/Sist_Op_stable.c ****         uint8_t pwm = 50;
+ 753                             		.loc 1 181 0
+ 754 04ae C8 07 32                		mov	[sp+7], #50
+ 755                             	.L39:
+ 756                             	.LBB9:
+ 182:../src/Sist_Op_stable.c **** 	for (;;) {
+ 183:../src/Sist_Op_stable.c ****                 timedLoopStart(40);
+ 757                             		.loc 1 183 0 discriminator 1
+ 758 04b1 30 28 00                		movw	ax, #40
+ 759 04b4 B8 00                   		movw	[sp], ax
+ 760 04b6 FC 00 00 00             		call	!!%code(_timedLoopStart)
+ 184:../src/Sist_Op_stable.c ****                 callDriver(DRV_PWM, PWM_SET, (void *) &pwm);
+ 761                             		.loc 1 184 0 discriminator 1
+ 762 04ba C8 00 05                		mov	[sp], #5
+ 763 04bd C8 02 00                		mov	[sp+2], #0
+ 764 04c0 C9 F0 08 00             		movw	r8, #8
+ 765 04c4 AE F8                   		movw	ax, sp
+ 766 04c6 BD F0                   		movw	r8, ax
+ 767 04c8 04 08 00                		addw	ax, #8
+ 768 04cb BD F0                   		movw	r8, ax
+ 769 04cd B1                      		decw	ax
+ 770 04ce B8 04                   		movw	[sp+4], ax
+ 771 04d0 FC 00 00 00             		call	!!%code(_callDriver)
+ 185:../src/Sist_Op_stable.c ****                 timedLoopWait();
+ 772                             		.loc 1 185 0 discriminator 1
+ 773 04d4 FC 00 00 00             		call	!!%code(_timedLoopWait)
+ 774                             	.LBE9:
+ 186:../src/Sist_Op_stable.c **** 	}
+ 775                             		.loc 1 186 0 discriminator 1
+ 776 04d8 EC B1 04 00             		br	!!.L39
+ 777                             	.LFE6:
+ 779                             		.global	_main
+ 781                             	_main:
+ 782                             	.LFB7:
+ 187:../src/Sist_Op_stable.c **** }
+ 188:../src/Sist_Op_stable.c **** 
+ 189:../src/Sist_Op_stable.c **** int main(void)
+ 190:../src/Sist_Op_stable.c **** {
+ 783                             		.loc 1 190 0
+ 784                             		; start of function
+ 785                             		; outgoing: 6 bytes
+ 786 04dc 20 06                   		subw	sp, #6
+ 787                             	.LCFI7:
+ 191:../src/Sist_Op_stable.c ****         kernelInit();
+ 788                             		.loc 1 191 0
+ 789 04de FC 00 00 00             		call	!!%code(_kernelInit)
+ 192:../src/Sist_Op_stable.c ****         initCtrDrv();
+ 790                             		.loc 1 192 0
+ 791 04e2 FC 00 00 00             		call	!!%code(_initCtrDrv)
+ 193:../src/Sist_Op_stable.c **** 
+ 194:../src/Sist_Op_stable.c ****         initDriver(DRV_LED);
+ 792                             		.loc 1 194 0
+ 793 04e6 C8 00 00                		mov	[sp], #0
+ 794 04e9 FC 00 00 00             		call	!!%code(_initDriver)
+ 195:../src/Sist_Op_stable.c ****         initDriver(DRV_LCD);
+ 795                             		.loc 1 195 0
+ 796 04ed C8 00 01                		mov	[sp], #1
+ 797 04f0 FC 00 00 00             		call	!!%code(_initDriver)
+ 196:../src/Sist_Op_stable.c ****         initDriver(DRV_BOT);
+ 798                             		.loc 1 196 0
+ 799 04f4 C8 00 02                		mov	[sp], #2
+ 800 04f7 FC 00 00 00             		call	!!%code(_initDriver)
+ 197:../src/Sist_Op_stable.c ****         initDriver(DRV_ADC);
+ 801                             		.loc 1 197 0
+ 802 04fb C8 00 03                		mov	[sp], #3
+ 803 04fe FC 00 00 00             		call	!!%code(_initDriver)
+ 198:../src/Sist_Op_stable.c ****         initDriver(DRV_SER);
+ 804                             		.loc 1 198 0
+ 805 0502 C8 00 04                		mov	[sp], #4
+ 806 0505 FC 00 00 00             		call	!!%code(_initDriver)
+ 199:../src/Sist_Op_stable.c ****         initDriver(DRV_TIM);
+ 807                             		.loc 1 199 0
+ 808 0509 C8 00 07                		mov	[sp], #7
+ 809 050c FC 00 00 00             		call	!!%code(_initDriver)
+ 200:../src/Sist_Op_stable.c ****         initDriver(DRV_PWM);
+ 810                             		.loc 1 200 0
+ 811 0510 C8 00 05                		mov	[sp], #5
+ 812 0513 FC 00 00 00             		call	!!%code(_initDriver)
+ 201:../src/Sist_Op_stable.c ****         initDriver(DRV_INT);
+ 813                             		.loc 1 201 0
+ 814 0517 C8 00 08                		mov	[sp], #8
+ 815 051a FC 00 00 00             		call	!!%code(_initDriver)
+ 202:../src/Sist_Op_stable.c ****         /* initDriver(DRV_PID); */
+ 203:../src/Sist_Op_stable.c ****         /* initDriver(DRV_WDT); */
+ 204:../src/Sist_Op_stable.c **** 
+ 205:../src/Sist_Op_stable.c ****         /* Add a new process call style:
+ 206:../src/Sist_Op_stable.c ****          * kernelAddProc(ptrFunc func, int stkSize, priorityMode newPrio);
+ 207:../src/Sist_Op_stable.c ****          */
+ 208:../src/Sist_Op_stable.c ****         kernelAddProc((void *) processa_comando,  100, NORMAL);
+ 816                             		.loc 1 208 0
+ 817 051e 30 00 00                		movw	ax, #%code(_processa_comando)
+ 818 0521 B8 00                   		movw	[sp], ax
+ 819 0523 30 64 00                		movw	ax, #100
+ 820 0526 B8 02                   		movw	[sp+2], ax
+ 821 0528 F6                      		clrw	ax
+ 822 0529 B8 04                   		movw	[sp+4], ax
+ 823 052b FC 00 00 00             		call	!!%code(_kernelAddProc)
+ 209:../src/Sist_Op_stable.c ****         kernelAddProc((void *) temperatura,       100, NORMAL);
+ 824                             		.loc 1 209 0
+ 825 052f 30 00 00                		movw	ax, #%code(_temperatura)
+ 826 0532 B8 00                   		movw	[sp], ax
+ 827 0534 30 64 00                		movw	ax, #100
+ 828 0537 B8 02                   		movw	[sp+2], ax
+ 829 0539 F6                      		clrw	ax
+ 830 053a B8 04                   		movw	[sp+4], ax
+ 831 053c FC 00 00 00             		call	!!%code(_kernelAddProc)
+ 210:../src/Sist_Op_stable.c ****         kernelAddProc((void *) procRelogio,       100, RTOS);
+ 832                             		.loc 1 210 0
+ 833 0540 30 00 00                		movw	ax, #%code(_procRelogio)
+ 834 0543 B8 00                   		movw	[sp], ax
+ 835 0545 30 64 00                		movw	ax, #100
+ 836 0548 B8 02                   		movw	[sp+2], ax
+ 837 054a E6                      		onew	ax
+ 838 054b B8 04                   		movw	[sp+4], ax
+ 839 054d FC 00 00 00             		call	!!%code(_kernelAddProc)
+ 211:../src/Sist_Op_stable.c ****         kernelAddProc((void *) teclado,           100, NORMAL);
+ 840                             		.loc 1 211 0
+ 841 0551 30 00 00                		movw	ax, #%code(_teclado)
+ 842 0554 B8 00                   		movw	[sp], ax
+ 843 0556 30 64 00                		movw	ax, #100
+ 844 0559 B8 02                   		movw	[sp+2], ax
+ 845 055b F6                      		clrw	ax
+ 846 055c B8 04                   		movw	[sp+4], ax
+ 847 055e FC 00 00 00             		call	!!%code(_kernelAddProc)
+ 212:../src/Sist_Op_stable.c ****         /* kernelAddProc((void *) pisca_leds,     100, NORMAL); */
+ 213:../src/Sist_Op_stable.c ****         /* kernelAddProc((void *) test_PWM,       100, NORMAL); */
+ 214:../src/Sist_Op_stable.c **** 
+ 215:../src/Sist_Op_stable.c ****         kernelLoop();
+ 848                             		.loc 1 215 0
+ 849 0562 FC 00 00 00             		call	!!%code(_kernelLoop)
+ 216:../src/Sist_Op_stable.c **** }
+ 850                             		.loc 1 216 0
+ 851 0566 10 06                   		addw	sp, #6
+ 852 0568 D7                      		ret
+ 853                             	.LFE7:
+ 855                             		.local	_ended.1969
+ 856                             		.comm	_ended.1969,1,1
+ 857                             		.local	_index.1972
+ 858                             		.comm	_index.1972,1,1
+ 859                             		.local	_in_data.1973
+ 860                             		.comm	_in_data.1973,10,1
+ 861                             		.local	_started.1970
+ 862                             		.comm	_started.1970,1,1
+ 863                             		.local	_overflow.1971
+ 864                             		.comm	_overflow.1971,1,1
+ 979                             	.Letext0:
+ 980                             		.file 2 "../src/r_cg_macrodriver.h"
+ 981                             		.file 3 "../src/dd_types.h"
+ 982                             		.file 4 "../src/kernel.h"
+ 983                             		.file 5 "../src/drvLed.h"
+ 984                             		.file 6 "../src/drvLcd.h"
+ 985                             		.file 7 "../src/drvBot.h"
+ 986                             		.file 8 "../src/drvADC.h"
+ 987                             		.file 9 "../src/drvSer.h"
+ 988                             		.file 10 "../src/drvPWM.h"
+ 989                             		.file 11 "../src/ctrdrv.h"

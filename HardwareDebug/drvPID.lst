@@ -1,0 +1,1196 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             	.data
+  28                             		.balign 2
+  31                             	_drvGetFunc:
+  32 0000 00 00                   		.short	%code(_getLedDriver)
+  33 0002 00 00                   		.short	%code(_getLcdDriver)
+  34 0004 00 00                   		.short	%code(_getBotDriver)
+  35 0006 00 00                   		.short	%code(_getADCDriver)
+  36 0008 00 00                   		.short	%code(_getSerDriver)
+  37 000a 00 00                   		.short	%code(_getPWMDriver)
+  38 000c 00 00                   		.short	%code(_getPIDDriver)
+  39 000e 00 00                   		.short	%code(_getTimDriver)
+  40 0010 00 00                   		.short	%code(_getIntDriver)
+  41                             		.local	_thisDriver
+  42                             		.comm	_thisDriver,6,2
+  43                             		.local	_this_functions
+  44                             		.comm	_this_functions,14,2
+  45                             		.local	_e0
+  46                             		.comm	_e0,2,2
+  47                             		.local	_e1
+  48                             		.comm	_e1,2,2
+  49                             		.local	_e2
+  50                             		.comm	_e2,2,2
+  51                             		.local	_y0
+  52                             		.comm	_y0,2,2
+  53                             		.local	_y1
+  54                             		.comm	_y1,2,2
+  55                             		.local	_y2
+  56                             		.comm	_y2,2,2
+  57                             		.local	_kp
+  58                             		.comm	_kp,2,2
+  59                             		.local	_ki
+  60                             		.comm	_ki,2,2
+  61                             		.local	_kd
+  62                             		.comm	_kd,2,2
+  63                             		.local	_kp_new
+  64                             		.comm	_kp_new,2,2
+  65                             		.local	_ki_new
+  66                             		.comm	_ki_new,2,2
+  67                             		.local	_kd_new
+  68                             		.comm	_kd_new,2,2
+  69                             		.local	_T_new
+  70                             		.comm	_T_new,2,2
+  71                             		.local	_T
+  72                             		.comm	_T,2,2
+  73                             		.local	_sp
+  74                             		.comm	_sp,2,2
+  75                             		.local	_sp_new
+  76                             		.comm	_sp_new,2,2
+  77                             		.local	_flag
+  78                             		.comm	_flag,1,1
+  79                             		.local	_run
+  80                             		.comm	_run,1,1
+  81                             	.text
+  82                             		.global	_startPID
+  84                             	_startPID:
+  85                             	.LFB0:
+  86                             		.file 1 "../src/drvPID.c"
+   1:../src/drvPID.c **** /*
+   2:../src/drvPID.c ****  * drvPID.c
+   3:../src/drvPID.c ****  *
+   4:../src/drvPID.c ****  *  Created on: 05/09/2014
+   5:../src/drvPID.c ****  *      Author: Luis Paulo
+   6:../src/drvPID.c ****  */
+   7:../src/drvPID.c **** 
+   8:../src/drvPID.c **** #include "drvPID.h"
+   9:../src/drvPID.c **** #include "ctrdrv.h"
+  10:../src/drvPID.c **** #include "r_cg_userdefine.h"
+  11:../src/drvPID.c **** #include "r_cg_macrodriver.h"
+  12:../src/drvPID.c **** 
+  13:../src/drvPID.c **** static driver thisDriver;
+  14:../src/drvPID.c **** static ptrFuncDrv this_functions[PID_END];
+  15:../src/drvPID.c **** 
+  16:../src/drvPID.c **** static int e0, e1, e2;
+  17:../src/drvPID.c **** static int y0, y1, y2;
+  18:../src/drvPID.c **** static int kp, ki, kd;
+  19:../src/drvPID.c **** static int kp_new, ki_new, kd_new;
+  20:../src/drvPID.c **** static int T_new;
+  21:../src/drvPID.c **** static int T;
+  22:../src/drvPID.c **** static int sp, sp_new;
+  23:../src/drvPID.c **** 
+  24:../src/drvPID.c **** static unsigned char flag, run;
+  25:../src/drvPID.c **** 
+  26:../src/drvPID.c **** char startPID(void *parameters);
+  27:../src/drvPID.c **** char stopPID(void *parameters);
+  28:../src/drvPID.c **** char updatePID(void *parameters);
+  29:../src/drvPID.c **** char resetPID(void *parameters);
+  30:../src/drvPID.c **** char getPIDValues(void *parameters);
+  31:../src/drvPID.c **** char setPIDValues(void *parameters);
+  32:../src/drvPID.c **** char spChange(void *parameters);
+  33:../src/drvPID.c **** 
+  34:../src/drvPID.c **** char startPID(void *parameters)
+  35:../src/drvPID.c **** {
+  87                             		.loc 1 35 0
+  36:../src/drvPID.c ****         /* Starts the control to send signals by serial port */
+  37:../src/drvPID.c **** 	run = 1;
+  88                             		.loc 1 37 0
+  89 0000 E5 35 00                		oneb	!_run
+  38:../src/drvPID.c **** 	return SUCESSO;
+  90                             		.loc 1 38 0
+  91 0003 CD F0 00                		mov	r8, #0
+  39:../src/drvPID.c **** }
+  92                             		.loc 1 39 0
+  93 0006 D7                      		ret
+  94                             	.LFE0:
+  96                             		.global	_spChange
+  98                             	_spChange:
+  99                             	.LFB1:
+  40:../src/drvPID.c **** 
+  41:../src/drvPID.c **** char spChange(void *parameters)
+  42:../src/drvPID.c **** {
+ 100                             		.loc 1 42 0
+  43:../src/drvPID.c **** 	/* Changes the system setpoint */
+  44:../src/drvPID.c **** 	sp = (unsigned int) parameters;
+ 101                             		.loc 1 44 0
+ 102 0007 A8 04                   		movw	ax, [sp+4]
+ 103 0009 BD F0                   		movw	r8, ax
+ 104 000b BF 30 00                		movw	!_sp, ax
+  45:../src/drvPID.c **** 	return SUCESSO;
+ 105                             		.loc 1 45 0
+ 106 000e CD F0 00                		mov	r8, #0
+  46:../src/drvPID.c **** }
+ 107                             		.loc 1 46 0
+ 108 0011 D7                      		ret
+ 109                             	.LFE1:
+ 111                             		.global	_stopPID
+ 113                             	_stopPID:
+ 114                             	.LFB2:
+  47:../src/drvPID.c **** 
+  48:../src/drvPID.c **** char stopPID(void *parameters)
+  49:../src/drvPID.c **** {
+ 115                             		.loc 1 49 0
+  50:../src/drvPID.c **** 	/* To stop the control sending signals by serial */
+  51:../src/drvPID.c **** 	run = 0;
+ 116                             		.loc 1 51 0
+ 117 0012 F5 35 00                		clrb	!_run
+  52:../src/drvPID.c **** 	return SUCESSO;
+ 118                             		.loc 1 52 0
+ 119 0015 CD F0 00                		mov	r8, #0
+  53:../src/drvPID.c **** }
+ 120                             		.loc 1 53 0
+ 121 0018 D7                      		ret
+ 122                             	.LFE2:
+ 124                             		.global	_resetPID
+ 126                             	_resetPID:
+ 127                             	.LFB3:
+  54:../src/drvPID.c **** 
+  55:../src/drvPID.c **** char resetPID(void *parameters)
+  56:../src/drvPID.c **** {
+ 128                             		.loc 1 56 0
+  57:../src/drvPID.c **** 	y0 = 0;
+ 129                             		.loc 1 57 0
+ 130 0019 F6                      		clrw	ax
+ 131 001a BF 1A 00                		movw	!_y0, ax
+  58:../src/drvPID.c **** 	y1 = 0;
+ 132                             		.loc 1 58 0
+ 133 001d F6                      		clrw	ax
+ 134 001e BF 1C 00                		movw	!_y1, ax
+  59:../src/drvPID.c **** 	y2 = 0;
+ 135                             		.loc 1 59 0
+ 136 0021 F6                      		clrw	ax
+ 137 0022 BF 1E 00                		movw	!_y2, ax
+  60:../src/drvPID.c **** 	e0 = 0;
+ 138                             		.loc 1 60 0
+ 139 0025 F6                      		clrw	ax
+ 140 0026 BF 14 00                		movw	!_e0, ax
+  61:../src/drvPID.c **** 	e1 = 0;
+ 141                             		.loc 1 61 0
+ 142 0029 F6                      		clrw	ax
+ 143 002a BF 16 00                		movw	!_e1, ax
+  62:../src/drvPID.c **** 	e2 = 0;
+ 144                             		.loc 1 62 0
+ 145 002d F6                      		clrw	ax
+ 146 002e BF 18 00                		movw	!_e2, ax
+  63:../src/drvPID.c **** 
+  64:../src/drvPID.c **** 	return SUCESSO;
+ 147                             		.loc 1 64 0
+ 148 0031 CD F0 00                		mov	r8, #0
+  65:../src/drvPID.c **** }
+ 149                             		.loc 1 65 0
+ 150 0034 D7                      		ret
+ 151                             	.LFE3:
+ 153                             		.global	___floatsisf
+ 154                             		.global	___divsf3
+ 155                             		.global	___fixsfsi
+ 156                             		.global	___divhi3
+ 157                             		.global	_updatePID
+ 159                             	_updatePID:
+ 160                             	.LFB4:
+  66:../src/drvPID.c **** 
+  67:../src/drvPID.c **** char updatePID(void *parameters)
+  68:../src/drvPID.c **** {
+ 161                             		.loc 1 68 0
+ 162                             		; start of function
+ 163                             		; push 2: r16
+ 164                             		; locals: 46 bytes
+ 165                             		; outgoing: 8 bytes
+ 166 0035 61 EF                   		sel	rb2
+ 167 0037 C1                      		push	ax ; r16
+ 168                             	.LCFI0:
+ 169 0038 61 CF                   		sel	rb0
+ 170 003a 20 36                   		subw	sp, #54
+ 171                             	.LCFI1:
+  69:../src/drvPID.c **** 	int pwm;
+  70:../src/drvPID.c **** 	int ad;
+  71:../src/drvPID.c **** 	
+  72:../src/drvPID.c ****         /*  Change control values  */
+  73:../src/drvPID.c **** 	if (flag == 1) {
+ 172                             		.loc 1 73 0
+ 173 003c 8F 34 00                		mov	a, !_flag
+ 174 003f 9D F0                   		mov	r8, a
+ 175 0041 4A F0 01                		cmp	r8, #1 
+ 176 0044 61 E8                   		skz 
+ 177 0046 EC 6D 00 00             		br	!!.L10
+  74:../src/drvPID.c **** 		kp = kp_new;
+ 178                             		.loc 1 74 0
+ 179 004a AF 26 00                		movw	ax, !_kp_new
+ 180 004d BD F0                   		movw	r8, ax
+ 181 004f BF 20 00                		movw	!_kp, ax
+  75:../src/drvPID.c **** 		ki = ki_new;
+ 182                             		.loc 1 75 0
+ 183 0052 AF 28 00                		movw	ax, !_ki_new
+ 184 0055 BD F0                   		movw	r8, ax
+ 185 0057 BF 22 00                		movw	!_ki, ax
+  76:../src/drvPID.c **** 		kd = kd_new;
+ 186                             		.loc 1 76 0
+ 187 005a AF 2A 00                		movw	ax, !_kd_new
+ 188 005d BD F0                   		movw	r8, ax
+ 189 005f BF 24 00                		movw	!_kd, ax
+  77:../src/drvPID.c **** 		T = T_new;
+ 190                             		.loc 1 77 0
+ 191 0062 AF 2C 00                		movw	ax, !_T_new
+ 192 0065 BD F0                   		movw	r8, ax
+ 193 0067 BF 2E 00                		movw	!_T, ax
+  78:../src/drvPID.c **** 		flag = 0;
+ 194                             		.loc 1 78 0
+ 195 006a F5 34 00                		clrb	!_flag
+ 196                             	.L10:
+  79:../src/drvPID.c **** 	}
+  80:../src/drvPID.c **** 	if (run == 1) {
+ 197                             		.loc 1 80 0
+ 198 006d 8F 35 00                		mov	a, !_run
+ 199 0070 9D F0                   		mov	r8, a
+ 200 0072 4A F0 01                		cmp	r8, #1 
+ 201 0075 61 E8                   		skz 
+ 202 0077 EC AA 02 00             		br	!!.L11
+  81:../src/drvPID.c **** 		/*  Update variables  */
+  82:../src/drvPID.c **** 		y2 = y1;
+ 203                             		.loc 1 82 0
+ 204 007b AF 1C 00                		movw	ax, !_y1
+ 205 007e BD F0                   		movw	r8, ax
+ 206 0080 BF 1E 00                		movw	!_y2, ax
+  83:../src/drvPID.c **** 		y1 = y0;
+ 207                             		.loc 1 83 0
+ 208 0083 AF 1A 00                		movw	ax, !_y0
+ 209 0086 BD F0                   		movw	r8, ax
+ 210 0088 BF 1C 00                		movw	!_y1, ax
+  84:../src/drvPID.c **** 		e2 = e1;
+ 211                             		.loc 1 84 0
+ 212 008b AF 16 00                		movw	ax, !_e1
+ 213 008e BD F0                   		movw	r8, ax
+ 214 0090 BF 18 00                		movw	!_e2, ax
+  85:../src/drvPID.c **** 		e1 = e0;
+ 215                             		.loc 1 85 0
+ 216 0093 AF 14 00                		movw	ax, !_e0
+ 217 0096 BD F0                   		movw	r8, ax
+ 218 0098 BF 16 00                		movw	!_e1, ax
+  86:../src/drvPID.c **** 
+  87:../src/drvPID.c **** 		callDriver(DRV_PWM, PWM_GET, &pwm);
+ 219                             		.loc 1 87 0
+ 220 009b C8 00 05                		mov	[sp], #5
+ 221 009e C8 02 01                		mov	[sp+2], #1
+ 222 00a1 C9 F0 36 00             		movw	r8, #54
+ 223 00a5 AE F8                   		movw	ax, sp
+ 224 00a7 BD F0                   		movw	r8, ax
+ 225 00a9 04 36 00                		addw	ax, #54
+ 226 00ac BD F0                   		movw	r8, ax
+ 227 00ae 04 FC FF                		addw	ax, #-4
+ 228 00b1 B8 04                   		movw	[sp+4], ax
+ 229 00b3 FC 00 00 00             		call	!!%code(_callDriver)
+  88:../src/drvPID.c **** 
+  89:../src/drvPID.c **** 		e0 = (sp - ad)/1023.0;
+ 230                             		.loc 1 89 0
+ 231 00b7 AF 30 00                		movw	ax, !_sp
+ 232 00ba BD F0                   		movw	r8, ax
+ 233 00bc A8 34                   		movw	ax, [sp+52]
+ 234 00be 16                      		movw	hl, ax
+ 235 00bf AD F0                   		movw	ax, r8
+ 236 00c1 27                      		subw	ax, hl
+ 237 00c2 B8 30                   		movw	[sp+48], ax
+ 238 00c4 BD F2                   		movw	r10, ax
+ 239 00c6 B8 1A                   		movw	[sp+26], ax
+ 240 00c8 88 31                   		mov	a, [sp+49]
+ 241 00ca 31 7B                   		sar	a, 7
+ 242 00cc 9D F0                   		mov	r8, a
+ 243 00ce 98 1C                   		mov	[sp+28], a
+ 244 00d0 98 1D                   		mov	[sp+29], a
+ 245 00d2 A8 1A                   		movw	ax, [sp+26]
+ 246 00d4 BD F0                   		movw	r8, ax
+ 247 00d6 B8 00                   		movw	[sp], ax
+ 248 00d8 A8 1C                   		movw	ax, [sp+28]
+ 249 00da BD F2                   		movw	r10, ax
+ 250 00dc B8 02                   		movw	[sp+2], ax
+ 251 00de FC 00 00 00             		call	!!___floatsisf
+ 252 00e2 8D F0                   		mov	a, r8
+ 253 00e4 9D F4                   		mov	r12, a
+ 254 00e6 8D F1                   		mov	a, r9
+ 255 00e8 9D F5                   		mov	r13, a
+ 256 00ea 8D F2                   		mov	a, r10
+ 257 00ec 9D F6                   		mov	r14, a
+ 258 00ee 8D F3                   		mov	a, r11
+ 259 00f0 9D F7                   		mov	r15, a
+ 260 00f2 8D F4                   		mov	a, r12
+ 261 00f4 98 00                   		mov	[sp], a
+ 262 00f6 8D F5                   		mov	a, r13
+ 263 00f8 98 01                   		mov	[sp+1], a
+ 264 00fa 8D F6                   		mov	a, r14
+ 265 00fc 98 02                   		mov	[sp+2], a
+ 266 00fe 8D F7                   		mov	a, r15
+ 267 0100 98 03                   		mov	[sp+3], a
+ 268 0102 30 00 C0                		movw	ax, #-16384
+ 269 0105 B8 04                   		movw	[sp+4], ax
+ 270 0107 30 7F 44                		movw	ax, #17535
+ 271 010a B8 06                   		movw	[sp+6], ax
+ 272 010c FC 00 00 00             		call	!!___divsf3
+ 273 0110 8D F0                   		mov	a, r8
+ 274 0112 9D F4                   		mov	r12, a
+ 275 0114 8D F1                   		mov	a, r9
+ 276 0116 9D F5                   		mov	r13, a
+ 277 0118 8D F2                   		mov	a, r10
+ 278 011a 9D F6                   		mov	r14, a
+ 279 011c 8D F3                   		mov	a, r11
+ 280 011e 9D F7                   		mov	r15, a
+ 281 0120 8D F4                   		mov	a, r12
+ 282 0122 8D F5                   		mov	a, r13
+ 283 0124 8D F6                   		mov	a, r14
+ 284 0126 8D F7                   		mov	a, r15
+ 285 0128 8D F0                   		mov	a, r8
+ 286 012a 98 00                   		mov	[sp], a
+ 287 012c 8D F1                   		mov	a, r9
+ 288 012e 98 01                   		mov	[sp+1], a
+ 289 0130 8D F2                   		mov	a, r10
+ 290 0132 98 02                   		mov	[sp+2], a
+ 291 0134 8D F3                   		mov	a, r11
+ 292 0136 98 03                   		mov	[sp+3], a
+ 293 0138 FC 00 00 00             		call	!!___fixsfsi
+ 294 013c AD F0                   		movw	ax, r8
+ 295 013e B8 16                   		movw	[sp+22], ax
+ 296 0140 AD F2                   		movw	ax, r10
+ 297 0142 B8 18                   		movw	[sp+24], ax
+ 298 0144 A8 16                   		movw	ax, [sp+22]
+ 299 0146 BD F0                   		movw	r8, ax
+ 300 0148 B8 2E                   		movw	[sp+46], ax
+ 301 014a BD F2                   		movw	r10, ax
+ 302 014c BF 14 00                		movw	!_e0, ax
+  90:../src/drvPID.c **** 
+  91:../src/drvPID.c **** 		/*  Processing  */
+  92:../src/drvPID.c **** 		y0 = y2 + (kp * (e0-e2)) + \
+ 303                             		.loc 1 92 0
+ 304 014f BD F2                   		movw	r10, ax
+ 305 0151 AF 18 00                		movw	ax, !_e2
+ 306 0154 BD F0                   		movw	r8, ax
+ 307 0156 AD F2                   		movw	ax, r10
+ 308 0158 26 F0                   		subw	ax, r8
+ 309 015a BD F0                   		movw	r8, ax
+ 310 015c AF 20 00                		movw	ax, !_kp
+ 311 015f BD F2                   		movw	r10, ax
+ 312                             		; mulhi macro r12 = r8 * r10
+ 313 0161 AD F0                   		movw    ax, r8
+ 314 0163 DA F2                   		movw    bc, r10
+ 315 0165 CE FB 01                		mulhu   ; bcax = bc * ax
+ 316 0168 BD F4                   		movw    r12, ax
+ 317                             		; end of mulhi macro
+ 318 016a AF 1E 00                		movw	ax, !_y2
+ 319 016d BD F0                   		movw	r8, ax
+ 320 016f AD F4                   		movw	ax, r12
+ 321 0171 06 F0                   		addw	ax, r8
+ 322 0173 BD F6                   		movw	r14, ax
+  93:../src/drvPID.c **** 				 (ki * (e0 + (2*e1) + e2) * T/2) + \
+ 323                             		.loc 1 93 0
+ 324 0175 AF 16 00                		movw	ax, !_e1
+ 325 0178 BD F0                   		movw	r8, ax
+ 326 017a 01                      		addw	ax, ax
+ 327 017b B8 14                   		movw	[sp+20], ax
+ 328 017d BD F0                   		movw	r8, ax
+ 329 017f B8 2C                   		movw	[sp+44], ax
+ 330 0181 AF 14 00                		movw	ax, !_e0
+ 331 0184 BD F0                   		movw	r8, ax
+ 332 0186 A8 2C                   		movw	ax, [sp+44]
+ 333 0188 06 F0                   		addw	ax, r8
+ 334 018a BD F2                   		movw	r10, ax
+ 335 018c AF 18 00                		movw	ax, !_e2
+ 336 018f BD F0                   		movw	r8, ax
+ 337 0191 AD F2                   		movw	ax, r10
+ 338 0193 06 F0                   		addw	ax, r8
+ 339 0195 BD F2                   		movw	r10, ax
+ 340 0197 AF 22 00                		movw	ax, !_ki
+ 341 019a BD F4                   		movw	r12, ax
+ 342                             		; mulhi macro r8 = r10 * r12
+ 343 019c AD F2                   		movw    ax, r10
+ 344 019e DA F4                   		movw    bc, r12
+ 345 01a0 CE FB 01                		mulhu   ; bcax = bc * ax
+ 346 01a3 BD F0                   		movw    r8, ax
+ 347                             		; end of mulhi macro
+ 348 01a5 AF 2E 00                		movw	ax, !_T
+ 349 01a8 BD F4                   		movw	r12, ax
+ 350                             		; mulhi macro r10 = r8 * r12
+ 351 01aa AD F0                   		movw    ax, r8
+ 352 01ac DA F4                   		movw    bc, r12
+ 353 01ae CE FB 01                		mulhu   ; bcax = bc * ax
+ 354 01b1 BD F2                   		movw    r10, ax
+ 355                             		; end of mulhi macro
+ 356 01b3 8D F3                   		mov	a, r11
+ 357 01b5 31 7A                   		shr	a, 7
+ 358 01b7 9D F0                   		mov	r8, a
+ 359 01b9 CD F1 00                		mov	r9, #0
+ 360 01bc AD F0                   		movw	ax, r8
+ 361 01be 06 F2                   		addw	ax, r10
+ 362 01c0 BD F0                   		movw	r8, ax
+ 363 01c2 31 1F                   		sarw	ax, 1
+ 364 01c4 B8 12                   		movw	[sp+18], ax
+ 365 01c6 BD F2                   		movw	r10, ax
+ 366 01c8 B8 2A                   		movw	[sp+42], ax
+  92:../src/drvPID.c **** 		y0 = y2 + (kp * (e0-e2)) + \
+ 367                             		.loc 1 92 0
+ 368 01ca 06 F6                   		addw	ax, r14
+ 369 01cc BD E8                   		movw	r16, ax
+  94:../src/drvPID.c **** 				 (kd * (e0 - (2*e1) + e2) * 2/T);
+ 370                             		.loc 1 94 0
+ 371 01ce AF 16 00                		movw	ax, !_e1
+ 372 01d1 BD F0                   		movw	r8, ax
+ 373 01d3 B8 28                   		movw	[sp+40], ax
+ 374 01d5 BD F2                   		movw	r10, ax
+ 375 01d7 B8 10                   		movw	[sp+16], ax
+ 376 01d9 01                      		addw	ax, ax
+ 377 01da B8 0E                   		movw	[sp+14], ax
+ 378 01dc BD F0                   		movw	r8, ax
+ 379 01de B8 10                   		movw	[sp+16], ax
+ 380 01e0 16                      		movw	hl, ax
+ 381 01e1 F6                      		clrw	ax
+ 382 01e2 27                      		subw	ax, hl
+ 383 01e3 BD F2                   		movw	r10, ax
+ 384 01e5 AF 14 00                		movw	ax, !_e0
+ 385 01e8 BD F0                   		movw	r8, ax
+ 386 01ea AD F2                   		movw	ax, r10
+ 387 01ec 06 F0                   		addw	ax, r8
+ 388 01ee BD F2                   		movw	r10, ax
+ 389 01f0 AF 18 00                		movw	ax, !_e2
+ 390 01f3 BD F0                   		movw	r8, ax
+ 391 01f5 AD F2                   		movw	ax, r10
+ 392 01f7 06 F0                   		addw	ax, r8
+ 393 01f9 BD F0                   		movw	r8, ax
+ 394 01fb AF 24 00                		movw	ax, !_kd
+ 395 01fe BD F4                   		movw	r12, ax
+ 396                             		; mulhi macro r10 = r8 * r12
+ 397 0200 AD F0                   		movw    ax, r8
+ 398 0202 DA F4                   		movw    bc, r12
+ 399 0204 CE FB 01                		mulhu   ; bcax = bc * ax
+ 400 0207 BD F2                   		movw    r10, ax
+ 401                             		; end of mulhi macro
+ 402 0209 AD F2                   		movw	ax, r10
+ 403 020b 01                      		addw	ax, ax
+ 404 020c B8 0C                   		movw	[sp+12], ax
+ 405 020e BD F2                   		movw	r10, ax
+ 406 0210 B8 26                   		movw	[sp+38], ax
+ 407 0212 AF 2E 00                		movw	ax, !_T
+ 408 0215 BD F0                   		movw	r8, ax
+ 409 0217 A8 26                   		movw	ax, [sp+38]
+ 410 0219 BD F2                   		movw	r10, ax
+ 411 021b B8 00                   		movw	[sp], ax
+ 412 021d AD F0                   		movw	ax, r8
+ 413 021f B8 02                   		movw	[sp+2], ax
+ 414 0221 FC 00 00 00             		call	!!___divhi3
+ 415 0225 AD F0                   		movw	ax, r8
+ 416 0227 B8 24                   		movw	[sp+36], ax
+  93:../src/drvPID.c **** 				 (ki * (e0 + (2*e1) + e2) * T/2) + \
+ 417                             		.loc 1 93 0
+ 418 0229 06 E8                   		addw	ax, r16
+ 419 022b BD F0                   		movw	r8, ax
+  92:../src/drvPID.c **** 		y0 = y2 + (kp * (e0-e2)) + \
+ 420                             		.loc 1 92 0
+ 421 022d BF 1A 00                		movw	!_y0, ax
+  95:../src/drvPID.c **** 
+  96:../src/drvPID.c **** 		/*  Saturations  */
+  97:../src/drvPID.c **** 		if (y0 > 1) {
+ 422                             		.loc 1 97 0
+ 423 0230 BD F0                   		movw	r8, ax
+ 424 0232 44 01 00                		cmpw	ax, #1 
+ 425 0235 71 FF                   		xor1 CY,a.7
+ 426 0237 61 E3                   		skh 
+ 427 0239 EC 50 02 00             		br	!!.L12
+  98:../src/drvPID.c **** 			callDriver(DRV_PWM, PWM_SET, 100); 
+ 428                             		.loc 1 98 0
+ 429 023d C8 00 05                		mov	[sp], #5
+ 430 0240 C8 02 00                		mov	[sp+2], #0
+ 431 0243 30 64 00                		movw	ax, #100
+ 432 0246 B8 04                   		movw	[sp+4], ax
+ 433 0248 FC 00 00 00             		call	!!%code(_callDriver)
+ 434 024c EC AA 02 00             		br	!!.L11
+ 435                             	.L12:
+  99:../src/drvPID.c **** 			//int2ascii(1023, &msgPID[1+1]);
+ 100:../src/drvPID.c **** 		} else if (y0 < 0) {
+ 436                             		.loc 1 100 0
+ 437 0250 AF 1A 00                		movw	ax, !_y0
+ 438 0253 BD F0                   		movw	r8, ax
+ 439 0255 44 00 00                		cmpw	ax, #0 
+ 440 0258 71 FF                   		xor1 CY,a.7
+ 441 025a 61 C8                   		skc 
+ 442 025c EC 71 02 00             		br	!!.L13
+ 101:../src/drvPID.c **** 			callDriver(DRV_PWM, PWM_SET, (void*) 0);
+ 443                             		.loc 1 101 0
+ 444 0260 C8 00 05                		mov	[sp], #5
+ 445 0263 C8 02 00                		mov	[sp+2], #0
+ 446 0266 F6                      		clrw	ax
+ 447 0267 B8 04                   		movw	[sp+4], ax
+ 448 0269 FC 00 00 00             		call	!!%code(_callDriver)
+ 449 026d EC AA 02 00             		br	!!.L11
+ 450                             	.L13:
+ 102:../src/drvPID.c **** 			//int2ascii(0, &msgPID[1+1]);
+ 103:../src/drvPID.c **** 		} else {
+ 104:../src/drvPID.c **** 			callDriver(DRV_PWM, PWM_SET, (void *)((int)(y0*1023)));
+ 451                             		.loc 1 104 0
+ 452 0271 AF 1A 00                		movw	ax, !_y0
+ 453 0274 BD F0                   		movw	r8, ax
+ 454 0276 B8 22                   		movw	[sp+34], ax
+ 455 0278 BD F2                   		movw	r10, ax
+ 456 027a B8 0A                   		movw	[sp+10], ax
+ 457 027c 31 5D                   		shlw	ax, 5
+ 458 027e B8 08                   		movw	[sp+8], ax
+ 459 0280 BD F0                   		movw	r8, ax
+ 460 0282 B8 0A                   		movw	[sp+10], ax
+ 461 0284 A8 22                   		movw	ax, [sp+34]
+ 462 0286 16                      		movw	hl, ax
+ 463 0287 A8 0A                   		movw	ax, [sp+10]
+ 464 0289 27                      		subw	ax, hl
+ 465 028a B8 0A                   		movw	[sp+10], ax
+ 466 028c 31 5D                   		shlw	ax, 5
+ 467 028e BD F0                   		movw	r8, ax
+ 468 0290 A8 0A                   		movw	ax, [sp+10]
+ 469 0292 06 F0                   		addw	ax, r8
+ 470 0294 B8 20                   		movw	[sp+32], ax
+ 471 0296 BD F2                   		movw	r10, ax
+ 472 0298 B8 1E                   		movw	[sp+30], ax
+ 473 029a C8 00 05                		mov	[sp], #5
+ 474 029d C8 02 00                		mov	[sp+2], #0
+ 475 02a0 A8 1E                   		movw	ax, [sp+30]
+ 476 02a2 BD F0                   		movw	r8, ax
+ 477 02a4 B8 04                   		movw	[sp+4], ax
+ 478 02a6 FC 00 00 00             		call	!!%code(_callDriver)
+ 479                             	.L11:
+ 105:../src/drvPID.c **** 			//int2ascii((int)(y0*1023), &msgPID[1+1]);
+ 106:../src/drvPID.c **** 		}
+ 107:../src/drvPID.c **** 		//int2ascii(ad, &msgPID[5+2]);
+ 108:../src/drvPID.c **** 		//int2ascii(sp, &msgPID[9+3]);
+ 109:../src/drvPID.c **** 
+ 110:../src/drvPID.c **** 		//sendMsg(msgPID, (12+4));
+ 111:../src/drvPID.c **** 	}
+ 112:../src/drvPID.c **** 	return SUCESSO;
+ 480                             		.loc 1 112 0
+ 481 02aa CD F0 00                		mov	r8, #0
+ 113:../src/drvPID.c **** }
+ 482                             		.loc 1 113 0
+ 483 02ad 10 36                   		addw	sp, #54
+ 484 02af 61 EF                   		sel	rb2
+ 485 02b1 C0                      		pop	ax ; r16
+ 486 02b2 61 CF                   		sel	rb0
+ 487 02b4 D7                      		ret
+ 488                             	.LFE4:
+ 490                             		.global	_getPIDValues
+ 492                             	_getPIDValues:
+ 493                             	.LFB5:
+ 114:../src/drvPID.c **** 
+ 115:../src/drvPID.c **** char getPIDValues(void *parameters)
+ 116:../src/drvPID.c **** {
+ 494                             		.loc 1 116 0
+ 495                             		; start of function
+ 496                             		; locals: 30 bytes
+ 497 02b5 20 1E                   		subw	sp, #30
+ 498                             	.LCFI2:
+ 117:../src/drvPID.c **** 	((int *) parameters)[0] = (int)(kp*100);
+ 499                             		.loc 1 117 0
+ 500 02b7 AF 20 00                		movw	ax, !_kp
+ 501 02ba BD F0                   		movw	r8, ax
+ 502 02bc B8 1C                   		movw	[sp+28], ax
+ 503 02be BD F2                   		movw	r10, ax
+ 504 02c0 B8 12                   		movw	[sp+18], ax
+ 505 02c2 01                      		addw	ax, ax
+ 506 02c3 B8 10                   		movw	[sp+16], ax
+ 507 02c5 BD F4                   		movw	r12, ax
+ 508 02c7 B8 12                   		movw	[sp+18], ax
+ 509 02c9 A8 1C                   		movw	ax, [sp+28]
+ 510 02cb 16                      		movw	hl, ax
+ 511 02cc A8 12                   		movw	ax, [sp+18]
+ 512 02ce 07                      		addw	ax, hl
+ 513 02cf B8 12                   		movw	[sp+18], ax
+ 514 02d1 31 5D                   		shlw	ax, 5
+ 515 02d3 BD F0                   		movw	r8, ax
+ 516 02d5 A8 12                   		movw	ax, [sp+18]
+ 517 02d7 06 F0                   		addw	ax, r8
+ 518 02d9 B8 12                   		movw	[sp+18], ax
+ 519 02db A8 1C                   		movw	ax, [sp+28]
+ 520 02dd 16                      		movw	hl, ax
+ 521 02de A8 12                   		movw	ax, [sp+18]
+ 522 02e0 07                      		addw	ax, hl
+ 523 02e1 BD F2                   		movw	r10, ax
+ 524 02e3 A8 22                   		movw	ax, [sp+34]
+ 525 02e5 BD F0                   		movw	r8, ax
+ 526 02e7 BD F4                   		movw	r12, ax
+ 527 02e9 FA F4                   		movw	hl, r12
+ 528 02eb AD F2                   		movw	ax, r10
+ 529 02ed BB                      		movw	[hl], ax
+ 118:../src/drvPID.c **** 	((int *) parameters)[1] = (int)(ki*100);
+ 530                             		.loc 1 118 0
+ 531 02ee A8 22                   		movw	ax, [sp+34]
+ 532 02f0 04 02 00                		addw	ax, #2
+ 533 02f3 BD F0                   		movw	r8, ax
+ 534 02f5 AF 22 00                		movw	ax, !_ki
+ 535 02f8 BD F2                   		movw	r10, ax
+ 536 02fa B8 1A                   		movw	[sp+26], ax
+ 537 02fc BD F4                   		movw	r12, ax
+ 538 02fe B8 0E                   		movw	[sp+14], ax
+ 539 0300 01                      		addw	ax, ax
+ 540 0301 B8 0C                   		movw	[sp+12], ax
+ 541 0303 BD F2                   		movw	r10, ax
+ 542 0305 B8 0E                   		movw	[sp+14], ax
+ 543 0307 A8 1A                   		movw	ax, [sp+26]
+ 544 0309 16                      		movw	hl, ax
+ 545 030a A8 0E                   		movw	ax, [sp+14]
+ 546 030c 07                      		addw	ax, hl
+ 547 030d B8 0E                   		movw	[sp+14], ax
+ 548 030f 31 5D                   		shlw	ax, 5
+ 549 0311 BD F2                   		movw	r10, ax
+ 550 0313 A8 0E                   		movw	ax, [sp+14]
+ 551 0315 06 F2                   		addw	ax, r10
+ 552 0317 B8 0E                   		movw	[sp+14], ax
+ 553 0319 A8 1A                   		movw	ax, [sp+26]
+ 554 031b 16                      		movw	hl, ax
+ 555 031c A8 0E                   		movw	ax, [sp+14]
+ 556 031e 07                      		addw	ax, hl
+ 557 031f BD F2                   		movw	r10, ax
+ 558 0321 AD F0                   		movw	ax, r8
+ 559 0323 BD F4                   		movw	r12, ax
+ 560 0325 FA F4                   		movw	hl, r12
+ 561 0327 AD F2                   		movw	ax, r10
+ 562 0329 BB                      		movw	[hl], ax
+ 119:../src/drvPID.c **** 	((int *) parameters)[2] = (int)(kd*100);
+ 563                             		.loc 1 119 0
+ 564 032a A8 22                   		movw	ax, [sp+34]
+ 565 032c 04 04 00                		addw	ax, #4
+ 566 032f BD F0                   		movw	r8, ax
+ 567 0331 AF 24 00                		movw	ax, !_kd
+ 568 0334 BD F2                   		movw	r10, ax
+ 569 0336 B8 18                   		movw	[sp+24], ax
+ 570 0338 BD F4                   		movw	r12, ax
+ 571 033a B8 0A                   		movw	[sp+10], ax
+ 572 033c 01                      		addw	ax, ax
+ 573 033d B8 08                   		movw	[sp+8], ax
+ 574 033f BD F2                   		movw	r10, ax
+ 575 0341 B8 0A                   		movw	[sp+10], ax
+ 576 0343 A8 18                   		movw	ax, [sp+24]
+ 577 0345 16                      		movw	hl, ax
+ 578 0346 A8 0A                   		movw	ax, [sp+10]
+ 579 0348 07                      		addw	ax, hl
+ 580 0349 B8 0A                   		movw	[sp+10], ax
+ 581 034b 31 5D                   		shlw	ax, 5
+ 582 034d BD F2                   		movw	r10, ax
+ 583 034f A8 0A                   		movw	ax, [sp+10]
+ 584 0351 06 F2                   		addw	ax, r10
+ 585 0353 B8 0A                   		movw	[sp+10], ax
+ 586 0355 A8 18                   		movw	ax, [sp+24]
+ 587 0357 16                      		movw	hl, ax
+ 588 0358 A8 0A                   		movw	ax, [sp+10]
+ 589 035a 07                      		addw	ax, hl
+ 590 035b BD F2                   		movw	r10, ax
+ 591 035d AD F0                   		movw	ax, r8
+ 592 035f BD F4                   		movw	r12, ax
+ 593 0361 FA F4                   		movw	hl, r12
+ 594 0363 AD F2                   		movw	ax, r10
+ 595 0365 BB                      		movw	[hl], ax
+ 120:../src/drvPID.c **** 	((int *) parameters)[3] = (int)(T*1000);
+ 596                             		.loc 1 120 0
+ 597 0366 A8 22                   		movw	ax, [sp+34]
+ 598 0368 04 06 00                		addw	ax, #6
+ 599 036b BD F0                   		movw	r8, ax
+ 600 036d AF 2E 00                		movw	ax, !_T
+ 601 0370 BD F2                   		movw	r10, ax
+ 602 0372 B8 16                   		movw	[sp+22], ax
+ 603 0374 BD F4                   		movw	r12, ax
+ 604 0376 B8 06                   		movw	[sp+6], ax
+ 605 0378 31 2D                   		shlw	ax, 2
+ 606 037a B8 04                   		movw	[sp+4], ax
+ 607 037c BD F2                   		movw	r10, ax
+ 608 037e B8 06                   		movw	[sp+6], ax
+ 609 0380 31 5D                   		shlw	ax, 5
+ 610 0382 B8 02                   		movw	[sp+2], ax
+ 611 0384 A8 06                   		movw	ax, [sp+6]
+ 612 0386 16                      		movw	hl, ax
+ 613 0387 A8 02                   		movw	ax, [sp+2]
+ 614 0389 27                      		subw	ax, hl
+ 615 038a B8 02                   		movw	[sp+2], ax
+ 616 038c A8 16                   		movw	ax, [sp+22]
+ 617 038e 16                      		movw	hl, ax
+ 618 038f A8 02                   		movw	ax, [sp+2]
+ 619 0391 07                      		addw	ax, hl
+ 620 0392 B8 02                   		movw	[sp+2], ax
+ 621 0394 31 3D                   		shlw	ax, 3
+ 622 0396 B8 00                   		movw	[sp], ax
+ 623 0398 BD F4                   		movw	r12, ax
+ 624 039a B8 02                   		movw	[sp+2], ax
+ 625 039c BD F2                   		movw	r10, ax
+ 626 039e B8 14                   		movw	[sp+20], ax
+ 627 03a0 BD F2                   		movw	r10, ax
+ 628 03a2 AD F0                   		movw	ax, r8
+ 629 03a4 BD F4                   		movw	r12, ax
+ 630 03a6 FA F4                   		movw	hl, r12
+ 631 03a8 AD F2                   		movw	ax, r10
+ 632 03aa BB                      		movw	[hl], ax
+ 121:../src/drvPID.c **** 
+ 122:../src/drvPID.c **** 	return SUCESSO;
+ 633                             		.loc 1 122 0
+ 634 03ab CD F0 00                		mov	r8, #0
+ 123:../src/drvPID.c **** }
+ 635                             		.loc 1 123 0
+ 636 03ae 10 1E                   		addw	sp, #30
+ 637 03b0 D7                      		ret
+ 638                             	.LFE5:
+ 640                             		.global	_setPIDValues
+ 642                             	_setPIDValues:
+ 643                             	.LFB6:
+ 124:../src/drvPID.c **** 
+ 125:../src/drvPID.c **** char setPIDValues(void *parameters)
+ 126:../src/drvPID.c **** {
+ 644                             		.loc 1 126 0
+ 645                             		; start of function
+ 646                             		; locals: 48 bytes
+ 647                             		; outgoing: 8 bytes
+ 648 03b1 20 38                   		subw	sp, #56
+ 649                             	.LCFI3:
+ 127:../src/drvPID.c **** 	/* Set new values to the temporary variables to update later */
+ 128:../src/drvPID.c **** 	kp_new = ((int *) parameters)[0] / 100.0;
+ 650                             		.loc 1 128 0
+ 651 03b3 A8 3C                   		movw	ax, [sp+60]
+ 652 03b5 BD F0                   		movw	r8, ax
+ 653 03b7 BD F2                   		movw	r10, ax
+ 654 03b9 FA F2                   		movw	hl, r10
+ 655 03bb AB                      		movw	ax, [hl]
+ 656 03bc BD F2                   		movw	r10, ax
+ 657 03be B8 36                   		movw	[sp+54], ax
+ 658 03c0 BD F0                   		movw	r8, ax
+ 659 03c2 B8 24                   		movw	[sp+36], ax
+ 660 03c4 88 37                   		mov	a, [sp+55]
+ 661 03c6 31 7B                   		sar	a, 7
+ 662 03c8 9D F0                   		mov	r8, a
+ 663 03ca 98 26                   		mov	[sp+38], a
+ 664 03cc 98 27                   		mov	[sp+39], a
+ 665 03ce A8 24                   		movw	ax, [sp+36]
+ 666 03d0 BD F2                   		movw	r10, ax
+ 667 03d2 B8 00                   		movw	[sp], ax
+ 668 03d4 A8 26                   		movw	ax, [sp+38]
+ 669 03d6 BD F0                   		movw	r8, ax
+ 670 03d8 B8 02                   		movw	[sp+2], ax
+ 671 03da FC 00 00 00             		call	!!___floatsisf
+ 672 03de 8D F0                   		mov	a, r8
+ 673 03e0 9D F4                   		mov	r12, a
+ 674 03e2 8D F1                   		mov	a, r9
+ 675 03e4 9D F5                   		mov	r13, a
+ 676 03e6 8D F2                   		mov	a, r10
+ 677 03e8 9D F6                   		mov	r14, a
+ 678 03ea 8D F3                   		mov	a, r11
+ 679 03ec 9D F7                   		mov	r15, a
+ 680 03ee 8D F4                   		mov	a, r12
+ 681 03f0 98 00                   		mov	[sp], a
+ 682 03f2 8D F5                   		mov	a, r13
+ 683 03f4 98 01                   		mov	[sp+1], a
+ 684 03f6 8D F6                   		mov	a, r14
+ 685 03f8 98 02                   		mov	[sp+2], a
+ 686 03fa 8D F7                   		mov	a, r15
+ 687 03fc 98 03                   		mov	[sp+3], a
+ 688 03fe F6                      		clrw	ax
+ 689 03ff B8 04                   		movw	[sp+4], ax
+ 690 0401 30 C8 42                		movw	ax, #17096
+ 691 0404 B8 06                   		movw	[sp+6], ax
+ 692 0406 FC 00 00 00             		call	!!___divsf3
+ 693 040a 8D F0                   		mov	a, r8
+ 694 040c 9D F4                   		mov	r12, a
+ 695 040e 8D F1                   		mov	a, r9
+ 696 0410 9D F5                   		mov	r13, a
+ 697 0412 8D F2                   		mov	a, r10
+ 698 0414 9D F6                   		mov	r14, a
+ 699 0416 8D F3                   		mov	a, r11
+ 700 0418 9D F7                   		mov	r15, a
+ 701 041a 8D F4                   		mov	a, r12
+ 702 041c 8D F5                   		mov	a, r13
+ 703 041e 8D F6                   		mov	a, r14
+ 704 0420 8D F7                   		mov	a, r15
+ 705 0422 8D F0                   		mov	a, r8
+ 706 0424 98 00                   		mov	[sp], a
+ 707 0426 8D F1                   		mov	a, r9
+ 708 0428 98 01                   		mov	[sp+1], a
+ 709 042a 8D F2                   		mov	a, r10
+ 710 042c 98 02                   		mov	[sp+2], a
+ 711 042e 8D F3                   		mov	a, r11
+ 712 0430 98 03                   		mov	[sp+3], a
+ 713 0432 FC 00 00 00             		call	!!___fixsfsi
+ 714 0436 AD F0                   		movw	ax, r8
+ 715 0438 B8 20                   		movw	[sp+32], ax
+ 716 043a AD F2                   		movw	ax, r10
+ 717 043c B8 22                   		movw	[sp+34], ax
+ 718 043e A8 20                   		movw	ax, [sp+32]
+ 719 0440 BD F2                   		movw	r10, ax
+ 720 0442 B8 34                   		movw	[sp+52], ax
+ 721 0444 BD F0                   		movw	r8, ax
+ 722 0446 BF 26 00                		movw	!_kp_new, ax
+ 129:../src/drvPID.c **** 	ki_new = ((int *) parameters)[1] / 100.0;
+ 723                             		.loc 1 129 0
+ 724 0449 A8 3C                   		movw	ax, [sp+60]
+ 725 044b 04 02 00                		addw	ax, #2
+ 726 044e BD F0                   		movw	r8, ax
+ 727 0450 BD F2                   		movw	r10, ax
+ 728 0452 FA F2                   		movw	hl, r10
+ 729 0454 AB                      		movw	ax, [hl]
+ 730 0455 BD F2                   		movw	r10, ax
+ 731 0457 B8 32                   		movw	[sp+50], ax
+ 732 0459 BD F0                   		movw	r8, ax
+ 733 045b B8 1C                   		movw	[sp+28], ax
+ 734 045d 88 33                   		mov	a, [sp+51]
+ 735 045f 31 7B                   		sar	a, 7
+ 736 0461 9D F0                   		mov	r8, a
+ 737 0463 98 1E                   		mov	[sp+30], a
+ 738 0465 98 1F                   		mov	[sp+31], a
+ 739 0467 A8 1C                   		movw	ax, [sp+28]
+ 740 0469 BD F2                   		movw	r10, ax
+ 741 046b B8 00                   		movw	[sp], ax
+ 742 046d A8 1E                   		movw	ax, [sp+30]
+ 743 046f BD F0                   		movw	r8, ax
+ 744 0471 B8 02                   		movw	[sp+2], ax
+ 745 0473 FC 00 00 00             		call	!!___floatsisf
+ 746 0477 8D F0                   		mov	a, r8
+ 747 0479 9D F4                   		mov	r12, a
+ 748 047b 8D F1                   		mov	a, r9
+ 749 047d 9D F5                   		mov	r13, a
+ 750 047f 8D F2                   		mov	a, r10
+ 751 0481 9D F6                   		mov	r14, a
+ 752 0483 8D F3                   		mov	a, r11
+ 753 0485 9D F7                   		mov	r15, a
+ 754 0487 8D F4                   		mov	a, r12
+ 755 0489 98 00                   		mov	[sp], a
+ 756 048b 8D F5                   		mov	a, r13
+ 757 048d 98 01                   		mov	[sp+1], a
+ 758 048f 8D F6                   		mov	a, r14
+ 759 0491 98 02                   		mov	[sp+2], a
+ 760 0493 8D F7                   		mov	a, r15
+ 761 0495 98 03                   		mov	[sp+3], a
+ 762 0497 F6                      		clrw	ax
+ 763 0498 B8 04                   		movw	[sp+4], ax
+ 764 049a 30 C8 42                		movw	ax, #17096
+ 765 049d B8 06                   		movw	[sp+6], ax
+ 766 049f FC 00 00 00             		call	!!___divsf3
+ 767 04a3 8D F0                   		mov	a, r8
+ 768 04a5 9D F4                   		mov	r12, a
+ 769 04a7 8D F1                   		mov	a, r9
+ 770 04a9 9D F5                   		mov	r13, a
+ 771 04ab 8D F2                   		mov	a, r10
+ 772 04ad 9D F6                   		mov	r14, a
+ 773 04af 8D F3                   		mov	a, r11
+ 774 04b1 9D F7                   		mov	r15, a
+ 775 04b3 8D F4                   		mov	a, r12
+ 776 04b5 8D F5                   		mov	a, r13
+ 777 04b7 8D F6                   		mov	a, r14
+ 778 04b9 8D F7                   		mov	a, r15
+ 779 04bb 8D F0                   		mov	a, r8
+ 780 04bd 98 00                   		mov	[sp], a
+ 781 04bf 8D F1                   		mov	a, r9
+ 782 04c1 98 01                   		mov	[sp+1], a
+ 783 04c3 8D F2                   		mov	a, r10
+ 784 04c5 98 02                   		mov	[sp+2], a
+ 785 04c7 8D F3                   		mov	a, r11
+ 786 04c9 98 03                   		mov	[sp+3], a
+ 787 04cb FC 00 00 00             		call	!!___fixsfsi
+ 788 04cf AD F0                   		movw	ax, r8
+ 789 04d1 B8 18                   		movw	[sp+24], ax
+ 790 04d3 AD F2                   		movw	ax, r10
+ 791 04d5 B8 1A                   		movw	[sp+26], ax
+ 792 04d7 A8 18                   		movw	ax, [sp+24]
+ 793 04d9 BD F2                   		movw	r10, ax
+ 794 04db B8 30                   		movw	[sp+48], ax
+ 795 04dd BD F0                   		movw	r8, ax
+ 796 04df BF 28 00                		movw	!_ki_new, ax
+ 130:../src/drvPID.c **** 	kd_new = ((int *) parameters)[2] / 100.0;
+ 797                             		.loc 1 130 0
+ 798 04e2 A8 3C                   		movw	ax, [sp+60]
+ 799 04e4 04 04 00                		addw	ax, #4
+ 800 04e7 BD F0                   		movw	r8, ax
+ 801 04e9 BD F2                   		movw	r10, ax
+ 802 04eb FA F2                   		movw	hl, r10
+ 803 04ed AB                      		movw	ax, [hl]
+ 804 04ee BD F2                   		movw	r10, ax
+ 805 04f0 B8 2E                   		movw	[sp+46], ax
+ 806 04f2 BD F0                   		movw	r8, ax
+ 807 04f4 B8 14                   		movw	[sp+20], ax
+ 808 04f6 88 2F                   		mov	a, [sp+47]
+ 809 04f8 31 7B                   		sar	a, 7
+ 810 04fa 9D F0                   		mov	r8, a
+ 811 04fc 98 16                   		mov	[sp+22], a
+ 812 04fe 98 17                   		mov	[sp+23], a
+ 813 0500 A8 14                   		movw	ax, [sp+20]
+ 814 0502 BD F2                   		movw	r10, ax
+ 815 0504 B8 00                   		movw	[sp], ax
+ 816 0506 A8 16                   		movw	ax, [sp+22]
+ 817 0508 BD F0                   		movw	r8, ax
+ 818 050a B8 02                   		movw	[sp+2], ax
+ 819 050c FC 00 00 00             		call	!!___floatsisf
+ 820 0510 8D F0                   		mov	a, r8
+ 821 0512 9D F4                   		mov	r12, a
+ 822 0514 8D F1                   		mov	a, r9
+ 823 0516 9D F5                   		mov	r13, a
+ 824 0518 8D F2                   		mov	a, r10
+ 825 051a 9D F6                   		mov	r14, a
+ 826 051c 8D F3                   		mov	a, r11
+ 827 051e 9D F7                   		mov	r15, a
+ 828 0520 8D F4                   		mov	a, r12
+ 829 0522 98 00                   		mov	[sp], a
+ 830 0524 8D F5                   		mov	a, r13
+ 831 0526 98 01                   		mov	[sp+1], a
+ 832 0528 8D F6                   		mov	a, r14
+ 833 052a 98 02                   		mov	[sp+2], a
+ 834 052c 8D F7                   		mov	a, r15
+ 835 052e 98 03                   		mov	[sp+3], a
+ 836 0530 F6                      		clrw	ax
+ 837 0531 B8 04                   		movw	[sp+4], ax
+ 838 0533 30 C8 42                		movw	ax, #17096
+ 839 0536 B8 06                   		movw	[sp+6], ax
+ 840 0538 FC 00 00 00             		call	!!___divsf3
+ 841 053c 8D F0                   		mov	a, r8
+ 842 053e 9D F4                   		mov	r12, a
+ 843 0540 8D F1                   		mov	a, r9
+ 844 0542 9D F5                   		mov	r13, a
+ 845 0544 8D F2                   		mov	a, r10
+ 846 0546 9D F6                   		mov	r14, a
+ 847 0548 8D F3                   		mov	a, r11
+ 848 054a 9D F7                   		mov	r15, a
+ 849 054c 8D F4                   		mov	a, r12
+ 850 054e 8D F5                   		mov	a, r13
+ 851 0550 8D F6                   		mov	a, r14
+ 852 0552 8D F7                   		mov	a, r15
+ 853 0554 8D F0                   		mov	a, r8
+ 854 0556 98 00                   		mov	[sp], a
+ 855 0558 8D F1                   		mov	a, r9
+ 856 055a 98 01                   		mov	[sp+1], a
+ 857 055c 8D F2                   		mov	a, r10
+ 858 055e 98 02                   		mov	[sp+2], a
+ 859 0560 8D F3                   		mov	a, r11
+ 860 0562 98 03                   		mov	[sp+3], a
+ 861 0564 FC 00 00 00             		call	!!___fixsfsi
+ 862 0568 AD F0                   		movw	ax, r8
+ 863 056a B8 10                   		movw	[sp+16], ax
+ 864 056c AD F2                   		movw	ax, r10
+ 865 056e B8 12                   		movw	[sp+18], ax
+ 866 0570 A8 10                   		movw	ax, [sp+16]
+ 867 0572 BD F2                   		movw	r10, ax
+ 868 0574 B8 2C                   		movw	[sp+44], ax
+ 869 0576 BD F0                   		movw	r8, ax
+ 870 0578 BF 2A 00                		movw	!_kd_new, ax
+ 131:../src/drvPID.c **** 	T_new = ((int *) parameters)[3] / 1000.0;
+ 871                             		.loc 1 131 0
+ 872 057b A8 3C                   		movw	ax, [sp+60]
+ 873 057d 04 06 00                		addw	ax, #6
+ 874 0580 BD F0                   		movw	r8, ax
+ 875 0582 BD F2                   		movw	r10, ax
+ 876 0584 FA F2                   		movw	hl, r10
+ 877 0586 AB                      		movw	ax, [hl]
+ 878 0587 BD F2                   		movw	r10, ax
+ 879 0589 B8 2A                   		movw	[sp+42], ax
+ 880 058b BD F0                   		movw	r8, ax
+ 881 058d B8 0C                   		movw	[sp+12], ax
+ 882 058f 88 2B                   		mov	a, [sp+43]
+ 883 0591 31 7B                   		sar	a, 7
+ 884 0593 9D F0                   		mov	r8, a
+ 885 0595 98 0E                   		mov	[sp+14], a
+ 886 0597 98 0F                   		mov	[sp+15], a
+ 887 0599 A8 0C                   		movw	ax, [sp+12]
+ 888 059b BD F2                   		movw	r10, ax
+ 889 059d B8 00                   		movw	[sp], ax
+ 890 059f A8 0E                   		movw	ax, [sp+14]
+ 891 05a1 BD F0                   		movw	r8, ax
+ 892 05a3 B8 02                   		movw	[sp+2], ax
+ 893 05a5 FC 00 00 00             		call	!!___floatsisf
+ 894 05a9 8D F0                   		mov	a, r8
+ 895 05ab 9D F4                   		mov	r12, a
+ 896 05ad 8D F1                   		mov	a, r9
+ 897 05af 9D F5                   		mov	r13, a
+ 898 05b1 8D F2                   		mov	a, r10
+ 899 05b3 9D F6                   		mov	r14, a
+ 900 05b5 8D F3                   		mov	a, r11
+ 901 05b7 9D F7                   		mov	r15, a
+ 902 05b9 8D F4                   		mov	a, r12
+ 903 05bb 98 00                   		mov	[sp], a
+ 904 05bd 8D F5                   		mov	a, r13
+ 905 05bf 98 01                   		mov	[sp+1], a
+ 906 05c1 8D F6                   		mov	a, r14
+ 907 05c3 98 02                   		mov	[sp+2], a
+ 908 05c5 8D F7                   		mov	a, r15
+ 909 05c7 98 03                   		mov	[sp+3], a
+ 910 05c9 F6                      		clrw	ax
+ 911 05ca B8 04                   		movw	[sp+4], ax
+ 912 05cc 30 7A 44                		movw	ax, #17530
+ 913 05cf B8 06                   		movw	[sp+6], ax
+ 914 05d1 FC 00 00 00             		call	!!___divsf3
+ 915 05d5 8D F0                   		mov	a, r8
+ 916 05d7 9D F4                   		mov	r12, a
+ 917 05d9 8D F1                   		mov	a, r9
+ 918 05db 9D F5                   		mov	r13, a
+ 919 05dd 8D F2                   		mov	a, r10
+ 920 05df 9D F6                   		mov	r14, a
+ 921 05e1 8D F3                   		mov	a, r11
+ 922 05e3 9D F7                   		mov	r15, a
+ 923 05e5 8D F4                   		mov	a, r12
+ 924 05e7 8D F5                   		mov	a, r13
+ 925 05e9 8D F6                   		mov	a, r14
+ 926 05eb 8D F7                   		mov	a, r15
+ 927 05ed 8D F0                   		mov	a, r8
+ 928 05ef 98 00                   		mov	[sp], a
+ 929 05f1 8D F1                   		mov	a, r9
+ 930 05f3 98 01                   		mov	[sp+1], a
+ 931 05f5 8D F2                   		mov	a, r10
+ 932 05f7 98 02                   		mov	[sp+2], a
+ 933 05f9 8D F3                   		mov	a, r11
+ 934 05fb 98 03                   		mov	[sp+3], a
+ 935 05fd FC 00 00 00             		call	!!___fixsfsi
+ 936 0601 AD F0                   		movw	ax, r8
+ 937 0603 B8 08                   		movw	[sp+8], ax
+ 938 0605 AD F2                   		movw	ax, r10
+ 939 0607 B8 0A                   		movw	[sp+10], ax
+ 940 0609 A8 08                   		movw	ax, [sp+8]
+ 941 060b BD F2                   		movw	r10, ax
+ 942 060d B8 28                   		movw	[sp+40], ax
+ 943 060f BD F0                   		movw	r8, ax
+ 944 0611 BF 2C 00                		movw	!_T_new, ax
+ 132:../src/drvPID.c **** 	flag = 1;
+ 945                             		.loc 1 132 0
+ 946 0614 E5 34 00                		oneb	!_flag
+ 133:../src/drvPID.c **** 
+ 134:../src/drvPID.c **** 	return SUCESSO;
+ 947                             		.loc 1 134 0
+ 948 0617 CD F0 00                		mov	r8, #0
+ 135:../src/drvPID.c **** }
+ 949                             		.loc 1 135 0
+ 950 061a 10 38                   		addw	sp, #56
+ 951 061c D7                      		ret
+ 952                             	.LFE6:
+ 954                             		.global	_initPID
+ 956                             	_initPID:
+ 957                             	.LFB7:
+ 136:../src/drvPID.c **** 
+ 137:../src/drvPID.c **** char initPID(void *parameters)
+ 138:../src/drvPID.c **** {
+ 958                             		.loc 1 138 0
+ 139:../src/drvPID.c **** 	/*  Variables adjust and driver's struct  */
+ 140:../src/drvPID.c **** 	e0 = e1 = e2 = y0 = y1 = y2 = 0;
+ 959                             		.loc 1 140 0
+ 960 061d F6                      		clrw	ax
+ 961 061e BF 1E 00                		movw	!_y2, ax
+ 962 0621 BD F0                   		movw	r8, ax
+ 963 0623 BF 1C 00                		movw	!_y1, ax
+ 964 0626 BD F0                   		movw	r8, ax
+ 965 0628 BF 1A 00                		movw	!_y0, ax
+ 966 062b BD F0                   		movw	r8, ax
+ 967 062d BF 18 00                		movw	!_e2, ax
+ 968 0630 BD F0                   		movw	r8, ax
+ 969 0632 BF 16 00                		movw	!_e1, ax
+ 970 0635 BD F0                   		movw	r8, ax
+ 971 0637 BF 14 00                		movw	!_e0, ax
+ 141:../src/drvPID.c **** 	T = 0.01;
+ 972                             		.loc 1 141 0
+ 973 063a F6                      		clrw	ax
+ 974 063b BF 2E 00                		movw	!_T, ax
+ 142:../src/drvPID.c **** 	sp = 0;
+ 975                             		.loc 1 142 0
+ 976 063e F6                      		clrw	ax
+ 977 063f BF 30 00                		movw	!_sp, ax
+ 143:../src/drvPID.c **** 	kp = 1;
+ 978                             		.loc 1 143 0
+ 979 0642 E6                      		onew	ax
+ 980 0643 BF 20 00                		movw	!_kp, ax
+ 144:../src/drvPID.c **** 	ki = 5;
+ 981                             		.loc 1 144 0
+ 982 0646 30 05 00                		movw	ax, #5
+ 983 0649 BF 22 00                		movw	!_ki, ax
+ 145:../src/drvPID.c **** 	kd = 0;
+ 984                             		.loc 1 145 0
+ 985 064c F6                      		clrw	ax
+ 986 064d BF 24 00                		movw	!_kd, ax
+ 146:../src/drvPID.c **** 	flag = 0;
+ 987                             		.loc 1 146 0
+ 988 0650 F5 34 00                		clrb	!_flag
+ 147:../src/drvPID.c **** 	run = 0;
+ 989                             		.loc 1 147 0
+ 990 0653 F5 35 00                		clrb	!_run
+ 148:../src/drvPID.c **** 
+ 149:../src/drvPID.c **** 	return SUCESSO;
+ 991                             		.loc 1 149 0
+ 992 0656 CD F0 00                		mov	r8, #0
+ 150:../src/drvPID.c **** }
+ 993                             		.loc 1 150 0
+ 994 0659 D7                      		ret
+ 995                             	.LFE7:
+ 997                             		.global	_getPIDDriver
+ 999                             	_getPIDDriver:
+ 1000                             	.LFB8:
+ 151:../src/drvPID.c **** 
+ 152:../src/drvPID.c **** driver *getPIDDriver(void)
+ 153:../src/drvPID.c **** {
+ 1001                             		.loc 1 153 0
+ 1002                             		; start of function
+ 1003                             		; locals: 2 bytes
+ 1004 065a 20 02                   		subw	sp, #2
+ 1005                             	.LCFI4:
+ 154:../src/drvPID.c **** 	thisDriver.drv_init = initPID;
+ 1006                             		.loc 1 154 0
+ 1007 065c 30 00 00                		movw	ax, #%code(_initPID)
+ 1008 065f BF 04 00                		movw	!_thisDriver+4, ax
+ 155:../src/drvPID.c **** 
+ 156:../src/drvPID.c **** 	this_functions[PID_START] = startPID;
+ 1009                             		.loc 1 156 0
+ 1010 0662 30 00 00                		movw	ax, #%code(_startPID)
+ 1011 0665 BF 06 00                		movw	!_this_functions, ax
+ 157:../src/drvPID.c **** 	this_functions[PID_STOP] = stopPID;
+ 1012                             		.loc 1 157 0
+ 1013 0668 30 00 00                		movw	ax, #%code(_stopPID)
+ 1014 066b BF 08 00                		movw	!_this_functions+2, ax
+ 158:../src/drvPID.c **** 	this_functions[PID_UPDATE] = updatePID;
+ 1015                             		.loc 1 158 0
+ 1016 066e 30 00 00                		movw	ax, #%code(_updatePID)
+ 1017 0671 BF 0A 00                		movw	!_this_functions+4, ax
+ 159:../src/drvPID.c **** 	this_functions[PID_RESET] = resetPID;
+ 1018                             		.loc 1 159 0
+ 1019 0674 30 00 00                		movw	ax, #%code(_resetPID)
+ 1020 0677 BF 0C 00                		movw	!_this_functions+6, ax
+ 160:../src/drvPID.c **** 	this_functions[PID_GETVALUES] = getPIDValues;
+ 1021                             		.loc 1 160 0
+ 1022 067a 30 00 00                		movw	ax, #%code(_getPIDValues)
+ 1023 067d BF 0E 00                		movw	!_this_functions+8, ax
+ 161:../src/drvPID.c **** 	this_functions[PID_SETVALUES] = setPIDValues;
+ 1024                             		.loc 1 161 0
+ 1025 0680 30 00 00                		movw	ax, #%code(_setPIDValues)
+ 1026 0683 BF 10 00                		movw	!_this_functions+10, ax
+ 162:../src/drvPID.c **** 	this_functions[PID_SETPOINTS] = spChange;
+ 1027                             		.loc 1 162 0
+ 1028 0686 30 00 00                		movw	ax, #%code(_spChange)
+ 1029 0689 BF 12 00                		movw	!_this_functions+12, ax
+ 163:../src/drvPID.c **** 
+ 164:../src/drvPID.c **** 	thisDriver.drv_func = this_functions;
+ 1030                             		.loc 1 164 0
+ 1031 068c 30 06 00                		movw	ax, #_this_functions
+ 1032 068f BF 02 00                		movw	!_thisDriver+2, ax
+ 165:../src/drvPID.c **** 
+ 166:../src/drvPID.c **** 	return &thisDriver;
+ 1033                             		.loc 1 166 0
+ 1034 0692 30 00 00                		movw	ax, #_thisDriver
+ 1035 0695 B8 00                   		movw	[sp], ax
+ 1036 0697 BD F0                   		movw	r8, ax
+ 167:../src/drvPID.c **** }
+ 1037                             		.loc 1 167 0
+ 1038 0699 10 02                   		addw	sp, #2
+ 1039 069b D7                      		ret
+ 1040                             	.LFE8:
+ 1152                             	.Letext0:
+ 1153                             		.file 2 "../src/dd_types.h"
+ 1154                             		.file 3 "../src/drvPID.h"
+ 1155                             		.file 4 "../src/drvPWM.h"
+ 1156                             		.file 5 "../src/ctrdrv.h"

@@ -1,0 +1,6 @@
+r_cg_adc.c:54:6:R_ADC_Create	0	static
+r_cg_adc.c:104:6:R_ADC_Start	0	static
+r_cg_adc.c:125:6:R_ADC_Stop	0	static
+r_cg_adc.c:146:6:R_ADC_Set_Operation_On	0	static
+r_cg_adc.c:161:6:R_ADC_Set_Operation_Off	0	static
+r_cg_adc.c:177:6:R_ADC_Get_Result	0	static

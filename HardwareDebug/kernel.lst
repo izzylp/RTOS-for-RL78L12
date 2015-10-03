@@ -1,0 +1,1697 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             	.data
+  28                             		.balign 2
+  31                             	_drvGetFunc:
+  32 0000 00 00                   		.short	%code(_getLedDriver)
+  33 0002 00 00                   		.short	%code(_getLcdDriver)
+  34 0004 00 00                   		.short	%code(_getBotDriver)
+  35 0006 00 00                   		.short	%code(_getADCDriver)
+  36 0008 00 00                   		.short	%code(_getSerDriver)
+  37 000a 00 00                   		.short	%code(_getPWMDriver)
+  38 000c 00 00                   		.short	%code(_getPIDDriver)
+  39 000e 00 00                   		.short	%code(_getTimDriver)
+  40 0010 00 00                   		.short	%code(_getIntDriver)
+  41                             		.local	_task_stack
+  42                             		.comm	_task_stack,400,1
+  43                             		.local	_SPAtual
+  44                             		.comm	_SPAtual,4,2
+  45                             		.local	_SP
+  46                             		.comm	_SP,4,2
+  47                             		.local	_sp_tmp
+  48                             		.comm	_sp_tmp,4,2
+  49                             		.comm	_p_fcn,2,2
+  50                             		.comm	_pool,160,2
+  51                             		.comm	_actualTask,1,1
+  52                             		.comm	_lastTask,1,1
+  53                             		.comm	_RRactualTask,1,1
+  54                             	.text
+  55                             		.global	_IdleFunc
+  57                             	_IdleFunc:
+  58                             	.LFB0:
+  59                             		.file 1 "../src/kernel.c"
+   1:../src/kernel.c **** #include "kernel.h"
+   2:../src/kernel.c **** #include "ctrdrv.h"
+   3:../src/kernel.c **** 
+   4:../src/kernel.c **** #define POOLSIZE        10
+   5:../src/kernel.c **** #define NUMBER_OF_TASKS (POOLSIZE - 1)
+   6:../src/kernel.c **** 
+   7:../src/kernel.c **** /* Put the idle task on last position */
+   8:../src/kernel.c **** #define IDLE_PROC_ID    (POOLSIZE - 1)
+   9:../src/kernel.c **** #define MIN_INT         -30000
+  10:../src/kernel.c **** 
+  11:../src/kernel.c **** #define STACK_SIZE       400
+  12:../src/kernel.c **** 
+  13:../src/kernel.c **** static char task_stack[STACK_SIZE]; 
+  14:../src/kernel.c **** 
+  15:../src/kernel.c **** static volatile uint32_t SPAtual;
+  16:../src/kernel.c **** 
+  17:../src/kernel.c **** /* Last position available in the stack */
+  18:../src/kernel.c **** volatile static uint32_t SP;
+  19:../src/kernel.c **** 
+  20:../src/kernel.c **** volatile static uint32_t sp_tmp;
+  21:../src/kernel.c **** ptrFunc p_fcn;
+  22:../src/kernel.c **** 
+  23:../src/kernel.c **** /* Variáveis do kernel */
+  24:../src/kernel.c **** volatile process pool[POOLSIZE];
+  25:../src/kernel.c **** volatile uint8_t actualTask;
+  26:../src/kernel.c **** volatile uint8_t lastTask;
+  27:../src/kernel.c **** 
+  28:../src/kernel.c **** /* Variable to define the actual task on round robin scheduler */
+  29:../src/kernel.c **** volatile int8_t RRactualTask;
+  30:../src/kernel.c **** 
+  31:../src/kernel.c **** /* This is the Idle process, 
+  32:../src/kernel.c ****  * the only process on kernel that is banked
+  33:../src/kernel.c ****  */
+  34:../src/kernel.c **** void IdleFunc(void) {
+  60                             		.loc 1 34 0
+  35:../src/kernel.c ****         /* Start interval timer */
+  36:../src/kernel.c ****         R_IT_Start();
+  61                             		.loc 1 36 0
+  62 0000 FC 00 00 00             		call	!!%code(_R_IT_Start)
+  37:../src/kernel.c **** 
+  38:../src/kernel.c ****         /* Enable interrupts */ 
+  39:../src/kernel.c ****         asm("ei");
+  63                             		.loc 1 39 0
+  64                             	 ; 39 "../src/kernel.c" 1
+  65 0004 71 7A FA                		ei
+  66                             	 ; 0 "" 2
+  67                             	.L2:
+  40:../src/kernel.c **** 
+  41:../src/kernel.c ****         for(;;) {
+  42:../src/kernel.c ****                 /* energy saving here */
+  43:../src/kernel.c ****         }
+  68                             		.loc 1 43 0 discriminator 1
+  69 0007 EC 07 00 00             		br	!!.L2
+  70                             	.LFE0:
+  72                             		.global	_timedLoopStart
+  74                             	_timedLoopStart:
+  75                             	.LFB1:
+  44:../src/kernel.c **** }
+  45:../src/kernel.c **** 
+  46:../src/kernel.c **** void timedLoopStart(signed int valor)
+  47:../src/kernel.c **** {
+  76                             		.loc 1 47 0
+  48:../src/kernel.c ****         pool[actualTask].Time = valor;
+  77                             		.loc 1 48 0
+  78 000b 8F 00 00                		mov	a, !_actualTask
+  79 000e 9D F0                   		mov	r8, a
+  80 0010 CD F1 00                		mov	r9, #0
+  81 0013 AD F0                   		movw	ax, r8
+  82 0015 31 4D                   		shlw	ax, 4
+  83 0017 BD F0                   		movw	r8, ax
+  84 0019 04 00 00                		addw	ax, #_pool+2
+  85 001c BD F2                   		movw	r10, ax
+  86 001e A8 04                   		movw	ax, [sp+4]
+  87 0020 BD F0                   		movw	r8, ax
+  88 0022 AD F2                   		movw	ax, r10
+  89 0024 BD F4                   		movw	r12, ax
+  90 0026 FA F4                   		movw	hl, r12
+  91 0028 AD F0                   		movw	ax, r8
+  92 002a BB                      		movw	[hl], ax
+  49:../src/kernel.c **** }
+  93                             		.loc 1 49 0
+  94 002b D7                      		ret
+  95                             	.LFE1:
+  97                             		.global	_timedLoopWait
+  99                             	_timedLoopWait:
+ 100                             	.LFB2:
+  50:../src/kernel.c **** 
+  51:../src/kernel.c **** void timedLoopWait(void)
+  52:../src/kernel.c **** {
+ 101                             		.loc 1 52 0
+  53:../src/kernel.c ****         pool[actualTask].Status = WAITING;
+ 102                             		.loc 1 53 0
+ 103 002c 8F 00 00                		mov	a, !_actualTask
+ 104 002f 9D F0                   		mov	r8, a
+ 105 0031 CD F1 00                		mov	r9, #0
+ 106 0034 AD F0                   		movw	ax, r8
+ 107 0036 31 4D                   		shlw	ax, 4
+ 108 0038 BD F0                   		movw	r8, ax
+ 109 003a 04 00 00                		addw	ax, #_pool+4
+ 110 003d BD F0                   		movw	r8, ax
+ 111 003f BD F2                   		movw	r10, ax
+ 112 0041 FA F2                   		movw	hl, r10
+ 113 0043 30 03 00                		movw	ax, #3
+ 114 0046 BB                      		movw	[hl], ax
+  54:../src/kernel.c ****         while (pool[actualTask].Status == WAITING);
+ 115                             		.loc 1 54 0
+ 116 0047 00                      		nop
+ 117                             	.L5:
+ 118                             		.loc 1 54 0 is_stmt 0 discriminator 1
+ 119 0048 8F 00 00                		mov	a, !_actualTask
+ 120 004b 9D F0                   		mov	r8, a
+ 121 004d CD F1 00                		mov	r9, #0
+ 122 0050 AD F0                   		movw	ax, r8
+ 123 0052 31 4D                   		shlw	ax, 4
+ 124 0054 BD F0                   		movw	r8, ax
+ 125 0056 04 00 00                		addw	ax, #_pool+4
+ 126 0059 BD F0                   		movw	r8, ax
+ 127 005b BD F2                   		movw	r10, ax
+ 128 005d FA F2                   		movw	hl, r10
+ 129 005f AB                      		movw	ax, [hl]
+ 130 0060 BD F0                   		movw	r8, ax
+ 131 0062 44 03 00                		cmpw	ax, #3 
+ 132 0065 61 F8                   		sknz 
+ 133 0067 EC 48 00 00             		br	!!.L5
+  55:../src/kernel.c **** }
+ 134                             		.loc 1 55 0 is_stmt 1
+ 135 006b D7                      		ret
+ 136                             	.LFE2:
+ 138                             		.global	_delay
+ 140                             	_delay:
+ 141                             	.LFB3:
+  56:../src/kernel.c **** 
+  57:../src/kernel.c **** void delay(signed int valor)
+  58:../src/kernel.c **** {
+ 142                             		.loc 1 58 0
+ 143                             		; start of function
+ 144                             		; outgoing: 2 bytes
+ 145 006c 20 02                   		subw	sp, #2
+ 146                             	.LCFI0:
+  59:../src/kernel.c ****         timedLoopStart(valor);
+ 147                             		.loc 1 59 0
+ 148 006e A8 06                   		movw	ax, [sp+6]
+ 149 0070 BD F0                   		movw	r8, ax
+ 150 0072 B8 00                   		movw	[sp], ax
+ 151 0074 FC 00 00 00             		call	!!%code(_timedLoopStart)
+  60:../src/kernel.c ****         timedLoopWait();
+ 152                             		.loc 1 60 0
+ 153 0078 FC 00 00 00             		call	!!%code(_timedLoopWait)
+  61:../src/kernel.c **** }
+ 154                             		.loc 1 61 0
+ 155 007c 10 02                   		addw	sp, #2
+ 156 007e D7                      		ret
+ 157                             	.LFE3:
+ 159                             		.global	_createStack
+ 161                             	_createStack:
+ 162                             	.LFB4:
+  62:../src/kernel.c **** 
+  63:../src/kernel.c **** void createStack(ptrFunc func, uint32_t position)
+  64:../src/kernel.c **** {
+ 163                             		.loc 1 64 0
+  65:../src/kernel.c ****         /*
+  66:../src/kernel.c ****          * General purpose registers:
+  67:../src/kernel.c ****          * AX, BC, DE, HL   (16 bits)
+  68:../src/kernel.c ****          *
+  69:../src/kernel.c ****          * Special purpose registers:
+  70:../src/kernel.c ****          * PSW    (8 bits)
+  71:../src/kernel.c ****          * PC     (20 bits)
+  72:../src/kernel.c ****          * SP     (16 bits)
+  73:../src/kernel.c ****          * ES     (8 bits)
+  74:../src/kernel.c ****          * CS     (8 bits)
+  75:../src/kernel.c ****          * PMC    (8 bits)
+  76:../src/kernel.c ****          */
+  77:../src/kernel.c **** 
+  78:../src/kernel.c ****         /* Initial PSW value allocated to a newly created task.
+  79:../src/kernel.c ****          *   11000110 = 0xC6
+  80:../src/kernel.c ****          *   ||||||||-------------- Carry flag (reset)
+  81:../src/kernel.c ****          *   |||||||--------------- In-service priority 0 flag (reset)
+  82:../src/kernel.c ****          *   |||||----------------- In-service priority 1 flag (reset) 
+  83:../src/kernel.c ****          *   ||||------------------ Register bank select 0 flag (reset) 
+  84:../src/kernel.c ****          *   |||------------------- Auxiliary carry flag cleared (reset)
+  85:../src/kernel.c ****          *   ||-------------------- Register bank select 1 flag (reset)
+  86:../src/kernel.c ****          *   |--------------------- Zero flag (set)
+  87:../src/kernel.c ****          *   ---------------------- Global interrupt enable flag (set)
+  88:../src/kernel.c ****          */
+  89:../src/kernel.c ****         sp_tmp = position;
+ 164                             		.loc 1 89 0
+ 165 007f A8 06                   		movw	ax, [sp+6]
+ 166 0081 BD F0                   		movw	r8, ax
+ 167 0083 BF 98 01                		movw	!_sp_tmp, ax
+ 168 0086 A8 08                   		movw	ax, [sp+8]
+ 169 0088 BD F0                   		movw	r8, ax
+ 170 008a BF 9A 01                		movw	!_sp_tmp+2, ax
+  90:../src/kernel.c ****         p_fcn = func;
+ 171                             		.loc 1 90 0
+ 172 008d A8 04                   		movw	ax, [sp+4]
+ 173 008f BD F0                   		movw	r8, ax
+ 174 0091 BF 00 00                		movw	!_p_fcn, ax
+  91:../src/kernel.c **** 
+  92:../src/kernel.c ****         asm("push   ax");
+ 175                             		.loc 1 92 0
+ 176                             	 ; 92 "../src/kernel.c" 1
+ 177 0094 C1                      		push   ax
+ 178                             	 ; 0 "" 2
+  93:../src/kernel.c ****         asm("push   bc");
+ 179                             		.loc 1 93 0
+ 180                             	 ; 93 "../src/kernel.c" 1
+ 181 0095 C3                      		push   bc
+ 182                             	 ; 0 "" 2
+  94:../src/kernel.c ****         asm("push   hl");
+ 183                             		.loc 1 94 0
+ 184                             	 ; 94 "../src/kernel.c" 1
+ 185 0096 C7                      		push   hl
+ 186                             	 ; 0 "" 2
+  95:../src/kernel.c **** 
+  96:../src/kernel.c ****         /* Store SP and set new temporary SP */
+  97:../src/kernel.c ****         asm("movw   bc, sp");
+ 187                             		.loc 1 97 0
+ 188                             	 ; 97 "../src/kernel.c" 1
+ 189 0097 DB F8 FF                		movw   bc, sp
+ 190                             	 ; 0 "" 2
+  98:../src/kernel.c ****         asm("movw   ax, #_sp_tmp");
+ 191                             		.loc 1 98 0
+ 192                             	 ; 98 "../src/kernel.c" 1
+ 193 009a 30 98 01                		movw   ax, #_sp_tmp
+ 194                             	 ; 0 "" 2
+  99:../src/kernel.c ****         asm("movw   hl, ax");
+ 195                             		.loc 1 99 0
+ 196                             	 ; 99 "../src/kernel.c" 1
+ 197 009d 16                      		movw   hl, ax
+ 198                             	 ; 0 "" 2
+ 100:../src/kernel.c ****         asm("movw   ax, [hl]");
+ 199                             		.loc 1 100 0
+ 200                             	 ; 100 "../src/kernel.c" 1
+ 201 009e AB                      		movw   ax, [hl]
+ 202                             	 ; 0 "" 2
+ 101:../src/kernel.c ****         asm("movw   sp, ax");
+ 203                             		.loc 1 101 0
+ 204                             	 ; 101 "../src/kernel.c" 1
+ 205 009f BE F8                   		movw   sp, ax
+ 206                             	 ; 0 "" 2
+ 102:../src/kernel.c **** 
+ 103:../src/kernel.c ****         /* Pushing PSW to SP-1 */
+ 104:../src/kernel.c ****         asm("movw   ax, #0C600h");
+ 207                             		.loc 1 104 0
+ 208                             	 ; 104 "../src/kernel.c" 1
+ 209 00a1 30 00 C6                		movw   ax, #0C600h
+ 210                             	 ; 0 "" 2
+ 105:../src/kernel.c ****         asm("push   ax");
+ 211                             		.loc 1 105 0
+ 212                             	 ; 105 "../src/kernel.c" 1
+ 213 00a4 C1                      		push   ax
+ 214                             	 ; 0 "" 2
+ 106:../src/kernel.c **** 
+ 107:../src/kernel.c ****         /* Pushing PC to SP */
+ 108:../src/kernel.c ****         asm("movw   ax, #_p_fcn");
+ 215                             		.loc 1 108 0
+ 216                             	 ; 108 "../src/kernel.c" 1
+ 217 00a5 30 00 00                		movw   ax, #_p_fcn
+ 218                             	 ; 0 "" 2
+ 109:../src/kernel.c ****         asm("movw   hl, ax");
+ 219                             		.loc 1 109 0
+ 220                             	 ; 109 "../src/kernel.c" 1
+ 221 00a8 16                      		movw   hl, ax
+ 222                             	 ; 0 "" 2
+ 110:../src/kernel.c ****         asm("movw   ax, [hl]");
+ 223                             		.loc 1 110 0
+ 224                             	 ; 110 "../src/kernel.c" 1
+ 225 00a9 AB                      		movw   ax, [hl]
+ 226                             	 ; 0 "" 2
+ 111:../src/kernel.c ****         asm("push   ax");
+ 227                             		.loc 1 111 0
+ 228                             	 ; 111 "../src/kernel.c" 1
+ 229 00aa C1                      		push   ax
+ 230                             	 ; 0 "" 2
+ 112:../src/kernel.c **** 
+ 113:../src/kernel.c ****         /* Pushing AX to SP */
+ 114:../src/kernel.c ****         asm("movw   ax, #0aaaah");
+ 231                             		.loc 1 114 0
+ 232                             	 ; 114 "../src/kernel.c" 1
+ 233 00ab 30 AA AA                		movw   ax, #0aaaah
+ 234                             	 ; 0 "" 2
+ 115:../src/kernel.c ****         asm("push   ax");
+ 235                             		.loc 1 115 0
+ 236                             	 ; 115 "../src/kernel.c" 1
+ 237 00ae C1                      		push   ax
+ 238                             	 ; 0 "" 2
+ 116:../src/kernel.c **** 
+ 117:../src/kernel.c **** 	/* Pushing HL to SP */
+ 118:../src/kernel.c ****         asm("movw   ax, #0ffffh");
+ 239                             		.loc 1 118 0
+ 240                             	 ; 118 "../src/kernel.c" 1
+ 241 00af 30 FF FF                		movw   ax, #0ffffh
+ 242                             	 ; 0 "" 2
+ 119:../src/kernel.c ****         asm("push   ax");
+ 243                             		.loc 1 119 0
+ 244                             	 ; 119 "../src/kernel.c" 1
+ 245 00b2 C1                      		push   ax
+ 246                             	 ; 0 "" 2
+ 120:../src/kernel.c **** 
+ 121:../src/kernel.c **** 	/* Pushing ES and CS to SP */
+ 122:../src/kernel.c ****         asm("movw   ax, #00f00h");
+ 247                             		.loc 1 122 0
+ 248                             	 ; 122 "../src/kernel.c" 1
+ 249 00b3 30 00 0F                		movw   ax, #00f00h
+ 250                             	 ; 0 "" 2
+ 123:../src/kernel.c ****         asm("push   ax");
+ 251                             		.loc 1 123 0
+ 252                             	 ; 123 "../src/kernel.c" 1
+ 253 00b6 C1                      		push   ax
+ 254                             	 ; 0 "" 2
+ 124:../src/kernel.c **** 
+ 125:../src/kernel.c **** 	/* Pushing DE to SP */
+ 126:../src/kernel.c ****         asm("movw   ax, #0dedeh");
+ 255                             		.loc 1 126 0
+ 256                             	 ; 126 "../src/kernel.c" 1
+ 257 00b7 30 DE DE                		movw   ax, #0dedeh
+ 258                             	 ; 0 "" 2
+ 127:../src/kernel.c ****         asm("push   ax");
+ 259                             		.loc 1 127 0
+ 260                             	 ; 127 "../src/kernel.c" 1
+ 261 00ba C1                      		push   ax
+ 262                             	 ; 0 "" 2
+ 128:../src/kernel.c **** 
+ 129:../src/kernel.c **** 	/* Pushing BC to SP */
+ 130:../src/kernel.c ****         asm("movw   ax, #0bcbch");
+ 263                             		.loc 1 130 0
+ 264                             	 ; 130 "../src/kernel.c" 1
+ 265 00bb 30 BC BC                		movw   ax, #0bcbch
+ 266                             	 ; 0 "" 2
+ 131:../src/kernel.c ****         asm("push   ax");
+ 267                             		.loc 1 131 0
+ 268                             	 ; 131 "../src/kernel.c" 1
+ 269 00be C1                      		push   ax
+ 270                             	 ; 0 "" 2
+ 132:../src/kernel.c **** 
+ 133:../src/kernel.c ****         /* Restore SP */
+ 134:../src/kernel.c ****         asm("movw   ax, bc");
+ 271                             		.loc 1 134 0
+ 272                             	 ; 134 "../src/kernel.c" 1
+ 273 00bf 13                      		movw   ax, bc
+ 274                             	 ; 0 "" 2
+ 135:../src/kernel.c ****         asm("movw   sp, ax");
+ 275                             		.loc 1 135 0
+ 276                             	 ; 135 "../src/kernel.c" 1
+ 277 00c0 BE F8                   		movw   sp, ax
+ 278                             	 ; 0 "" 2
+ 136:../src/kernel.c **** 
+ 137:../src/kernel.c ****         asm("pop    hl");
+ 279                             		.loc 1 137 0
+ 280                             	 ; 137 "../src/kernel.c" 1
+ 281 00c2 C6                      		pop    hl
+ 282                             	 ; 0 "" 2
+ 138:../src/kernel.c ****         asm("pop    bc");
+ 283                             		.loc 1 138 0
+ 284                             	 ; 138 "../src/kernel.c" 1
+ 285 00c3 C2                      		pop    bc
+ 286                             	 ; 0 "" 2
+ 139:../src/kernel.c ****         asm("pop    ax");
+ 287                             		.loc 1 139 0
+ 288                             	 ; 139 "../src/kernel.c" 1
+ 289 00c4 C0                      		pop    ax
+ 290                             	 ; 0 "" 2
+ 140:../src/kernel.c **** }
+ 291                             		.loc 1 140 0
+ 292 00c5 D7                      		ret
+ 293                             	.LFE4:
+ 295                             		.global	_CreateIdleProc
+ 297                             	_CreateIdleProc:
+ 298                             	.LFB5:
+ 141:../src/kernel.c **** 
+ 142:../src/kernel.c **** void CreateIdleProc(void)
+ 143:../src/kernel.c **** {
+ 299                             		.loc 1 143 0
+ 300                             		; start of function
+ 301                             		; push 4: r16 r18
+ 302                             		; locals: 4 bytes
+ 303 00c6 61 EF                   		sel	rb2
+ 304 00c8 C1                      		push	ax ; r16
+ 305                             	.LCFI1:
+ 306 00c9 C3                      		push	bc ; r18
+ 307                             	.LCFI2:
+ 308 00ca 61 CF                   		sel	rb0
+ 309 00cc 20 04                   		subw	sp, #4
+ 310                             	.LCFI3:
+ 144:../src/kernel.c ****         /* Idle process creation */
+ 145:../src/kernel.c ****         pool[IDLE_PROC_ID].StackInit = SP;
+ 311                             		.loc 1 145 0
+ 312 00ce AF 94 01                		movw	ax, !_SP
+ 313 00d1 BD F0                   		movw	r8, ax
+ 314 00d3 AF 96 01                		movw	ax, !_SP+2
+ 315 00d6 BD F2                   		movw	r10, ax
+ 316 00d8 AD F0                   		movw	ax, r8
+ 317 00da BF 00 00                		movw	!_pool+156, ax
+ 318 00dd AD F2                   		movw	ax, r10
+ 319 00df BF 00 00                		movw	!_pool+158, ax
+ 146:../src/kernel.c ****         pool[IDLE_PROC_ID].Status = READY;
+ 320                             		.loc 1 146 0
+ 321 00e2 30 02 00                		movw	ax, #2
+ 322 00e5 BF 00 00                		movw	!_pool+148, ax
+ 147:../src/kernel.c ****         pool[IDLE_PROC_ID].Function = IdleFunc;
+ 323                             		.loc 1 147 0
+ 324 00e8 30 00 00                		movw	ax, #%code(_IdleFunc)
+ 325 00eb BF 00 00                		movw	!_pool+144, ax
+ 148:../src/kernel.c **** 
+ 149:../src/kernel.c ****         /*  
+ 150:../src/kernel.c ****          *  Pushing function address into the stack
+ 151:../src/kernel.c ****          *  (most significant byte first)
+ 152:../src/kernel.c ****          *
+ 153:../src/kernel.c ****          *  The function address is 20 bits, 
+ 154:../src/kernel.c ****          *  which means it will occupy 4 positions of
+ 155:../src/kernel.c ****          *  1 byte in the stack:
+ 156:../src/kernel.c ****          *
+ 157:../src/kernel.c ****          *  SP    ->   
+ 158:../src/kernel.c ****          *  SP-1  ->  0x00
+ 159:../src/kernel.c ****          *  SP-2  ->  PC19-PC16
+ 160:../src/kernel.c ****          *  SP-3  ->  PC15-PC8
+ 161:../src/kernel.c ****          *  SP-4  ->  PC7-PC0
+ 162:../src/kernel.c ****          */
+ 163:../src/kernel.c ****         p_fcn = IdleFunc;
+ 326                             		.loc 1 163 0
+ 327 00ee 30 00 00                		movw	ax, #%code(_IdleFunc)
+ 328 00f1 BF 00 00                		movw	!_p_fcn, ax
+ 164:../src/kernel.c **** 
+ 165:../src/kernel.c ****         /* Storing registers */
+ 166:../src/kernel.c ****         asm("push   ax");
+ 329                             		.loc 1 166 0
+ 330                             	 ; 166 "../src/kernel.c" 1
+ 331 00f4 C1                      		push   ax
+ 332                             	 ; 0 "" 2
+ 167:../src/kernel.c ****         asm("push   bc");
+ 333                             		.loc 1 167 0
+ 334                             	 ; 167 "../src/kernel.c" 1
+ 335 00f5 C3                      		push   bc
+ 336                             	 ; 0 "" 2
+ 168:../src/kernel.c ****         asm("push   hl");
+ 337                             		.loc 1 168 0
+ 338                             	 ; 168 "../src/kernel.c" 1
+ 339 00f6 C7                      		push   hl
+ 340                             	 ; 0 "" 2
+ 169:../src/kernel.c ****         asm("push   de");
+ 341                             		.loc 1 169 0
+ 342                             	 ; 169 "../src/kernel.c" 1
+ 343 00f7 C5                      		push   de
+ 344                             	 ; 0 "" 2
+ 170:../src/kernel.c **** 
+ 171:../src/kernel.c ****         /* Storing and updating SP register */
+ 172:../src/kernel.c ****         asm("movw   bc, sp");
+ 345                             		.loc 1 172 0
+ 346                             	 ; 172 "../src/kernel.c" 1
+ 347 00f8 DB F8 FF                		movw   bc, sp
+ 348                             	 ; 0 "" 2
+ 173:../src/kernel.c ****         asm("movw   ax, #_SP");
+ 349                             		.loc 1 173 0
+ 350                             	 ; 173 "../src/kernel.c" 1
+ 351 00fb 30 94 01                		movw   ax, #_SP
+ 352                             	 ; 0 "" 2
+ 174:../src/kernel.c ****         asm("movw   hl, ax");
+ 353                             		.loc 1 174 0
+ 354                             	 ; 174 "../src/kernel.c" 1
+ 355 00fe 16                      		movw   hl, ax
+ 356                             	 ; 0 "" 2
+ 175:../src/kernel.c ****         asm("movw   ax, [hl]");
+ 357                             		.loc 1 175 0
+ 358                             	 ; 175 "../src/kernel.c" 1
+ 359 00ff AB                      		movw   ax, [hl]
+ 360                             	 ; 0 "" 2
+ 176:../src/kernel.c ****         asm("movw   sp, ax");
+ 361                             		.loc 1 176 0
+ 362                             	 ; 176 "../src/kernel.c" 1
+ 363 0100 BE F8                   		movw   sp, ax
+ 364                             	 ; 0 "" 2
+ 177:../src/kernel.c **** 
+ 178:../src/kernel.c ****         /* Pushing PSW and PC */
+ 179:../src/kernel.c ****         asm("movw   ax, #0C600h");
+ 365                             		.loc 1 179 0
+ 366                             	 ; 179 "../src/kernel.c" 1
+ 367 0102 30 00 C6                		movw   ax, #0C600h
+ 368                             	 ; 0 "" 2
+ 180:../src/kernel.c ****         asm("push   ax");
+ 369                             		.loc 1 180 0
+ 370                             	 ; 180 "../src/kernel.c" 1
+ 371 0105 C1                      		push   ax
+ 372                             	 ; 0 "" 2
+ 181:../src/kernel.c ****         asm("movw   ax, #_p_fcn");
+ 373                             		.loc 1 181 0
+ 374                             	 ; 181 "../src/kernel.c" 1
+ 375 0106 30 00 00                		movw   ax, #_p_fcn
+ 376                             	 ; 0 "" 2
+ 182:../src/kernel.c ****         asm("movw   hl, ax");
+ 377                             		.loc 1 182 0
+ 378                             	 ; 182 "../src/kernel.c" 1
+ 379 0109 16                      		movw   hl, ax
+ 380                             	 ; 0 "" 2
+ 183:../src/kernel.c ****         asm("movw   ax, [hl]");
+ 381                             		.loc 1 183 0
+ 382                             	 ; 183 "../src/kernel.c" 1
+ 383 010a AB                      		movw   ax, [hl]
+ 384                             	 ; 0 "" 2
+ 184:../src/kernel.c ****         asm("push   ax");
+ 385                             		.loc 1 184 0
+ 386                             	 ; 184 "../src/kernel.c" 1
+ 387 010b C1                      		push   ax
+ 388                             	 ; 0 "" 2
+ 185:../src/kernel.c **** 
+ 186:../src/kernel.c ****         /* Restore SP */
+ 187:../src/kernel.c ****         asm("movw   ax, bc");
+ 389                             		.loc 1 187 0
+ 390                             	 ; 187 "../src/kernel.c" 1
+ 391 010c 13                      		movw   ax, bc
+ 392                             	 ; 0 "" 2
+ 188:../src/kernel.c ****         asm("movw   sp, ax");
+ 393                             		.loc 1 188 0
+ 394                             	 ; 188 "../src/kernel.c" 1
+ 395 010d BE F8                   		movw   sp, ax
+ 396                             	 ; 0 "" 2
+ 189:../src/kernel.c **** 
+ 190:../src/kernel.c ****         /* Restoring registers */
+ 191:../src/kernel.c ****         asm("pop    de");
+ 397                             		.loc 1 191 0
+ 398                             	 ; 191 "../src/kernel.c" 1
+ 399 010f C4                      		pop    de
+ 400                             	 ; 0 "" 2
+ 192:../src/kernel.c ****         asm("pop    hl");
+ 401                             		.loc 1 192 0
+ 402                             	 ; 192 "../src/kernel.c" 1
+ 403 0110 C6                      		pop    hl
+ 404                             	 ; 0 "" 2
+ 193:../src/kernel.c ****         asm("pop    bc");
+ 405                             		.loc 1 193 0
+ 406                             	 ; 193 "../src/kernel.c" 1
+ 407 0111 C2                      		pop    bc
+ 408                             	 ; 0 "" 2
+ 194:../src/kernel.c ****         asm("pop    ax");
+ 409                             		.loc 1 194 0
+ 410                             	 ; 194 "../src/kernel.c" 1
+ 411 0112 C0                      		pop    ax
+ 412                             	 ; 0 "" 2
+ 195:../src/kernel.c **** 
+ 196:../src/kernel.c ****         SP -= 4;
+ 413                             		.loc 1 196 0
+ 414 0113 AF 94 01                		movw	ax, !_SP
+ 415 0116 BD F0                   		movw	r8, ax
+ 416 0118 B8 00                   		movw	[sp], ax
+ 417 011a AF 96 01                		movw	ax, !_SP+2
+ 418 011d BD F0                   		movw	r8, ax
+ 419 011f B8 02                   		movw	[sp+2], ax
+ 420 0121 A8 00                   		movw ax,[sp] 
+ 421 0123 04 FC FF                		addw ax,#65532 
+ 422 0126 BD F0                   		movw r8, ax 
+ 423 0128 A8 02                   		movw ax,[sp+2] 
+ 424 012a 61 D8                   		sknc 
+ 425 012c A1                      		incw ax 
+ 426 012d 04 FF FF                		addw ax,#-1 
+ 427 0130 BD F2                   		movw r10,ax
+ 428 0132 AD F0                   		movw	ax, r8
+ 429 0134 BF 94 01                		movw	!_SP, ax
+ 430 0137 AD F2                   		movw	ax, r10
+ 431 0139 BF 96 01                		movw	!_SP+2, ax
+ 197:../src/kernel.c **** 
+ 198:../src/kernel.c ****         /* Stack end point */
+ 199:../src/kernel.c ****         pool[IDLE_PROC_ID].StackPoint = SP;
+ 432                             		.loc 1 199 0
+ 433 013c AF 94 01                		movw	ax, !_SP
+ 434 013f BD F4                   		movw	r12, ax
+ 435 0141 AF 96 01                		movw	ax, !_SP+2
+ 436 0144 BD F6                   		movw	r14, ax
+ 437 0146 AD F4                   		movw	ax, r12
+ 438 0148 BF 00 00                		movw	!_pool+152, ax
+ 439 014b AD F6                   		movw	ax, r14
+ 440 014d BF 00 00                		movw	!_pool+154, ax
+ 200:../src/kernel.c ****         /* Jump to the next "stack slot" */
+ 201:../src/kernel.c ****         SP = pool[IDLE_PROC_ID].StackInit - 50;
+ 441                             		.loc 1 201 0
+ 442 0150 AF 00 00                		movw	ax, !_pool+156
+ 443 0153 BD E8                   		movw	r16, ax
+ 444 0155 AF 00 00                		movw	ax, !_pool+158
+ 445 0158 BD EA                   		movw	r18, ax
+ 446 015a AD E8                   		movw ax,r16 
+ 447 015c 04 CE FF                		addw ax,#65486 
+ 448 015f BD F0                   		movw r8, ax 
+ 449 0161 AD EA                   		movw ax,r18 
+ 450 0163 61 D8                   		sknc 
+ 451 0165 A1                      		incw ax 
+ 452 0166 04 FF FF                		addw ax,#-1 
+ 453 0169 BD F2                   		movw r10,ax
+ 454 016b AD F0                   		movw	ax, r8
+ 455 016d BF 94 01                		movw	!_SP, ax
+ 456 0170 AD F2                   		movw	ax, r10
+ 457 0172 BF 96 01                		movw	!_SP+2, ax
+ 202:../src/kernel.c **** }
+ 458                             		.loc 1 202 0
+ 459 0175 10 04                   		addw	sp, #4
+ 460 0177 61 EF                   		sel	rb2
+ 461 0179 C2                      		pop	bc ; r18
+ 462 017a C0                      		pop	ax ; r16
+ 463 017b 61 CF                   		sel	rb0
+ 464 017d D7                      		ret
+ 465                             	.LFE5:
+ 467                             		.global	_kernelInit
+ 469                             	_kernelInit:
+ 470                             	.LFB6:
+ 203:../src/kernel.c **** 
+ 204:../src/kernel.c **** int8_t kernelInit(void) 
+ 205:../src/kernel.c **** {
+ 471                             		.loc 1 205 0
+ 472                             		; start of function
+ 473                             		; push 2: r16
+ 474                             		; locals: 8 bytes
+ 475 017e 61 EF                   		sel	rb2
+ 476 0180 C1                      		push	ax ; r16
+ 477                             	.LCFI4:
+ 478 0181 61 CF                   		sel	rb0
+ 479 0183 20 08                   		subw	sp, #8
+ 480                             	.LCFI5:
+ 206:../src/kernel.c ****         unsigned char i;
+ 207:../src/kernel.c **** 
+ 208:../src/kernel.c ****         /* Starting all positions as empty */
+ 209:../src/kernel.c ****         for (i = 0; i < NUMBER_OF_TASKS; i++){
+ 481                             		.loc 1 209 0
+ 482 0185 C8 07 00                		mov	[sp+7], #0
+ 483 0188 EC A7 01 00             		br	!!.L10
+ 484                             	.L11:
+ 210:../src/kernel.c ****                 pool[i].Status = EMPTYSLOT;
+ 485                             		.loc 1 210 0 discriminator 2
+ 486 018c 88 07                   		mov	a, [sp+7]
+ 487 018e 70                      		mov	x, a 
+ 488 018f 51 00                   		mov	a, #0
+ 489 0191 BD E8                   		movw	r16, ax
+ 490 0193 31 4D                   		shlw	ax, 4
+ 491 0195 BD E8                   		movw	r16, ax
+ 492 0197 04 00 00                		addw	ax, #_pool+4
+ 493 019a BD E8                   		movw	r16, ax
+ 494 019c FA E8                   		movw	hl, r16
+ 495 019e F6                      		clrw	ax
+ 496 019f BB                      		movw	[hl], ax
+ 209:../src/kernel.c ****         for (i = 0; i < NUMBER_OF_TASKS; i++){
+ 497                             		.loc 1 209 0 discriminator 2
+ 498 01a0 88 07                   		mov	a, [sp+7]
+ 499 01a2 9D E8                   		mov	r16, a
+ 500 01a4 81                      		inc	a
+ 501 01a5 98 07                   		mov	[sp+7], a
+ 502                             	.L10:
+ 209:../src/kernel.c ****         for (i = 0; i < NUMBER_OF_TASKS; i++){
+ 503                             		.loc 1 209 0 is_stmt 0 discriminator 1
+ 504 01a7 88 07                   		mov	a, [sp+7]
+ 505 01a9 4C 08                   		cmp	a, #8 
+ 506 01ab 61 E3                   		skh 
+ 507 01ad EC 8C 01 00             		br	!!.L11
+ 211:../src/kernel.c ****         }
+ 212:../src/kernel.c **** 
+ 213:../src/kernel.c ****         lastTask = 0;
+ 508                             		.loc 1 213 0 is_stmt 1
+ 509 01b1 F5 00 00                		clrb	!_lastTask
+ 214:../src/kernel.c **** 
+ 215:../src/kernel.c ****         /* Pointing SP to the bottom of stack */
+ 216:../src/kernel.c ****         SP = 0xf0000;
+ 510                             		.loc 1 216 0
+ 511 01b4 F6                      		clrw	ax
+ 512 01b5 BF 94 01                		movw	!_SP, ax
+ 513 01b8 30 0F 00                		movw	ax, #15
+ 514 01bb BF 96 01                		movw	!_SP+2, ax
+ 217:../src/kernel.c ****         SP |= ((uint16_t) (task_stack + STACK_SIZE));
+ 515                             		.loc 1 217 0
+ 516 01be AF 94 01                		movw	ax, !_SP
+ 517 01c1 BD F4                   		movw	r12, ax
+ 518 01c3 AF 96 01                		movw	ax, !_SP+2
+ 519 01c6 BD F6                   		movw	r14, ax
+ 520 01c8 30 90 01                		movw	ax, #_task_stack+400
+ 521 01cb B8 04                   		movw	[sp+4], ax
+ 522 01cd BD F0                   		movw	r8, ax
+ 523 01cf B8 00                   		movw	[sp], ax
+ 524 01d1 C8 02 00                		mov	[sp+2], #0
+ 525 01d4 C8 03 00                		mov	[sp+3], #0
+ 526 01d7 88 00                   		mov	a, [sp]
+ 527 01d9 6B F4                   		or	a, r12
+ 528 01db 9D F0                   		mov	r8, a
+ 529 01dd 88 01                   		mov	a, [sp+1]
+ 530 01df 6B F5                   		or	a, r13
+ 531 01e1 9D F1                   		mov	r9, a
+ 532 01e3 88 02                   		mov	a, [sp+2]
+ 533 01e5 6B F6                   		or	a, r14
+ 534 01e7 9D F2                   		mov	r10, a
+ 535 01e9 88 03                   		mov	a, [sp+3]
+ 536 01eb 6B F7                   		or	a, r15
+ 537 01ed 9D F3                   		mov	r11, a
+ 538 01ef AD F0                   		movw	ax, r8
+ 539 01f1 BF 94 01                		movw	!_SP, ax
+ 540 01f4 AD F2                   		movw	ax, r10
+ 541 01f6 BF 96 01                		movw	!_SP+2, ax
+ 218:../src/kernel.c **** 
+ 219:../src/kernel.c ****         CreateIdleProc();
+ 542                             		.loc 1 219 0
+ 543 01f9 FC 00 00 00             		call	!!%code(_CreateIdleProc)
+ 220:../src/kernel.c **** 
+ 221:../src/kernel.c ****         actualTask = IDLE_PROC_ID;
+ 544                             		.loc 1 221 0
+ 545 01fd CF 00 00 09             		mov	!_actualTask, #9
+ 222:../src/kernel.c ****         RRactualTask = 0;
+ 546                             		.loc 1 222 0
+ 547 0201 F5 00 00                		clrb	!_RRactualTask
+ 223:../src/kernel.c **** 
+ 224:../src/kernel.c ****         return SUCESSO;
+ 548                             		.loc 1 224 0
+ 549 0204 CD F0 00                		mov	r8, #0
+ 225:../src/kernel.c **** }
+ 550                             		.loc 1 225 0
+ 551 0207 10 08                   		addw	sp, #8
+ 552 0209 61 EF                   		sel	rb2
+ 553 020b C0                      		pop	ax ; r16
+ 554 020c 61 CF                   		sel	rb0
+ 555 020e D7                      		ret
+ 556                             	.LFE6:
+ 558                             		.global	_kernelAddProc
+ 560                             	_kernelAddProc:
+ 561                             	.LFB7:
+ 226:../src/kernel.c **** 
+ 227:../src/kernel.c **** int8_t kernelAddProc(ptrFunc func, int stkSize, priorityMode newPrio)
+ 228:../src/kernel.c **** {
+ 562                             		.loc 1 228 0
+ 563                             		; start of function
+ 564                             		; push 6: r16 r18 r20
+ 565                             		; locals: 10 bytes
+ 566                             		; outgoing: 6 bytes
+ 567 020f 61 EF                   		sel	rb2
+ 568 0211 C1                      		push	ax ; r16
+ 569                             	.LCFI6:
+ 570 0212 C3                      		push	bc ; r18
+ 571                             	.LCFI7:
+ 572 0213 C5                      		push	de ; r20
+ 573                             	.LCFI8:
+ 574 0214 61 CF                   		sel	rb0
+ 575 0216 20 10                   		subw	sp, #16
+ 576                             	.LCFI9:
+ 229:../src/kernel.c ****         /* lastTask is a pointer to the next free space in the pool */
+ 230:../src/kernel.c ****         if (lastTask == NUMBER_OF_TASKS) {
+ 577                             		.loc 1 230 0
+ 578 0218 8F 00 00                		mov	a, !_lastTask
+ 579 021b 9D F0                   		mov	r8, a
+ 580 021d 4A F0 09                		cmp	r8, #9 
+ 581 0220 61 E8                   		skz 
+ 582 0222 EC 2D 02 00             		br	!!.L14
+ 231:../src/kernel.c ****                 return FALHA;
+ 583                             		.loc 1 231 0
+ 584 0226 CD F0 01                		mov	r8, #1
+ 585 0229 EC 75 03 00             		br	!!.L15
+ 586                             	.L14:
+ 232:../src/kernel.c ****         }
+ 233:../src/kernel.c **** 
+ 234:../src/kernel.c ****         pool[lastTask].StackInit = SP;
+ 587                             		.loc 1 234 0
+ 588 022d 8F 00 00                		mov	a, !_lastTask
+ 589 0230 9D F0                   		mov	r8, a
+ 590 0232 CD F1 00                		mov	r9, #0
+ 591 0235 AF 94 01                		movw	ax, !_SP
+ 592 0238 BD F2                   		movw	r10, ax
+ 593 023a AF 96 01                		movw	ax, !_SP+2
+ 594 023d BD F4                   		movw	r12, ax
+ 595 023f AD F0                   		movw	ax, r8
+ 596 0241 31 4D                   		shlw	ax, 4
+ 597 0243 BD F0                   		movw	r8, ax
+ 598 0245 04 00 00                		addw	ax, #_pool+12
+ 599 0248 BD F0                   		movw	r8, ax
+ 600 024a BD F6                   		movw	r14, ax
+ 601 024c FA F6                   		movw	hl, r14
+ 602 024e AD F2                   		movw	ax, r10
+ 603 0250 BB                      		movw	[hl], ax
+ 604 0251 FA F0                   		movw	hl, r8
+ 605 0253 AD F4                   		movw	ax, r12
+ 606 0255 BC 02                   		movw	[hl+2], ax
+ 235:../src/kernel.c ****         pool[lastTask].prioridade = newPrio;
+ 607                             		.loc 1 235 0
+ 608 0257 8F 00 00                		mov	a, !_lastTask
+ 609 025a 9D F0                   		mov	r8, a
+ 610 025c CD F1 00                		mov	r9, #0
+ 611 025f AD F0                   		movw	ax, r8
+ 612 0261 31 4D                   		shlw	ax, 4
+ 613 0263 BD F0                   		movw	r8, ax
+ 614 0265 04 00 00                		addw	ax, #_pool+6
+ 615 0268 BD F2                   		movw	r10, ax
+ 616 026a A8 1E                   		movw	ax, [sp+30]
+ 617 026c BD F0                   		movw	r8, ax
+ 618 026e AD F2                   		movw	ax, r10
+ 619 0270 BD F4                   		movw	r12, ax
+ 620 0272 FA F4                   		movw	hl, r12
+ 621 0274 AD F0                   		movw	ax, r8
+ 622 0276 BB                      		movw	[hl], ax
+ 236:../src/kernel.c ****         pool[lastTask].Status = READY;
+ 623                             		.loc 1 236 0
+ 624 0277 8F 00 00                		mov	a, !_lastTask
+ 625 027a 9D F0                   		mov	r8, a
+ 626 027c CD F1 00                		mov	r9, #0
+ 627 027f AD F0                   		movw	ax, r8
+ 628 0281 31 4D                   		shlw	ax, 4
+ 629 0283 BD F0                   		movw	r8, ax
+ 630 0285 04 00 00                		addw	ax, #_pool+4
+ 631 0288 BD F0                   		movw	r8, ax
+ 632 028a BD F6                   		movw	r14, ax
+ 633 028c FA F6                   		movw	hl, r14
+ 634 028e 30 02 00                		movw	ax, #2
+ 635 0291 BB                      		movw	[hl], ax
+ 237:../src/kernel.c ****         pool[lastTask].Function = func;
+ 636                             		.loc 1 237 0
+ 637 0292 8F 00 00                		mov	a, !_lastTask
+ 638 0295 9D F0                   		mov	r8, a
+ 639 0297 CD F1 00                		mov	r9, #0
+ 640 029a AD F0                   		movw	ax, r8
+ 641 029c 31 4D                   		shlw	ax, 4
+ 642 029e BD F0                   		movw	r8, ax
+ 643 02a0 04 00 00                		addw	ax, #_pool
+ 644 02a3 BD F2                   		movw	r10, ax
+ 645 02a5 A8 1A                   		movw	ax, [sp+26]
+ 646 02a7 BD F0                   		movw	r8, ax
+ 647 02a9 AD F2                   		movw	ax, r10
+ 648 02ab BD F4                   		movw	r12, ax
+ 649 02ad FA F4                   		movw	hl, r12
+ 650 02af AD F0                   		movw	ax, r8
+ 651 02b1 BB                      		movw	[hl], ax
+ 238:../src/kernel.c **** 
+ 239:../src/kernel.c ****         /* Give a little time to all processes to avoid RTOS false warning */
+ 240:../src/kernel.c ****         pool[lastTask].Time = 10; 
+ 652                             		.loc 1 240 0
+ 653 02b2 8F 00 00                		mov	a, !_lastTask
+ 654 02b5 9D F0                   		mov	r8, a
+ 655 02b7 CD F1 00                		mov	r9, #0
+ 656 02ba AD F0                   		movw	ax, r8
+ 657 02bc 31 4D                   		shlw	ax, 4
+ 658 02be BD F0                   		movw	r8, ax
+ 659 02c0 04 00 00                		addw	ax, #_pool+2
+ 660 02c3 BD F0                   		movw	r8, ax
+ 661 02c5 BD F6                   		movw	r14, ax
+ 662 02c7 FA F6                   		movw	hl, r14
+ 663 02c9 30 0A 00                		movw	ax, #10
+ 664 02cc BB                      		movw	[hl], ax
+ 241:../src/kernel.c **** 
+ 242:../src/kernel.c ****         createStack(func, SP);
+ 665                             		.loc 1 242 0
+ 666 02cd AF 94 01                		movw	ax, !_SP
+ 667 02d0 BD F6                   		movw	r14, ax
+ 668 02d2 AF 96 01                		movw	ax, !_SP+2
+ 669 02d5 BD E8                   		movw	r16, ax
+ 670 02d7 A8 1A                   		movw	ax, [sp+26]
+ 671 02d9 BD F0                   		movw	r8, ax
+ 672 02db B8 00                   		movw	[sp], ax
+ 673 02dd AD F6                   		movw	ax, r14
+ 674 02df B8 02                   		movw	[sp+2], ax
+ 675 02e1 AD E8                   		movw	ax, r16
+ 676 02e3 B8 04                   		movw	[sp+4], ax
+ 677 02e5 FC 00 00 00             		call	!!%code(_createStack)
+ 243:../src/kernel.c **** 
+ 244:../src/kernel.c ****         /* Stack end point */
+ 245:../src/kernel.c ****         pool[lastTask].StackPoint = SP - 14;
+ 678                             		.loc 1 245 0
+ 679 02e9 8F 00 00                		mov	a, !_lastTask
+ 680 02ec 9D F0                   		mov	r8, a
+ 681 02ee 70                      		mov	x, a 
+ 682 02ef 51 00                   		mov	a, #0
+ 683 02f1 BD F4                   		movw	r12, ax
+ 684 02f3 AF 94 01                		movw	ax, !_SP
+ 685 02f6 BD F0                   		movw	r8, ax
+ 686 02f8 B8 0C                   		movw	[sp+12], ax
+ 687 02fa AF 96 01                		movw	ax, !_SP+2
+ 688 02fd BD F2                   		movw	r10, ax
+ 689 02ff B8 0E                   		movw	[sp+14], ax
+ 690 0301 A8 0C                   		movw ax,[sp+12] 
+ 691 0303 04 F2 FF                		addw ax,#65522 
+ 692 0306 BD F0                   		movw r8, ax 
+ 693 0308 A8 0E                   		movw ax,[sp+14] 
+ 694 030a 61 D8                   		sknc 
+ 695 030c A1                      		incw ax 
+ 696 030d 04 FF FF                		addw ax,#-1 
+ 697 0310 BD F2                   		movw r10,ax
+ 698 0312 AD F4                   		movw	ax, r12
+ 699 0314 31 4D                   		shlw	ax, 4
+ 700 0316 BD F4                   		movw	r12, ax
+ 701 0318 04 00 00                		addw	ax, #_pool+8
+ 702 031b BD F4                   		movw	r12, ax
+ 703 031d BD F6                   		movw	r14, ax
+ 704 031f FA F6                   		movw	hl, r14
+ 705 0321 AD F0                   		movw	ax, r8
+ 706 0323 BB                      		movw	[hl], ax
+ 707 0324 FA F4                   		movw	hl, r12
+ 708 0326 AD F2                   		movw	ax, r10
+ 709 0328 BC 02                   		movw	[hl+2], ax
+ 246:../src/kernel.c **** 
+ 247:../src/kernel.c ****         /* Jump to the next stack free position */
+ 248:../src/kernel.c ****         SP -= stkSize;
+ 710                             		.loc 1 248 0
+ 711 032a AF 94 01                		movw	ax, !_SP
+ 712 032d BD EA                   		movw	r18, ax
+ 713 032f AF 96 01                		movw	ax, !_SP+2
+ 714 0332 BD EC                   		movw	r20, ax
+ 715 0334 A8 1C                   		movw	ax, [sp+28]
+ 716 0336 BD F0                   		movw	r8, ax
+ 717 0338 B8 06                   		movw	[sp+6], ax
+ 718 033a BD F2                   		movw	r10, ax
+ 719 033c B8 08                   		movw	[sp+8], ax
+ 720 033e 88 07                   		mov	a, [sp+7]
+ 721 0340 31 7B                   		sar	a, 7
+ 722 0342 9D F0                   		mov	r8, a
+ 723 0344 98 0A                   		mov	[sp+10], a
+ 724 0346 98 0B                   		mov	[sp+11], a
+ 725 0348 FB F8 FF                		movw	hl, sp
+ 726 034b AD EA                   		movw ax,r18 
+ 727 034d 61 29 08                		subw ax,[hl+8] 
+ 728 0350 BD F0                   		movw r8, ax 
+ 729 0352 AD EC                   		movw ax,r20 
+ 730 0354 61 D8                   		sknc 
+ 731 0356 B1                      		decw ax 
+ 732 0357 61 29 0A                		subw ax,[hl+10] 
+ 733 035a BD F2                   		movw r10,ax
+ 734 035c AD F0                   		movw	ax, r8
+ 735 035e BF 94 01                		movw	!_SP, ax
+ 736 0361 AD F2                   		movw	ax, r10
+ 737 0363 BF 96 01                		movw	!_SP+2, ax
+ 249:../src/kernel.c **** 
+ 250:../src/kernel.c ****         /* Point to next free space */
+ 251:../src/kernel.c ****         lastTask++;
+ 738                             		.loc 1 251 0
+ 739 0366 8F 00 00                		mov	a, !_lastTask
+ 740 0369 9D F0                   		mov	r8, a
+ 741 036b A4 F0                   		inc	r8
+ 742 036d 8D F0                   		mov	a, r8
+ 743 036f 9F 00 00                		mov	!_lastTask, a
+ 252:../src/kernel.c **** 
+ 253:../src/kernel.c ****         return SUCESSO;
+ 744                             		.loc 1 253 0
+ 745 0372 CD F0 00                		mov	r8, #0
+ 746                             	.L15:
+ 254:../src/kernel.c **** }
+ 747                             		.loc 1 254 0
+ 748 0375 10 10                   		addw	sp, #16
+ 749 0377 61 EF                   		sel	rb2
+ 750 0379 C4                      		pop	de ; r20
+ 751 037a C2                      		pop	bc ; r18
+ 752 037b C0                      		pop	ax ; r16
+ 753 037c 61 CF                   		sel	rb0
+ 754 037e D7                      		ret
+ 755                             	.LFE7:
+ 757                             		.comm	_SP_dummy,4,2
+ 758                             		.global	_kernelLoop
+ 760                             	_kernelLoop:
+ 761                             	.LFB8:
+ 255:../src/kernel.c **** 
+ 256:../src/kernel.c **** uint32_t SP_dummy;
+ 257:../src/kernel.c **** 
+ 258:../src/kernel.c **** void kernelLoop(void) 
+ 259:../src/kernel.c **** {
+ 762                             		.loc 1 259 0
+ 260:../src/kernel.c ****         pool[IDLE_PROC_ID].Status = RUNNING;
+ 763                             		.loc 1 260 0
+ 764 037f E6                      		onew	ax
+ 765 0380 BF 00 00                		movw	!_pool+148, ax
+ 261:../src/kernel.c ****         SP_dummy = pool[IDLE_PROC_ID].StackPoint;
+ 766                             		.loc 1 261 0
+ 767 0383 AF 00 00                		movw	ax, !_pool+152
+ 768 0386 BD F0                   		movw	r8, ax
+ 769 0388 AF 00 00                		movw	ax, !_pool+154
+ 770 038b BD F2                   		movw	r10, ax
+ 771 038d AD F0                   		movw	ax, r8
+ 772 038f BF 00 00                		movw	!_SP_dummy, ax
+ 773 0392 AD F2                   		movw	ax, r10
+ 774 0394 BF 00 00                		movw	!_SP_dummy+2, ax
+ 262:../src/kernel.c ****         actualTask = IDLE_PROC_ID;
+ 775                             		.loc 1 262 0
+ 776 0397 CF 00 00 09             		mov	!_actualTask, #9
+ 263:../src/kernel.c **** 
+ 264:../src/kernel.c ****         /* Restore SP */
+ 265:../src/kernel.c ****         asm("movw   ax, #_SP_dummy");
+ 777                             		.loc 1 265 0
+ 778                             	 ; 265 "../src/kernel.c" 1
+ 779 039b 30 00 00                		movw   ax, #_SP_dummy
+ 780                             	 ; 0 "" 2
+ 266:../src/kernel.c ****         asm("movw   hl, ax");
+ 781                             		.loc 1 266 0
+ 782                             	 ; 266 "../src/kernel.c" 1
+ 783 039e 16                      		movw   hl, ax
+ 784                             	 ; 0 "" 2
+ 267:../src/kernel.c ****         asm("movw   ax, [hl]");
+ 785                             		.loc 1 267 0
+ 786                             	 ; 267 "../src/kernel.c" 1
+ 787 039f AB                      		movw   ax, [hl]
+ 788                             	 ; 0 "" 2
+ 268:../src/kernel.c ****         asm("movw   sp, ax");
+ 789                             		.loc 1 268 0
+ 790                             	 ; 268 "../src/kernel.c" 1
+ 791 03a0 BE F8                   		movw   sp, ax
+ 792                             	 ; 0 "" 2
+ 269:../src/kernel.c **** 
+ 270:../src/kernel.c ****         /* Load of context is done by reti */
+ 271:../src/kernel.c ****         asm("reti");
+ 793                             		.loc 1 271 0
+ 794                             	 ; 271 "../src/kernel.c" 1
+ 795 03a2 61 FC                   		reti
+ 796                             	 ; 0 "" 2
+ 797                             	.L17:
+ 272:../src/kernel.c **** 
+ 273:../src/kernel.c ****         /* Should not get here */
+ 274:../src/kernel.c ****         for (;;);
+ 798                             		.loc 1 274 0 discriminator 1
+ 799 03a4 EC A4 03 00             		br	!!.L17
+ 800                             	.LFE8:
+ 802                             		.global	_Scheduler
+ 804                             	_Scheduler:
+ 805                             	.LFB9:
+ 275:../src/kernel.c **** }
+ 276:../src/kernel.c **** 
+ 277:../src/kernel.c **** int8_t Scheduler(void)
+ 278:../src/kernel.c **** {
+ 806                             		.loc 1 278 0
+ 807                             		; start of function
+ 808                             		; locals: 2 bytes
+ 809 03a8 20 02                   		subw	sp, #2
+ 810                             	.LCFI10:
+ 279:../src/kernel.c ****         char i;
+ 280:../src/kernel.c ****         char next = IDLE_PROC_ID;
+ 811                             		.loc 1 280 0
+ 812 03aa C8 00 09                		mov	[sp], #9
+ 281:../src/kernel.c **** 
+ 282:../src/kernel.c ****         if (lastTask == 0) {
+ 813                             		.loc 1 282 0
+ 814 03ad 8F 00 00                		mov	a, !_lastTask
+ 815 03b0 9D F0                   		mov	r8, a
+ 816 03b2 D4 F0                   		cmp0	r8 
+ 817 03b4 61 E8                   		skz 
+ 818 03b6 EC C2 03 00             		br	!!.L19
+ 283:../src/kernel.c ****                 return next;
+ 819                             		.loc 1 283 0
+ 820 03ba 88 00                   		mov	a, [sp]
+ 821 03bc 9D F0                   		mov	r8, a
+ 822 03be EC CA 05 00             		br	!!.L20
+ 823                             	.L19:
+ 284:../src/kernel.c ****         }
+ 285:../src/kernel.c **** 
+ 286:../src/kernel.c ****         /* Update tick count for each process except the one running */
+ 287:../src/kernel.c ****         for (i = 0; i < lastTask; i++){
+ 824                             		.loc 1 287 0
+ 825 03c2 C8 01 00                		mov	[sp+1], #0
+ 826 03c5 EC 79 04 00             		br	!!.L21
+ 827                             	.L24:
+ 288:../src/kernel.c ****                 if (pool[i].Status != EMPTYSLOT){
+ 828                             		.loc 1 288 0
+ 829 03c9 88 01                   		mov	a, [sp+1]
+ 830 03cb 70                      		mov	x, a 
+ 831 03cc 51 00                   		mov	a, #0
+ 832 03ce BD F0                   		movw	r8, ax
+ 833 03d0 31 4D                   		shlw	ax, 4
+ 834 03d2 BD F0                   		movw	r8, ax
+ 835 03d4 04 00 00                		addw	ax, #_pool+4
+ 836 03d7 BD F0                   		movw	r8, ax
+ 837 03d9 BD F2                   		movw	r10, ax
+ 838 03db FA F2                   		movw	hl, r10
+ 839 03dd AB                      		movw	ax, [hl]
+ 840 03de BD F0                   		movw	r8, ax
+ 841 03e0 44 00 00                		cmpw	ax, #0 
+ 842 03e3 61 F8                   		sknz 
+ 843 03e5 EC 72 04 00             		br	!!.L22
+ 289:../src/kernel.c ****                         if (pool[i].Time > -30000){
+ 844                             		.loc 1 289 0
+ 845 03e9 88 01                   		mov	a, [sp+1]
+ 846 03eb 70                      		mov	x, a 
+ 847 03ec 51 00                   		mov	a, #0
+ 848 03ee BD F0                   		movw	r8, ax
+ 849 03f0 31 4D                   		shlw	ax, 4
+ 850 03f2 BD F0                   		movw	r8, ax
+ 851 03f4 04 00 00                		addw	ax, #_pool+2
+ 852 03f7 BD F0                   		movw	r8, ax
+ 853 03f9 BD F4                   		movw	r12, ax
+ 854 03fb FA F4                   		movw	hl, r12
+ 855 03fd AB                      		movw	ax, [hl]
+ 856 03fe BD F0                   		movw	r8, ax
+ 857 0400 44 D1 8A                		cmpw	ax, #-29999 
+ 858 0403 71 FF                   		xor1 CY,a.7
+ 859 0405 71 C0                   		not1 CY
+ 860 0407 61 D8                   		sknc 
+ 861 0409 EC 38 04 00             		br	!!.L23
+ 290:../src/kernel.c ****                                 pool[i].Time--;
+ 862                             		.loc 1 290 0
+ 863 040d 88 01                   		mov	a, [sp+1]
+ 864 040f 70                      		mov	x, a 
+ 865 0410 51 00                   		mov	a, #0
+ 866 0412 BD F0                   		movw	r8, ax
+ 867 0414 31 4D                   		shlw	ax, 4
+ 868 0416 BD F2                   		movw	r10, ax
+ 869 0418 04 00 00                		addw	ax, #_pool+2
+ 870 041b BD F2                   		movw	r10, ax
+ 871 041d BD F4                   		movw	r12, ax
+ 872 041f FA F4                   		movw	hl, r12
+ 873 0421 AB                      		movw	ax, [hl]
+ 874 0422 BD F2                   		movw	r10, ax
+ 875 0424 B6 F2                   		decw	r10
+ 876 0426 AD F0                   		movw	ax, r8
+ 877 0428 31 4D                   		shlw	ax, 4
+ 878 042a BD F0                   		movw	r8, ax
+ 879 042c 04 00 00                		addw	ax, #_pool+2
+ 880 042f BD F0                   		movw	r8, ax
+ 881 0431 BD F4                   		movw	r12, ax
+ 882 0433 FA F4                   		movw	hl, r12
+ 883 0435 AD F2                   		movw	ax, r10
+ 884 0437 BB                      		movw	[hl], ax
+ 885                             	.L23:
+ 291:../src/kernel.c ****                         }
+ 292:../src/kernel.c ****                         if (pool[i].Time <= 0){
+ 886                             		.loc 1 292 0
+ 887 0438 88 01                   		mov	a, [sp+1]
+ 888 043a 70                      		mov	x, a 
+ 889 043b 51 00                   		mov	a, #0
+ 890 043d BD F0                   		movw	r8, ax
+ 891 043f 31 4D                   		shlw	ax, 4
+ 892 0441 BD F0                   		movw	r8, ax
+ 893 0443 04 00 00                		addw	ax, #_pool+2
+ 894 0446 BD F0                   		movw	r8, ax
+ 895 0448 BD F2                   		movw	r10, ax
+ 896 044a FA F2                   		movw	hl, r10
+ 897 044c AB                      		movw	ax, [hl]
+ 898 044d BD F0                   		movw	r8, ax
+ 899 044f 44 00 00                		cmpw	ax, #0 
+ 900 0452 71 FF                   		xor1 CY,a.7
+ 901 0454 61 F3                   		sknh 
+ 902 0456 EC 72 04 00             		br	!!.L22
+ 293:../src/kernel.c ****                                 pool[i].Status = READY;
+ 903                             		.loc 1 293 0
+ 904 045a 88 01                   		mov	a, [sp+1]
+ 905 045c 70                      		mov	x, a 
+ 906 045d 51 00                   		mov	a, #0
+ 907 045f BD F0                   		movw	r8, ax
+ 908 0461 31 4D                   		shlw	ax, 4
+ 909 0463 BD F0                   		movw	r8, ax
+ 910 0465 04 00 00                		addw	ax, #_pool+4
+ 911 0468 BD F0                   		movw	r8, ax
+ 912 046a BD F4                   		movw	r12, ax
+ 913 046c FA F4                   		movw	hl, r12
+ 914 046e 30 02 00                		movw	ax, #2
+ 915 0471 BB                      		movw	[hl], ax
+ 916                             	.L22:
+ 287:../src/kernel.c ****         for (i = 0; i < lastTask; i++){
+ 917                             		.loc 1 287 0
+ 918 0472 88 01                   		mov	a, [sp+1]
+ 919 0474 9D F0                   		mov	r8, a
+ 920 0476 81                      		inc	a
+ 921 0477 98 01                   		mov	[sp+1], a
+ 922                             	.L21:
+ 287:../src/kernel.c ****         for (i = 0; i < lastTask; i++){
+ 923                             		.loc 1 287 0 is_stmt 0 discriminator 1
+ 924 0479 8F 00 00                		mov	a, !_lastTask
+ 925 047c 9D F0                   		mov	r8, a
+ 926 047e 88 01                   		mov	a, [sp+1]
+ 927 0480 4B F0                   		cmp	a, r8 
+ 928 0482 61 D8                   		sknc 
+ 929 0484 EC C9 03 00             		br	!!.L24
+ 294:../src/kernel.c ****                         }
+ 295:../src/kernel.c ****                 }
+ 296:../src/kernel.c ****         }
+ 297:../src/kernel.c **** 
+ 298:../src/kernel.c ****         /* RTOS priority check */
+ 299:../src/kernel.c ****         for (i = 0; i < lastTask; i++){
+ 930                             		.loc 1 299 0 is_stmt 1
+ 931 0488 C8 01 00                		mov	[sp+1], #0
+ 932 048b EC DE 04 00             		br	!!.L25
+ 933                             	.L27:
+ 300:../src/kernel.c ****                 if((pool[i].prioridade == RTOS) &&
+ 934                             		.loc 1 300 0
+ 935 048f 88 01                   		mov	a, [sp+1]
+ 936 0491 70                      		mov	x, a 
+ 937 0492 51 00                   		mov	a, #0
+ 938 0494 BD F0                   		movw	r8, ax
+ 939 0496 31 4D                   		shlw	ax, 4
+ 940 0498 BD F0                   		movw	r8, ax
+ 941 049a 04 00 00                		addw	ax, #_pool+6
+ 942 049d BD F0                   		movw	r8, ax
+ 943 049f BD F2                   		movw	r10, ax
+ 944 04a1 FA F2                   		movw	hl, r10
+ 945 04a3 AB                      		movw	ax, [hl]
+ 946 04a4 BD F0                   		movw	r8, ax
+ 947 04a6 44 01 00                		cmpw	ax, #1 
+ 948 04a9 61 E8                   		skz 
+ 949 04ab EC D7 04 00             		br	!!.L26
+ 301:../src/kernel.c ****                    (pool[i].Status == READY)) {
+ 950                             		.loc 1 301 0 discriminator 1
+ 951 04af 88 01                   		mov	a, [sp+1]
+ 952 04b1 70                      		mov	x, a 
+ 953 04b2 51 00                   		mov	a, #0
+ 954 04b4 BD F0                   		movw	r8, ax
+ 955 04b6 31 4D                   		shlw	ax, 4
+ 956 04b8 BD F0                   		movw	r8, ax
+ 957 04ba 04 00 00                		addw	ax, #_pool+4
+ 958 04bd BD F0                   		movw	r8, ax
+ 959 04bf BD F4                   		movw	r12, ax
+ 960 04c1 FA F4                   		movw	hl, r12
+ 961 04c3 AB                      		movw	ax, [hl]
+ 962 04c4 BD F0                   		movw	r8, ax
+ 300:../src/kernel.c ****                 if((pool[i].prioridade == RTOS) &&
+ 963                             		.loc 1 300 0 discriminator 1
+ 964 04c6 44 02 00                		cmpw	ax, #2 
+ 965 04c9 61 E8                   		skz 
+ 966 04cb EC D7 04 00             		br	!!.L26
+ 302:../src/kernel.c ****                         return i;
+ 967                             		.loc 1 302 0
+ 968 04cf 88 01                   		mov	a, [sp+1]
+ 969 04d1 9D F0                   		mov	r8, a
+ 970 04d3 EC CA 05 00             		br	!!.L20
+ 971                             	.L26:
+ 299:../src/kernel.c ****         for (i = 0; i < lastTask; i++){
+ 972                             		.loc 1 299 0
+ 973 04d7 88 01                   		mov	a, [sp+1]
+ 974 04d9 9D F0                   		mov	r8, a
+ 975 04db 81                      		inc	a
+ 976 04dc 98 01                   		mov	[sp+1], a
+ 977                             	.L25:
+ 299:../src/kernel.c ****         for (i = 0; i < lastTask; i++){
+ 978                             		.loc 1 299 0 is_stmt 0 discriminator 1
+ 979 04de 8F 00 00                		mov	a, !_lastTask
+ 980 04e1 9D F0                   		mov	r8, a
+ 981 04e3 88 01                   		mov	a, [sp+1]
+ 982 04e5 4B F0                   		cmp	a, r8 
+ 983 04e7 61 D8                   		sknc 
+ 984 04e9 EC 8F 04 00             		br	!!.L27
+ 303:../src/kernel.c ****                 }
+ 304:../src/kernel.c ****         }
+ 305:../src/kernel.c **** 
+ 306:../src/kernel.c ****         /* RRS: round-robin scheduler
+ 307:../src/kernel.c ****          * Start from the next task and go all the way around  
+ 308:../src/kernel.c ****          */
+ 309:../src/kernel.c ****         i = (RRactualTask+1);
+ 985                             		.loc 1 309 0 is_stmt 1
+ 986 04ed 8F 00 00                		mov	a, !_RRactualTask
+ 987 04f0 9D F0                   		mov	r8, a
+ 988 04f2 81                      		inc	a
+ 989 04f3 98 01                   		mov	[sp+1], a
+ 310:../src/kernel.c ****         if (i>=lastTask) {
+ 990                             		.loc 1 310 0
+ 991 04f5 8F 00 00                		mov	a, !_lastTask
+ 992 04f8 9D F0                   		mov	r8, a
+ 993 04fa 88 01                   		mov	a, [sp+1]
+ 994 04fc 4B F0                   		cmp	a, r8 
+ 995 04fe 61 D8                   		sknc 
+ 996 0500 EC 0B 05 00             		br	!!.L28
+ 311:../src/kernel.c ****                 i = 0;
+ 997                             		.loc 1 311 0
+ 998 0504 C8 01 00                		mov	[sp+1], #0
+ 312:../src/kernel.c ****         }
+ 313:../src/kernel.c ****         while ((i != RRactualTask) && 
+ 999                             		.loc 1 313 0
+ 1000 0507 EC 28 05 00             		br	!!.L29
+ 1001                             	.L28:
+ 1002 050b EC 28 05 00             		br	!!.L29
+ 1003                             	.L31:
+ 314:../src/kernel.c ****                (pool[i].Status != READY)) {
+ 315:../src/kernel.c ****                 i++;
+ 1004                             		.loc 1 315 0
+ 1005 050f 88 01                   		mov	a, [sp+1]
+ 1006 0511 9D F0                   		mov	r8, a
+ 1007 0513 81                      		inc	a
+ 1008 0514 98 01                   		mov	[sp+1], a
+ 316:../src/kernel.c ****                 if (i >= lastTask) {
+ 1009                             		.loc 1 316 0
+ 1010 0516 8F 00 00                		mov	a, !_lastTask
+ 1011 0519 9D F0                   		mov	r8, a
+ 1012 051b 88 01                   		mov	a, [sp+1]
+ 1013 051d 4B F0                   		cmp	a, r8 
+ 1014 051f 61 D8                   		sknc 
+ 1015 0521 EC 28 05 00             		br	!!.L29
+ 317:../src/kernel.c ****                         i = 0;
+ 1016                             		.loc 1 317 0
+ 1017 0525 C8 01 00                		mov	[sp+1], #0
+ 1018                             	.L29:
+ 313:../src/kernel.c ****         while ((i != RRactualTask) && 
+ 1019                             		.loc 1 313 0 discriminator 1
+ 1020 0528 88 01                   		mov	a, [sp+1]
+ 1021 052a 70                      		mov	x, a 
+ 1022 052b 51 00                   		mov	a, #0
+ 1023 052d BD F2                   		movw	r10, ax
+ 1024 052f 8F 00 00                		mov	a, !_RRactualTask
+ 1025 0532 9D F0                   		mov	r8, a
+ 1026 0534 31 8F                   		sarw	ax, 8
+ 1027 0536 BD F0                   		movw	r8, ax
+ 1028 0538 AD F2                   		movw	ax, r10
+ 1029 053a 46 F0                   		cmpw	ax, r8 
+ 1030 053c 61 F8                   		sknz 
+ 1031 053e EC 62 05 00             		br	!!.L30
+ 314:../src/kernel.c ****                (pool[i].Status != READY)) {
+ 1032                             		.loc 1 314 0 discriminator 2
+ 1033 0542 88 01                   		mov	a, [sp+1]
+ 1034 0544 70                      		mov	x, a 
+ 1035 0545 51 00                   		mov	a, #0
+ 1036 0547 BD F0                   		movw	r8, ax
+ 1037 0549 31 4D                   		shlw	ax, 4
+ 1038 054b BD F0                   		movw	r8, ax
+ 1039 054d 04 00 00                		addw	ax, #_pool+4
+ 1040 0550 BD F0                   		movw	r8, ax
+ 1041 0552 BD F2                   		movw	r10, ax
+ 1042 0554 FA F2                   		movw	hl, r10
+ 1043 0556 AB                      		movw	ax, [hl]
+ 1044 0557 BD F0                   		movw	r8, ax
+ 313:../src/kernel.c ****         while ((i != RRactualTask) && 
+ 1045                             		.loc 1 313 0 discriminator 2
+ 1046 0559 44 02 00                		cmpw	ax, #2 
+ 1047 055c 61 E8                   		skz 
+ 1048 055e EC 0F 05 00             		br	!!.L31
+ 1049                             	.L30:
+ 318:../src/kernel.c ****                 }
+ 319:../src/kernel.c ****         }
+ 320:../src/kernel.c **** 
+ 321:../src/kernel.c ****         /* If the variable "i" comes back to nextTask
+ 322:../src/kernel.c ****          * there aren't any other task willing to run
+ 323:../src/kernel.c ****          */
+ 324:../src/kernel.c ****         if ((i == RRactualTask) && 
+ 1050                             		.loc 1 324 0
+ 1051 0562 88 01                   		mov	a, [sp+1]
+ 1052 0564 70                      		mov	x, a 
+ 1053 0565 51 00                   		mov	a, #0
+ 1054 0567 BD F2                   		movw	r10, ax
+ 1055 0569 8F 00 00                		mov	a, !_RRactualTask
+ 1056 056c 9D F0                   		mov	r8, a
+ 1057 056e 31 8F                   		sarw	ax, 8
+ 1058 0570 BD F0                   		movw	r8, ax
+ 1059 0572 AD F2                   		movw	ax, r10
+ 1060 0574 46 F0                   		cmpw	ax, r8 
+ 1061 0576 61 E8                   		skz 
+ 1062 0578 EC A3 05 00             		br	!!.L32
+ 325:../src/kernel.c ****             (pool[i].Status == WAITING)) {
+ 1063                             		.loc 1 325 0 discriminator 1
+ 1064 057c 88 01                   		mov	a, [sp+1]
+ 1065 057e 70                      		mov	x, a 
+ 1066 057f 51 00                   		mov	a, #0
+ 1067 0581 BD F0                   		movw	r8, ax
+ 1068 0583 31 4D                   		shlw	ax, 4
+ 1069 0585 BD F0                   		movw	r8, ax
+ 1070 0587 04 00 00                		addw	ax, #_pool+4
+ 1071 058a BD F0                   		movw	r8, ax
+ 1072 058c BD F4                   		movw	r12, ax
+ 1073 058e FA F4                   		movw	hl, r12
+ 1074 0590 AB                      		movw	ax, [hl]
+ 1075 0591 BD F0                   		movw	r8, ax
+ 324:../src/kernel.c ****         if ((i == RRactualTask) && 
+ 1076                             		.loc 1 324 0 discriminator 1
+ 1077 0593 44 03 00                		cmpw	ax, #3 
+ 1078 0596 61 E8                   		skz 
+ 1079 0598 EC A3 05 00             		br	!!.L32
+ 326:../src/kernel.c ****                 return IDLE_PROC_ID;
+ 1080                             		.loc 1 326 0
+ 1081 059c CD F0 09                		mov	r8, #9
+ 1082 059f EC CA 05 00             		br	!!.L20
+ 1083                             	.L32:
+ 327:../src/kernel.c ****         } else {
+ 328:../src/kernel.c ****                 RRactualTask=i;
+ 1084                             		.loc 1 328 0
+ 1085 05a3 88 01                   		mov	a, [sp+1]
+ 1086 05a5 9D F0                   		mov	r8, a
+ 1087 05a7 9F 00 00                		mov	!_RRactualTask, a
+ 329:../src/kernel.c ****                 next = i;
+ 1088                             		.loc 1 329 0
+ 1089 05aa 88 01                   		mov	a, [sp+1]
+ 1090 05ac 9D F0                   		mov	r8, a
+ 1091 05ae 98 00                   		mov	[sp], a
+ 330:../src/kernel.c ****         }
+ 331:../src/kernel.c **** 
+ 332:../src/kernel.c ****         /* In the end, 'next' has the next task for both scheduler algorithms */
+ 333:../src/kernel.c ****         if (next >= lastTask) {
+ 1092                             		.loc 1 333 0
+ 1093 05b0 8F 00 00                		mov	a, !_lastTask
+ 1094 05b3 9D F0                   		mov	r8, a
+ 1095 05b5 88 00                   		mov	a, [sp]
+ 1096 05b7 4B F0                   		cmp	a, r8 
+ 1097 05b9 61 D8                   		sknc 
+ 1098 05bb EC C6 05 00             		br	!!.L33
+ 334:../src/kernel.c ****                 return IDLE_PROC_ID;
+ 1099                             		.loc 1 334 0
+ 1100 05bf CD F0 09                		mov	r8, #9
+ 1101 05c2 EC CA 05 00             		br	!!.L20
+ 1102                             	.L33:
+ 335:../src/kernel.c ****         }
+ 336:../src/kernel.c ****         return next;
+ 1103                             		.loc 1 336 0
+ 1104 05c6 88 00                   		mov	a, [sp]
+ 1105 05c8 9D F0                   		mov	r8, a
+ 1106                             	.L20:
+ 337:../src/kernel.c **** }
+ 1107                             		.loc 1 337 0
+ 1108 05ca 10 02                   		addw	sp, #2
+ 1109 05cc D7                      		ret
+ 1110                             	.LFE9:
+ 1112                             		.global	_kernelClock
+ 1114                             	_kernelClock:
+ 1115                             	.LFB10:
+ 338:../src/kernel.c **** 
+ 339:../src/kernel.c **** /* This function is called every IT interrupt */
+ 340:../src/kernel.c **** void kernelClock(void)
+ 341:../src/kernel.c **** {
+ 1116                             		.loc 1 341 0
+ 1117                             		; start of function
+ 1118                             		; push 4: r16 r18
+ 1119 05cd 61 EF                   		sel	rb2
+ 1120 05cf C1                      		push	ax ; r16
+ 1121                             	.LCFI11:
+ 1122 05d0 C3                      		push	bc ; r18
+ 1123                             	.LCFI12:
+ 1124 05d1 61 CF                   		sel	rb0
+ 342:../src/kernel.c ****         /* Store AX */
+ 343:../src/kernel.c ****         asm("movw   r10, ax");
+ 1125                             		.loc 1 343 0
+ 1126                             	 ; 343 "../src/kernel.c" 1
+ 1127 05d3 BD F2                   		movw   r10, ax
+ 1128                             	 ; 0 "" 2
+ 344:../src/kernel.c **** 
+ 345:../src/kernel.c ****         /* Remove stack pushes added by the compiler  
+ 346:../src/kernel.c ****          * INT_IT      -> 18     bytes
+ 347:../src/kernel.c ****          * kernelClock -> 4 + 4  bytes 
+ 348:../src/kernel.c ****          */
+ 349:../src/kernel.c ****         asm("movw   ax, sp");
+ 1129                             		.loc 1 349 0
+ 1130                             	 ; 349 "../src/kernel.c" 1
+ 1131 05d5 AE F8                   		movw   ax, sp
+ 1132                             	 ; 0 "" 2
+ 350:../src/kernel.c ****         asm("addw   ax, #26");
+ 1133                             		.loc 1 350 0
+ 1134                             	 ; 350 "../src/kernel.c" 1
+ 1135 05d7 04 1A 00                		addw   ax, #26
+ 1136                             	 ; 0 "" 2
+ 351:../src/kernel.c ****         asm("movw   sp, ax");
+ 1137                             		.loc 1 351 0
+ 1138                             	 ; 351 "../src/kernel.c" 1
+ 1139 05da BE F8                   		movw   sp, ax
+ 1140                             	 ; 0 "" 2
+ 352:../src/kernel.c ****        
+ 353:../src/kernel.c ****         /* Restore AX */
+ 354:../src/kernel.c ****         asm("movw   ax, r10");
+ 1141                             		.loc 1 354 0
+ 1142                             	 ; 354 "../src/kernel.c" 1
+ 1143 05dc AD F2                   		movw   ax, r10
+ 1144                             	 ; 0 "" 2
+ 355:../src/kernel.c **** 
+ 356:../src/kernel.c ****         /* Save process context */
+ 357:../src/kernel.c ****         asm("push   ax");
+ 1145                             		.loc 1 357 0
+ 1146                             	 ; 357 "../src/kernel.c" 1
+ 1147 05de C1                      		push   ax
+ 1148                             	 ; 0 "" 2
+ 358:../src/kernel.c ****         asm("push   hl");
+ 1149                             		.loc 1 358 0
+ 1150                             	 ; 358 "../src/kernel.c" 1
+ 1151 05df C7                      		push   hl
+ 1152                             	 ; 0 "" 2
+ 359:../src/kernel.c ****         asm("mov    a, cs");
+ 1153                             		.loc 1 359 0
+ 1154                             	 ; 359 "../src/kernel.c" 1
+ 1155 05e0 8E FC                   		mov    a, cs
+ 1156                             	 ; 0 "" 2
+ 360:../src/kernel.c ****         asm("xch    a, x");
+ 1157                             		.loc 1 360 0
+ 1158                             	 ; 360 "../src/kernel.c" 1
+ 1159 05e2 08                      		xch    a, x
+ 1160                             	 ; 0 "" 2
+ 361:../src/kernel.c ****         asm("mov    a, es");
+ 1161                             		.loc 1 361 0
+ 1162                             	 ; 361 "../src/kernel.c" 1
+ 1163 05e3 8E FD                   		mov    a, es
+ 1164                             	 ; 0 "" 2
+ 362:../src/kernel.c ****         asm("push   ax");
+ 1165                             		.loc 1 362 0
+ 1166                             	 ; 362 "../src/kernel.c" 1
+ 1167 05e5 C1                      		push   ax
+ 1168                             	 ; 0 "" 2
+ 363:../src/kernel.c ****         asm("push   de");
+ 1169                             		.loc 1 363 0
+ 1170                             	 ; 363 "../src/kernel.c" 1
+ 1171 05e6 C5                      		push   de
+ 1172                             	 ; 0 "" 2
+ 364:../src/kernel.c ****         asm("push   bc");
+ 1173                             		.loc 1 364 0
+ 1174                             	 ; 364 "../src/kernel.c" 1
+ 1175 05e7 C3                      		push   bc
+ 1176                             	 ; 0 "" 2
+ 365:../src/kernel.c **** 
+ 366:../src/kernel.c ****         /* Save SP into SPAtual */
+ 367:../src/kernel.c ****         asm("movw   ax, #_SPAtual");
+ 1177                             		.loc 1 367 0
+ 1178                             	 ; 367 "../src/kernel.c" 1
+ 1179 05e8 30 90 01                		movw   ax, #_SPAtual
+ 1180                             	 ; 0 "" 2
+ 368:../src/kernel.c ****         asm("movw   hl, ax");
+ 1181                             		.loc 1 368 0
+ 1182                             	 ; 368 "../src/kernel.c" 1
+ 1183 05eb 16                      		movw   hl, ax
+ 1184                             	 ; 0 "" 2
+ 369:../src/kernel.c ****         asm("movw   ax, sp");
+ 1185                             		.loc 1 369 0
+ 1186                             	 ; 369 "../src/kernel.c" 1
+ 1187 05ec AE F8                   		movw   ax, sp
+ 1188                             	 ; 0 "" 2
+ 370:../src/kernel.c ****         asm("movw   [hl], ax");
+ 1189                             		.loc 1 370 0
+ 1190                             	 ; 370 "../src/kernel.c" 1
+ 1191 05ee BB                      		movw   [hl], ax
+ 1192                             	 ; 0 "" 2
+ 371:../src/kernel.c **** 
+ 372:../src/kernel.c ****         pool[actualTask].StackPoint = SPAtual;
+ 1193                             		.loc 1 372 0
+ 1194 05ef 8F 00 00                		mov	a, !_actualTask
+ 1195 05f2 9D F4                   		mov	r12, a
+ 1196 05f4 CD F5 00                		mov	r13, #0
+ 1197 05f7 AF 90 01                		movw	ax, !_SPAtual
+ 1198 05fa BD F0                   		movw	r8, ax
+ 1199 05fc AF 92 01                		movw	ax, !_SPAtual+2
+ 1200 05ff BD F2                   		movw	r10, ax
+ 1201 0601 AD F4                   		movw	ax, r12
+ 1202 0603 31 4D                   		shlw	ax, 4
+ 1203 0605 BD F4                   		movw	r12, ax
+ 1204 0607 04 00 00                		addw	ax, #_pool+8
+ 1205 060a BD F4                   		movw	r12, ax
+ 1206 060c BD F6                   		movw	r14, ax
+ 1207 060e FA F6                   		movw	hl, r14
+ 1208 0610 AD F0                   		movw	ax, r8
+ 1209 0612 BB                      		movw	[hl], ax
+ 1210 0613 FA F4                   		movw	hl, r12
+ 1211 0615 AD F2                   		movw	ax, r10
+ 1212 0617 BC 02                   		movw	[hl+2], ax
+ 373:../src/kernel.c **** 
+ 374:../src/kernel.c ****         /* Get next task */
+ 375:../src/kernel.c ****         actualTask = Scheduler();
+ 1213                             		.loc 1 375 0
+ 1214 0619 FC 00 00 00             		call	!!%code(_Scheduler)
+ 1215 061d 8D F0                   		mov	a, r8
+ 1216 061f 9F 00 00                		mov	!_actualTask, a
+ 376:../src/kernel.c **** 
+ 377:../src/kernel.c ****         SPAtual = pool[actualTask].StackPoint;
+ 1217                             		.loc 1 377 0
+ 1218 0622 9D F0                   		mov	r8, a
+ 1219 0624 CD F1 00                		mov	r9, #0
+ 1220 0627 AD F0                   		movw	ax, r8
+ 1221 0629 31 4D                   		shlw	ax, 4
+ 1222 062b BD F0                   		movw	r8, ax
+ 1223 062d 04 00 00                		addw	ax, #_pool+8
+ 1224 0630 BD F0                   		movw	r8, ax
+ 1225 0632 BD F2                   		movw	r10, ax
+ 1226 0634 FA F2                   		movw	hl, r10
+ 1227 0636 AB                      		movw	ax, [hl]
+ 1228 0637 BD E8                   		movw	r16, ax
+ 1229 0639 FA F0                   		movw	hl, r8
+ 1230 063b AC 02                   		movw	ax, [hl+2]
+ 1231 063d BD EA                   		movw	r18, ax
+ 1232 063f AD E8                   		movw	ax, r16
+ 1233 0641 BF 90 01                		movw	!_SPAtual, ax
+ 1234 0644 AD EA                   		movw	ax, r18
+ 1235 0646 BF 92 01                		movw	!_SPAtual+2, ax
+ 378:../src/kernel.c **** 
+ 379:../src/kernel.c ****         /* Clear IT interrupt flag */
+ 380:../src/kernel.c ****         ITIF = 0u;
+ 1236                             		.loc 1 380 0
+ 1237 0649 C9 F0 E2 FF             		movw	r8, #-30
+ 1238 064d AD F0                   		movw	ax, r8
+ 1239 064f BD F4                   		movw	r12, ax
+ 1240 0651 FA F4                   		movw	hl, r12
+ 1241 0653 8B                      		mov	a, [hl]
+ 1242 0654 9D F2                   		mov	r10, a
+ 1243 0656 5A F2 7F                		and	r10, #127
+ 1244 0659 AD F0                   		movw	ax, r8
+ 1245 065b BD F6                   		movw	r14, ax
+ 1246 065d 8D F2                   		mov	a, r10
+ 1247 065f 9B                      		mov	[hl], a
+ 381:../src/kernel.c **** 
+ 382:../src/kernel.c ****         /* Load new process */
+ 383:../src/kernel.c ****         asm("movw   ax, #_SPAtual");
+ 1248                             		.loc 1 383 0
+ 1249                             	 ; 383 "../src/kernel.c" 1
+ 1250 0660 30 90 01                		movw   ax, #_SPAtual
+ 1251                             	 ; 0 "" 2
+ 384:../src/kernel.c ****         asm("movw   hl, ax");
+ 1252                             		.loc 1 384 0
+ 1253                             	 ; 384 "../src/kernel.c" 1
+ 1254 0663 16                      		movw   hl, ax
+ 1255                             	 ; 0 "" 2
+ 385:../src/kernel.c ****         asm("movw   ax, [hl]");
+ 1256                             		.loc 1 385 0
+ 1257                             	 ; 385 "../src/kernel.c" 1
+ 1258 0664 AB                      		movw   ax, [hl]
+ 1259                             	 ; 0 "" 2
+ 386:../src/kernel.c ****         asm("movw   sp, ax");
+ 1260                             		.loc 1 386 0
+ 1261                             	 ; 386 "../src/kernel.c" 1
+ 1262 0665 BE F8                   		movw   sp, ax
+ 1263                             	 ; 0 "" 2
+ 387:../src/kernel.c ****         asm("pop    bc");
+ 1264                             		.loc 1 387 0
+ 1265                             	 ; 387 "../src/kernel.c" 1
+ 1266 0667 C2                      		pop    bc
+ 1267                             	 ; 0 "" 2
+ 388:../src/kernel.c ****         asm("pop    de");
+ 1268                             		.loc 1 388 0
+ 1269                             	 ; 388 "../src/kernel.c" 1
+ 1270 0668 C4                      		pop    de
+ 1271                             	 ; 0 "" 2
+ 389:../src/kernel.c ****         asm("pop    ax");
+ 1272                             		.loc 1 389 0
+ 1273                             	 ; 389 "../src/kernel.c" 1
+ 1274 0669 C0                      		pop    ax
+ 1275                             	 ; 0 "" 2
+ 390:../src/kernel.c ****         asm("mov    es, a");
+ 1276                             		.loc 1 390 0
+ 1277                             	 ; 390 "../src/kernel.c" 1
+ 1278 066a 9E FD                   		mov    es, a
+ 1279                             	 ; 0 "" 2
+ 391:../src/kernel.c ****         asm("xch    a, x");
+ 1280                             		.loc 1 391 0
+ 1281                             	 ; 391 "../src/kernel.c" 1
+ 1282 066c 08                      		xch    a, x
+ 1283                             	 ; 0 "" 2
+ 392:../src/kernel.c ****         asm("mov    cs, a");
+ 1284                             		.loc 1 392 0
+ 1285                             	 ; 392 "../src/kernel.c" 1
+ 1286 066d 9E FC                   		mov    cs, a
+ 1287                             	 ; 0 "" 2
+ 393:../src/kernel.c ****         asm("pop    hl");
+ 1288                             		.loc 1 393 0
+ 1289                             	 ; 393 "../src/kernel.c" 1
+ 1290 066f C6                      		pop    hl
+ 1291                             	 ; 0 "" 2
+ 394:../src/kernel.c ****         asm("pop    ax");
+ 1292                             		.loc 1 394 0
+ 1293                             	 ; 394 "../src/kernel.c" 1
+ 1294 0670 C0                      		pop    ax
+ 1295                             	 ; 0 "" 2
+ 395:../src/kernel.c **** 
+ 396:../src/kernel.c ****         asm("reti");
+ 1296                             		.loc 1 396 0
+ 1297                             	 ; 396 "../src/kernel.c" 1
+ 1298 0671 61 FC                   		reti
+ 1299                             	 ; 0 "" 2
+ 397:../src/kernel.c **** }
+ 1300                             		.loc 1 397 0
+ 1301 0673 61 EF                   		sel	rb2
+ 1302 0675 C2                      		pop	bc ; r18
+ 1303 0676 C0                      		pop	ax ; r16
+ 1304 0677 61 CF                   		sel	rb0
+ 1305 0679 D7                      		ret
+ 1306                             	.LFE10:
+ 1466                             	.Letext0:
+ 1467                             		.file 2 "../src/iodefine.h"
+ 1468                             		.file 3 "../src/r_cg_macrodriver.h"
+ 1469                             		.file 4 "../src/kernel.h"
+ 1470                             		.file 5 "../src/dd_types.h"
+ 1471                             		.file 6 "../src/ctrdrv.h"

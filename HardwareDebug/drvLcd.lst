@@ -1,0 +1,615 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.local	_thisDriver
+  28                             		.comm	_thisDriver,6,2
+  29                             		.local	_this_functions
+  30                             		.comm	_this_functions,22,2
+  31                             		.global	_initLcd
+  33                             	_initLcd:
+  34                             	.LFB0:
+  35                             		.file 1 "../src/drvLcd.c"
+   1:../src/drvLcd.c **** /*
+   2:../src/drvLcd.c ****  * drvLcd.c
+   3:../src/drvLcd.c ****  *
+   4:../src/drvLcd.c ****  *  Created on: Jun 12, 2014
+   5:../src/drvLcd.c ****  *      Author: Pedro
+   6:../src/drvLcd.c ****  */
+   7:../src/drvLcd.c **** #include "drvLcd.h"
+   8:../src/drvLcd.c **** #include "r_cg_userdefine.h"
+   9:../src/drvLcd.c **** #include "r_cg_macrodriver.h"
+  10:../src/drvLcd.c **** #include "lcd_panel.h"
+  11:../src/drvLcd.c **** 
+  12:../src/drvLcd.c **** static driver thisDriver;
+  13:../src/drvLcd.c **** static ptrFuncDrv this_functions[LCD_END];
+  14:../src/drvLcd.c **** 
+  15:../src/drvLcd.c **** char initLcd(void *parameters);
+  16:../src/drvLcd.c **** char lcdClear(void *parameters);
+  17:../src/drvLcd.c **** char lcdOn(void *parameters);
+  18:../src/drvLcd.c **** char lcdOff(void *parameters);
+  19:../src/drvLcd.c **** char lcdDelay(void *parameters);
+  20:../src/drvLcd.c **** char lcdString(void *parameters);
+  21:../src/drvLcd.c **** char lcdSimbolos(void *parameters);
+  22:../src/drvLcd.c **** char lcdDias(void *parameters);
+  23:../src/drvLcd.c **** char lcdBateria(void *parameters);
+  24:../src/drvLcd.c **** char lcdSecA(void *parameters);
+  25:../src/drvLcd.c **** char ledSecB(void *parameters);
+  26:../src/drvLcd.c **** char ledSecC(void *parameters);
+  27:../src/drvLcd.c **** 
+  28:../src/drvLcd.c **** char initLcd(void *parameters)
+  29:../src/drvLcd.c **** {
+  36                             		.loc 1 29 0
+  30:../src/drvLcd.c **** 	Init_Display_Panel();
+  37                             		.loc 1 30 0
+  38 0000 FC 00 00 00             		call	!!%code(_Init_Display_Panel)
+  31:../src/drvLcd.c **** 
+  32:../src/drvLcd.c **** 	return SUCESSO;
+  39                             		.loc 1 32 0
+  40 0004 CD F0 00                		mov	r8, #0
+  33:../src/drvLcd.c **** }
+  41                             		.loc 1 33 0
+  42 0007 D7                      		ret
+  43                             	.LFE0:
+  45                             		.global	_lcdClear
+  47                             	_lcdClear:
+  48                             	.LFB1:
+  34:../src/drvLcd.c **** 
+  35:../src/drvLcd.c **** char lcdClear(void *parameters)
+  36:../src/drvLcd.c **** {
+  49                             		.loc 1 36 0
+  37:../src/drvLcd.c **** 	Clear_Display();
+  50                             		.loc 1 37 0
+  51 0008 FC 00 00 00             		call	!!%code(_Clear_Display)
+  38:../src/drvLcd.c **** 
+  39:../src/drvLcd.c **** 	return SUCESSO;
+  52                             		.loc 1 39 0
+  53 000c CD F0 00                		mov	r8, #0
+  40:../src/drvLcd.c **** }
+  54                             		.loc 1 40 0
+  55 000f D7                      		ret
+  56                             	.LFE1:
+  58                             		.global	_lcdOn
+  60                             	_lcdOn:
+  61                             	.LFB2:
+  41:../src/drvLcd.c **** 
+  42:../src/drvLcd.c **** char lcdOn(void *parameters)
+  43:../src/drvLcd.c **** {
+  62                             		.loc 1 43 0
+  44:../src/drvLcd.c **** 	Lcd_On();
+  63                             		.loc 1 44 0
+  64 0010 FC 00 00 00             		call	!!%code(_Lcd_On)
+  45:../src/drvLcd.c **** 
+  46:../src/drvLcd.c **** 	return SUCESSO;
+  65                             		.loc 1 46 0
+  66 0014 CD F0 00                		mov	r8, #0
+  47:../src/drvLcd.c **** }
+  67                             		.loc 1 47 0
+  68 0017 D7                      		ret
+  69                             	.LFE2:
+  71                             		.global	_lcdOff
+  73                             	_lcdOff:
+  74                             	.LFB3:
+  48:../src/drvLcd.c **** 
+  49:../src/drvLcd.c **** char lcdOff(void *parameters)
+  50:../src/drvLcd.c **** {
+  75                             		.loc 1 50 0
+  51:../src/drvLcd.c **** 	Lcd_Off();
+  76                             		.loc 1 51 0
+  77 0018 FC 00 00 00             		call	!!%code(_Lcd_Off)
+  52:../src/drvLcd.c **** 
+  53:../src/drvLcd.c **** 	return SUCESSO;
+  78                             		.loc 1 53 0
+  79 001c CD F0 00                		mov	r8, #0
+  54:../src/drvLcd.c **** }
+  80                             		.loc 1 54 0
+  81 001f D7                      		ret
+  82                             	.LFE3:
+  84                             		.global	_lcdDelay
+  86                             	_lcdDelay:
+  87                             	.LFB4:
+  55:../src/drvLcd.c **** 
+  56:../src/drvLcd.c **** /* Delay em microsegundos */
+  57:../src/drvLcd.c **** char lcdDelay(void *parameters){
+  88                             		.loc 1 57 0
+  89                             		; start of function
+  90                             		; outgoing: 4 bytes
+  91 0020 20 04                   		subw	sp, #4
+  92                             	.LCFI0:
+  58:../src/drvLcd.c **** 	Display_Panel_Delay(*(uint32_t *) parameters);
+  93                             		.loc 1 58 0
+  94 0022 A8 08                   		movw	ax, [sp+8]
+  95 0024 BD F4                   		movw	r12, ax
+  96 0026 BD F6                   		movw	r14, ax
+  97 0028 FA F6                   		movw	hl, r14
+  98 002a AB                      		movw	ax, [hl]
+  99 002b BD F0                   		movw	r8, ax
+ 100 002d FA F4                   		movw	hl, r12
+ 101 002f AC 02                   		movw	ax, [hl+2]
+ 102 0031 BD F2                   		movw	r10, ax
+ 103 0033 AD F0                   		movw	ax, r8
+ 104 0035 B8 00                   		movw	[sp], ax
+ 105 0037 AD F2                   		movw	ax, r10
+ 106 0039 B8 02                   		movw	[sp+2], ax
+ 107 003b FC 00 00 00             		call	!!%code(_Display_Panel_Delay)
+  59:../src/drvLcd.c **** 
+  60:../src/drvLcd.c **** 	return SUCESSO;
+ 108                             		.loc 1 60 0
+ 109 003f CD F0 00                		mov	r8, #0
+  61:../src/drvLcd.c **** }
+ 110                             		.loc 1 61 0
+ 111 0042 10 04                   		addw	sp, #4
+ 112 0044 D7                      		ret
+ 113                             	.LFE4:
+ 115                             		.global	_lcdString
+ 117                             	_lcdString:
+ 118                             	.LFB5:
+  62:../src/drvLcd.c **** 
+  63:../src/drvLcd.c **** char lcdString(void *parameters)
+  64:../src/drvLcd.c **** {
+ 119                             		.loc 1 64 0
+ 120                             		; start of function
+ 121                             		; outgoing: 4 bytes
+ 122 0045 20 04                   		subw	sp, #4
+ 123                             	.LCFI1:
+  65:../src/drvLcd.c **** 	Display_Panel_String(PANEL_LCD_LINE1, (char *const) parameters);
+ 124                             		.loc 1 65 0
+ 125 0047 C8 00 33                		mov	[sp], #51
+ 126 004a A8 08                   		movw	ax, [sp+8]
+ 127 004c BD F0                   		movw	r8, ax
+ 128 004e B8 02                   		movw	[sp+2], ax
+ 129 0050 FC 00 00 00             		call	!!%code(_Display_Panel_String)
+  66:../src/drvLcd.c **** 
+  67:../src/drvLcd.c **** 	return SUCESSO;
+ 130                             		.loc 1 67 0
+ 131 0054 CD F0 00                		mov	r8, #0
+  68:../src/drvLcd.c **** }
+ 132                             		.loc 1 68 0
+ 133 0057 10 04                   		addw	sp, #4
+ 134 0059 D7                      		ret
+ 135                             	.LFE5:
+ 137                             		.global	_lcdSimbolos
+ 139                             	_lcdSimbolos:
+ 140                             	.LFB6:
+  69:../src/drvLcd.c **** 
+  70:../src/drvLcd.c **** char lcdSimbolos(void *parameters)
+  71:../src/drvLcd.c **** {
+ 141                             		.loc 1 71 0
+ 142                             		; start of function
+ 143                             		; outgoing: 2 bytes
+ 144 005a 20 02                   		subw	sp, #2
+ 145                             	.LCFI2:
+  72:../src/drvLcd.c **** 	Symbol_Map(*(uint16_t const *) parameters);
+ 146                             		.loc 1 72 0
+ 147 005c A8 06                   		movw	ax, [sp+6]
+ 148 005e BD F0                   		movw	r8, ax
+ 149 0060 BD F2                   		movw	r10, ax
+ 150 0062 FA F2                   		movw	hl, r10
+ 151 0064 AB                      		movw	ax, [hl]
+ 152 0065 BD F0                   		movw	r8, ax
+ 153 0067 B8 00                   		movw	[sp], ax
+ 154 0069 FC 00 00 00             		call	!!%code(_Symbol_Map)
+  73:../src/drvLcd.c **** 
+  74:../src/drvLcd.c **** 	return SUCESSO;
+ 155                             		.loc 1 74 0
+ 156 006d CD F0 00                		mov	r8, #0
+  75:../src/drvLcd.c **** }
+ 157                             		.loc 1 75 0
+ 158 0070 10 02                   		addw	sp, #2
+ 159 0072 D7                      		ret
+ 160                             	.LFE6:
+ 162                             		.global	_lcdDias
+ 164                             	_lcdDias:
+ 165                             	.LFB7:
+  76:../src/drvLcd.c **** 
+  77:../src/drvLcd.c **** char lcdDias(void *parameters)
+  78:../src/drvLcd.c **** {
+ 166                             		.loc 1 78 0
+ 167                             		; start of function
+ 168                             		; outgoing: 2 bytes
+ 169 0073 20 02                   		subw	sp, #2
+ 170                             	.LCFI3:
+  79:../src/drvLcd.c **** 	SECTF_Glyph_Map(*(uint8_t const *) parameters);
+ 171                             		.loc 1 79 0
+ 172 0075 A8 06                   		movw	ax, [sp+6]
+ 173 0077 BD F0                   		movw	r8, ax
+ 174 0079 BD F2                   		movw	r10, ax
+ 175 007b FA F2                   		movw	hl, r10
+ 176 007d 8B                      		mov	a, [hl]
+ 177 007e 9D F0                   		mov	r8, a
+ 178 0080 98 00                   		mov	[sp], a
+ 179 0082 FC 00 00 00             		call	!!%code(_SECTF_Glyph_Map)
+  80:../src/drvLcd.c **** 
+  81:../src/drvLcd.c **** 	return SUCESSO;
+ 180                             		.loc 1 81 0
+ 181 0086 CD F0 00                		mov	r8, #0
+  82:../src/drvLcd.c **** }
+ 182                             		.loc 1 82 0
+ 183 0089 10 02                   		addw	sp, #2
+ 184 008b D7                      		ret
+ 185                             	.LFE7:
+ 187                             		.global	_lcdBateria
+ 189                             	_lcdBateria:
+ 190                             	.LFB8:
+  83:../src/drvLcd.c **** 
+  84:../src/drvLcd.c **** /* Parâmetros para a bateria LEVEL_0,LEVEL_1,LEVEL_2,LEVEL_3,LEVEL_4 */
+  85:../src/drvLcd.c **** char lcdBateria(void *parameters)
+  86:../src/drvLcd.c **** {
+ 191                             		.loc 1 86 0
+ 192                             		; start of function
+ 193                             		; outgoing: 4 bytes
+ 194 008c 20 04                   		subw	sp, #4
+ 195                             	.LCFI4:
+  87:../src/drvLcd.c **** 	SECTD_Glyph_Map(*(uint8_t const *) parameters, BATTERY_OUTLINE_ON);
+ 196                             		.loc 1 87 0
+ 197 008e A8 08                   		movw	ax, [sp+8]
+ 198 0090 BD F0                   		movw	r8, ax
+ 199 0092 BD F2                   		movw	r10, ax
+ 200 0094 FA F2                   		movw	hl, r10
+ 201 0096 8B                      		mov	a, [hl]
+ 202 0097 9D F0                   		mov	r8, a
+ 203 0099 98 00                   		mov	[sp], a
+ 204 009b C8 02 01                		mov	[sp+2], #1
+ 205 009e FC 00 00 00             		call	!!%code(_SECTD_Glyph_Map)
+  88:../src/drvLcd.c **** 
+  89:../src/drvLcd.c **** 	return SUCESSO;
+ 206                             		.loc 1 89 0
+ 207 00a2 CD F0 00                		mov	r8, #0
+  90:../src/drvLcd.c **** }
+ 208                             		.loc 1 90 0
+ 209 00a5 10 04                   		addw	sp, #4
+ 210 00a7 D7                      		ret
+ 211                             	.LFE8:
+ 213                             		.global	_lcdSecA
+ 215                             	_lcdSecA:
+ 216                             	.LFB9:
+  91:../src/drvLcd.c **** 
+  92:../src/drvLcd.c **** /*
+  93:../src/drvLcd.c **** char lcdRelogio(void *parameters){
+  94:../src/drvLcd.c **** 	SECTB_Glyph_Map ((uint8_t const) parameters, BATTERY_OUTLINE_ON);
+  95:../src/drvLcd.c **** 	return sucesso;
+  96:../src/drvLcd.c **** }*/
+  97:../src/drvLcd.c **** 
+  98:../src/drvLcd.c **** char lcdSecA(void *parameters)
+  99:../src/drvLcd.c **** {
+ 217                             		.loc 1 99 0
+ 218                             		; start of function
+ 219                             		; locals: 2 bytes
+ 220                             		; outgoing: 4 bytes
+ 221 00a8 20 06                   		subw	sp, #6
+ 222                             	.LCFI5:
+ 100:../src/drvLcd.c **** 	uint8_t *digito = (uint8_t *) parameters;
+ 223                             		.loc 1 100 0
+ 224 00aa A8 0A                   		movw	ax, [sp+10]
+ 225 00ac BD F0                   		movw	r8, ax
+ 226 00ae B8 04                   		movw	[sp+4], ax
+ 101:../src/drvLcd.c **** 
+ 102:../src/drvLcd.c ****         SECTA_Glyph_Map((uint8_t const) digito[0], CASE_0);
+ 227                             		.loc 1 102 0
+ 228 00b0 BD F0                   		movw	r8, ax
+ 229 00b2 BD F2                   		movw	r10, ax
+ 230 00b4 FA F2                   		movw	hl, r10
+ 231 00b6 8B                      		mov	a, [hl]
+ 232 00b7 9D F0                   		mov	r8, a
+ 233 00b9 98 00                   		mov	[sp], a
+ 234 00bb F6                      		clrw	ax
+ 235 00bc B8 02                   		movw	[sp+2], ax
+ 236 00be FC 00 00 00             		call	!!%code(_SECTA_Glyph_Map)
+ 103:../src/drvLcd.c ****         SECTA_Glyph_Map((uint8_t const) digito[1], CASE_1);
+ 237                             		.loc 1 103 0
+ 238 00c2 A8 04                   		movw	ax, [sp+4]
+ 239 00c4 A1                      		incw	ax
+ 240 00c5 BD F0                   		movw	r8, ax
+ 241 00c7 BD F2                   		movw	r10, ax
+ 242 00c9 FA F2                   		movw	hl, r10
+ 243 00cb 8B                      		mov	a, [hl]
+ 244 00cc 9D F0                   		mov	r8, a
+ 245 00ce 98 00                   		mov	[sp], a
+ 246 00d0 E6                      		onew	ax
+ 247 00d1 B8 02                   		movw	[sp+2], ax
+ 248 00d3 FC 00 00 00             		call	!!%code(_SECTA_Glyph_Map)
+ 104:../src/drvLcd.c ****         SECTA_Glyph_Map((uint8_t const) digito[2], CASE_2);
+ 249                             		.loc 1 104 0
+ 250 00d7 A8 04                   		movw	ax, [sp+4]
+ 251 00d9 04 02 00                		addw	ax, #2
+ 252 00dc BD F0                   		movw	r8, ax
+ 253 00de BD F2                   		movw	r10, ax
+ 254 00e0 FA F2                   		movw	hl, r10
+ 255 00e2 8B                      		mov	a, [hl]
+ 256 00e3 9D F0                   		mov	r8, a
+ 257 00e5 98 00                   		mov	[sp], a
+ 258 00e7 30 02 00                		movw	ax, #2
+ 259 00ea B8 02                   		movw	[sp+2], ax
+ 260 00ec FC 00 00 00             		call	!!%code(_SECTA_Glyph_Map)
+ 105:../src/drvLcd.c ****         SECTA_Glyph_Map((uint8_t const) digito[3], CASE_3);
+ 261                             		.loc 1 105 0
+ 262 00f0 A8 04                   		movw	ax, [sp+4]
+ 263 00f2 04 03 00                		addw	ax, #3
+ 264 00f5 BD F0                   		movw	r8, ax
+ 265 00f7 BD F2                   		movw	r10, ax
+ 266 00f9 FA F2                   		movw	hl, r10
+ 267 00fb 8B                      		mov	a, [hl]
+ 268 00fc 9D F0                   		mov	r8, a
+ 269 00fe 98 00                   		mov	[sp], a
+ 270 0100 30 03 00                		movw	ax, #3
+ 271 0103 B8 02                   		movw	[sp+2], ax
+ 272 0105 FC 00 00 00             		call	!!%code(_SECTA_Glyph_Map)
+ 106:../src/drvLcd.c **** 
+ 107:../src/drvLcd.c ****         return SUCESSO;
+ 273                             		.loc 1 107 0
+ 274 0109 CD F0 00                		mov	r8, #0
+ 108:../src/drvLcd.c **** }
+ 275                             		.loc 1 108 0
+ 276 010c 10 06                   		addw	sp, #6
+ 277 010e D7                      		ret
+ 278                             	.LFE9:
+ 280                             		.global	_ledSecB
+ 282                             	_ledSecB:
+ 283                             	.LFB10:
+ 109:../src/drvLcd.c **** 
+ 110:../src/drvLcd.c **** char ledSecB(void *parameters)
+ 111:../src/drvLcd.c **** {
+ 284                             		.loc 1 111 0
+ 285                             		; start of function
+ 286                             		; locals: 2 bytes
+ 287                             		; outgoing: 4 bytes
+ 288 010f 20 06                   		subw	sp, #6
+ 289                             	.LCFI6:
+ 112:../src/drvLcd.c **** 	uint8_t *digito = (uint8_t *) parameters;
+ 290                             		.loc 1 112 0
+ 291 0111 A8 0A                   		movw	ax, [sp+10]
+ 292 0113 BD F0                   		movw	r8, ax
+ 293 0115 B8 04                   		movw	[sp+4], ax
+ 113:../src/drvLcd.c **** 
+ 114:../src/drvLcd.c **** 	SECTB_Glyph_Map((uint8_t const) digito[0], CASE_1);
+ 294                             		.loc 1 114 0
+ 295 0117 BD F0                   		movw	r8, ax
+ 296 0119 BD F2                   		movw	r10, ax
+ 297 011b FA F2                   		movw	hl, r10
+ 298 011d 8B                      		mov	a, [hl]
+ 299 011e 9D F0                   		mov	r8, a
+ 300 0120 98 00                   		mov	[sp], a
+ 301 0122 E6                      		onew	ax
+ 302 0123 B8 02                   		movw	[sp+2], ax
+ 303 0125 FC 00 00 00             		call	!!%code(_SECTB_Glyph_Map)
+ 115:../src/drvLcd.c **** 	SECTB_Glyph_Map((uint8_t const) digito[1], CASE_2);
+ 304                             		.loc 1 115 0
+ 305 0129 A8 04                   		movw	ax, [sp+4]
+ 306 012b A1                      		incw	ax
+ 307 012c BD F0                   		movw	r8, ax
+ 308 012e BD F2                   		movw	r10, ax
+ 309 0130 FA F2                   		movw	hl, r10
+ 310 0132 8B                      		mov	a, [hl]
+ 311 0133 9D F0                   		mov	r8, a
+ 312 0135 98 00                   		mov	[sp], a
+ 313 0137 30 02 00                		movw	ax, #2
+ 314 013a B8 02                   		movw	[sp+2], ax
+ 315 013c FC 00 00 00             		call	!!%code(_SECTB_Glyph_Map)
+ 116:../src/drvLcd.c **** 	SECTB_Glyph_Map((uint8_t const) digito[2], CASE_3);
+ 316                             		.loc 1 116 0
+ 317 0140 A8 04                   		movw	ax, [sp+4]
+ 318 0142 04 02 00                		addw	ax, #2
+ 319 0145 BD F0                   		movw	r8, ax
+ 320 0147 BD F2                   		movw	r10, ax
+ 321 0149 FA F2                   		movw	hl, r10
+ 322 014b 8B                      		mov	a, [hl]
+ 323 014c 9D F0                   		mov	r8, a
+ 324 014e 98 00                   		mov	[sp], a
+ 325 0150 30 03 00                		movw	ax, #3
+ 326 0153 B8 02                   		movw	[sp+2], ax
+ 327 0155 FC 00 00 00             		call	!!%code(_SECTB_Glyph_Map)
+ 117:../src/drvLcd.c **** 	SECTB_Glyph_Map((uint8_t const) digito[3], CASE_4);
+ 328                             		.loc 1 117 0
+ 329 0159 A8 04                   		movw	ax, [sp+4]
+ 330 015b 04 03 00                		addw	ax, #3
+ 331 015e BD F0                   		movw	r8, ax
+ 332 0160 BD F2                   		movw	r10, ax
+ 333 0162 FA F2                   		movw	hl, r10
+ 334 0164 8B                      		mov	a, [hl]
+ 335 0165 9D F0                   		mov	r8, a
+ 336 0167 98 00                   		mov	[sp], a
+ 337 0169 30 04 00                		movw	ax, #4
+ 338 016c B8 02                   		movw	[sp+2], ax
+ 339 016e FC 00 00 00             		call	!!%code(_SECTB_Glyph_Map)
+ 118:../src/drvLcd.c **** 	SECTB_Glyph_Map((uint8_t const) digito[4], CASE_5);
+ 340                             		.loc 1 118 0
+ 341 0172 A8 04                   		movw	ax, [sp+4]
+ 342 0174 04 04 00                		addw	ax, #4
+ 343 0177 BD F0                   		movw	r8, ax
+ 344 0179 BD F2                   		movw	r10, ax
+ 345 017b FA F2                   		movw	hl, r10
+ 346 017d 8B                      		mov	a, [hl]
+ 347 017e 9D F0                   		mov	r8, a
+ 348 0180 98 00                   		mov	[sp], a
+ 349 0182 30 05 00                		movw	ax, #5
+ 350 0185 B8 02                   		movw	[sp+2], ax
+ 351 0187 FC 00 00 00             		call	!!%code(_SECTB_Glyph_Map)
+ 119:../src/drvLcd.c **** 
+ 120:../src/drvLcd.c ****         return SUCESSO;
+ 352                             		.loc 1 120 0
+ 353 018b CD F0 00                		mov	r8, #0
+ 121:../src/drvLcd.c **** }
+ 354                             		.loc 1 121 0
+ 355 018e 10 06                   		addw	sp, #6
+ 356 0190 D7                      		ret
+ 357                             	.LFE10:
+ 359                             		.global	_ledSecC
+ 361                             	_ledSecC:
+ 362                             	.LFB11:
+ 122:../src/drvLcd.c **** 
+ 123:../src/drvLcd.c **** char ledSecC(void *parameters)
+ 124:../src/drvLcd.c **** {
+ 363                             		.loc 1 124 0
+ 364                             		; start of function
+ 365                             		; locals: 2 bytes
+ 366                             		; outgoing: 4 bytes
+ 367 0191 20 06                   		subw	sp, #6
+ 368                             	.LCFI7:
+ 125:../src/drvLcd.c **** 	uint8_t *digito = (uint8_t *) parameters;
+ 369                             		.loc 1 125 0
+ 370 0193 A8 0A                   		movw	ax, [sp+10]
+ 371 0195 BD F0                   		movw	r8, ax
+ 372 0197 B8 04                   		movw	[sp+4], ax
+ 126:../src/drvLcd.c **** 
+ 127:../src/drvLcd.c **** 	SECTC_Glyph_Map((uint8_t const) digito[0], CASE_2);
+ 373                             		.loc 1 127 0
+ 374 0199 BD F0                   		movw	r8, ax
+ 375 019b BD F2                   		movw	r10, ax
+ 376 019d FA F2                   		movw	hl, r10
+ 377 019f 8B                      		mov	a, [hl]
+ 378 01a0 9D F0                   		mov	r8, a
+ 379 01a2 98 00                   		mov	[sp], a
+ 380 01a4 30 02 00                		movw	ax, #2
+ 381 01a7 B8 02                   		movw	[sp+2], ax
+ 382 01a9 FC 00 00 00             		call	!!%code(_SECTC_Glyph_Map)
+ 128:../src/drvLcd.c **** 	SECTC_Glyph_Map((uint8_t const) digito[1], CASE_3);
+ 383                             		.loc 1 128 0
+ 384 01ad A8 04                   		movw	ax, [sp+4]
+ 385 01af A1                      		incw	ax
+ 386 01b0 BD F0                   		movw	r8, ax
+ 387 01b2 BD F2                   		movw	r10, ax
+ 388 01b4 FA F2                   		movw	hl, r10
+ 389 01b6 8B                      		mov	a, [hl]
+ 390 01b7 9D F0                   		mov	r8, a
+ 391 01b9 98 00                   		mov	[sp], a
+ 392 01bb 30 03 00                		movw	ax, #3
+ 393 01be B8 02                   		movw	[sp+2], ax
+ 394 01c0 FC 00 00 00             		call	!!%code(_SECTC_Glyph_Map)
+ 129:../src/drvLcd.c **** 	SECTC_Glyph_Map((uint8_t const) digito[2], CASE_4);
+ 395                             		.loc 1 129 0
+ 396 01c4 A8 04                   		movw	ax, [sp+4]
+ 397 01c6 04 02 00                		addw	ax, #2
+ 398 01c9 BD F0                   		movw	r8, ax
+ 399 01cb BD F2                   		movw	r10, ax
+ 400 01cd FA F2                   		movw	hl, r10
+ 401 01cf 8B                      		mov	a, [hl]
+ 402 01d0 9D F0                   		mov	r8, a
+ 403 01d2 98 00                   		mov	[sp], a
+ 404 01d4 30 04 00                		movw	ax, #4
+ 405 01d7 B8 02                   		movw	[sp+2], ax
+ 406 01d9 FC 00 00 00             		call	!!%code(_SECTC_Glyph_Map)
+ 130:../src/drvLcd.c **** 	SECTC_Glyph_Map((uint8_t const) digito[3], CASE_5);
+ 407                             		.loc 1 130 0
+ 408 01dd A8 04                   		movw	ax, [sp+4]
+ 409 01df 04 03 00                		addw	ax, #3
+ 410 01e2 BD F0                   		movw	r8, ax
+ 411 01e4 BD F2                   		movw	r10, ax
+ 412 01e6 FA F2                   		movw	hl, r10
+ 413 01e8 8B                      		mov	a, [hl]
+ 414 01e9 9D F0                   		mov	r8, a
+ 415 01eb 98 00                   		mov	[sp], a
+ 416 01ed 30 05 00                		movw	ax, #5
+ 417 01f0 B8 02                   		movw	[sp+2], ax
+ 418 01f2 FC 00 00 00             		call	!!%code(_SECTC_Glyph_Map)
+ 131:../src/drvLcd.c **** 
+ 132:../src/drvLcd.c ****         return SUCESSO;
+ 419                             		.loc 1 132 0
+ 420 01f6 CD F0 00                		mov	r8, #0
+ 133:../src/drvLcd.c **** }
+ 421                             		.loc 1 133 0
+ 422 01f9 10 06                   		addw	sp, #6
+ 423 01fb D7                      		ret
+ 424                             	.LFE11:
+ 426                             		.global	_getLcdDriver
+ 428                             	_getLcdDriver:
+ 429                             	.LFB12:
+ 134:../src/drvLcd.c **** 
+ 135:../src/drvLcd.c **** /* Função para acesso ao driver */
+ 136:../src/drvLcd.c **** driver *getLcdDriver(void)
+ 137:../src/drvLcd.c **** {
+ 430                             		.loc 1 137 0
+ 431                             		; start of function
+ 432                             		; locals: 2 bytes
+ 433 01fc 20 02                   		subw	sp, #2
+ 434                             	.LCFI8:
+ 138:../src/drvLcd.c **** 	thisDriver.drv_init = initLcd;
+ 435                             		.loc 1 138 0
+ 436 01fe 30 00 00                		movw	ax, #%code(_initLcd)
+ 437 0201 BF 04 00                		movw	!_thisDriver+4, ax
+ 139:../src/drvLcd.c **** 
+ 140:../src/drvLcd.c ****         /* Funções do driver */
+ 141:../src/drvLcd.c **** 	this_functions[LCD_CLEAR] = lcdClear;
+ 438                             		.loc 1 141 0
+ 439 0204 30 00 00                		movw	ax, #%code(_lcdClear)
+ 440 0207 BF 06 00                		movw	!_this_functions, ax
+ 142:../src/drvLcd.c **** 	this_functions[LCD_ON] = lcdOn;
+ 441                             		.loc 1 142 0
+ 442 020a 30 00 00                		movw	ax, #%code(_lcdOn)
+ 443 020d BF 08 00                		movw	!_this_functions+2, ax
+ 143:../src/drvLcd.c **** 	this_functions[LCD_OFF] = lcdOff;
+ 444                             		.loc 1 143 0
+ 445 0210 30 00 00                		movw	ax, #%code(_lcdOff)
+ 446 0213 BF 0A 00                		movw	!_this_functions+4, ax
+ 144:../src/drvLcd.c **** 	this_functions[LCD_DELAY] = lcdDelay;
+ 447                             		.loc 1 144 0
+ 448 0216 30 00 00                		movw	ax, #%code(_lcdDelay)
+ 449 0219 BF 1A 00                		movw	!_this_functions+20, ax
+ 145:../src/drvLcd.c **** 	this_functions[LCD_STG] = lcdString;
+ 450                             		.loc 1 145 0
+ 451 021c 30 00 00                		movw	ax, #%code(_lcdString)
+ 452 021f BF 18 00                		movw	!_this_functions+18, ax
+ 146:../src/drvLcd.c **** 	this_functions[LCD_SIMB] = lcdSimbolos;
+ 453                             		.loc 1 146 0
+ 454 0222 30 00 00                		movw	ax, #%code(_lcdSimbolos)
+ 455 0225 BF 16 00                		movw	!_this_functions+16, ax
+ 147:../src/drvLcd.c **** 	this_functions[LCD_DIAS] = lcdDias;
+ 456                             		.loc 1 147 0
+ 457 0228 30 00 00                		movw	ax, #%code(_lcdDias)
+ 458 022b BF 14 00                		movw	!_this_functions+14, ax
+ 148:../src/drvLcd.c **** 	this_functions[LCD_BAT] = lcdBateria;
+ 459                             		.loc 1 148 0
+ 460 022e 30 00 00                		movw	ax, #%code(_lcdBateria)
+ 461 0231 BF 12 00                		movw	!_this_functions+12, ax
+ 149:../src/drvLcd.c **** 	this_functions[LCD_SECA] = lcdSecA;
+ 462                             		.loc 1 149 0
+ 463 0234 30 00 00                		movw	ax, #%code(_lcdSecA)
+ 464 0237 BF 0C 00                		movw	!_this_functions+6, ax
+ 150:../src/drvLcd.c **** 	this_functions[LCD_SECB] = ledSecB;
+ 465                             		.loc 1 150 0
+ 466 023a 30 00 00                		movw	ax, #%code(_ledSecB)
+ 467 023d BF 0E 00                		movw	!_this_functions+8, ax
+ 151:../src/drvLcd.c **** 	this_functions[LCD_SECC] = ledSecC;
+ 468                             		.loc 1 151 0
+ 469 0240 30 00 00                		movw	ax, #%code(_ledSecC)
+ 470 0243 BF 10 00                		movw	!_this_functions+10, ax
+ 152:../src/drvLcd.c **** 
+ 153:../src/drvLcd.c **** 	thisDriver.drv_func = this_functions;
+ 471                             		.loc 1 153 0
+ 472 0246 30 06 00                		movw	ax, #_this_functions
+ 473 0249 BF 02 00                		movw	!_thisDriver+2, ax
+ 154:../src/drvLcd.c **** 	return &thisDriver;
+ 474                             		.loc 1 154 0
+ 475 024c 30 00 00                		movw	ax, #_thisDriver
+ 476 024f B8 00                   		movw	[sp], ax
+ 477 0251 BD F0                   		movw	r8, ax
+ 155:../src/drvLcd.c **** }
+ 478                             		.loc 1 155 0
+ 479 0253 10 02                   		addw	sp, #2
+ 480 0255 D7                      		ret
+ 481                             	.LFE12:
+ 641                             	.Letext0:
+ 642                             		.file 2 "../src/dd_types.h"
+ 643                             		.file 3 "../src/r_cg_macrodriver.h"
+ 644                             		.file 4 "../src/drvLcd.h"

@@ -1,0 +1,709 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.local	_thisDriver
+  28                             		.comm	_thisDriver,6,2
+  29                             		.local	_this_functions
+  30                             		.comm	_this_functions,4,2
+  31                             		.local	_pwm
+  32                             		.comm	_pwm,1,1
+  34                             	_r_tau0_create:
+  35                             	.LFB0:
+  36                             		.file 1 "../src/drvPWM.c"
+   1:../src/drvPWM.c **** /*
+   2:../src/drvPWM.c ****  * drvPWM.h
+   3:../src/drvPWM.c ****  *
+   4:../src/drvPWM.c ****  *  Created on: 14/09/2014
+   5:../src/drvPWM.c ****  *      Author: Luis
+   6:../src/drvPWM.c ****  */
+   7:../src/drvPWM.c **** 
+   8:../src/drvPWM.c **** #include "drvPWM.h"
+   9:../src/drvPWM.c **** #include "r_cg_userdefine.h"
+  10:../src/drvPWM.c **** #include "r_cg_macrodriver.h"
+  11:../src/drvPWM.c **** #include "r_cg_timer.h"
+  12:../src/drvPWM.c **** 
+  13:../src/drvPWM.c **** static driver thisDriver;
+  14:../src/drvPWM.c **** static ptrFuncDrv this_functions[PWM_END];
+  15:../src/drvPWM.c **** 
+  16:../src/drvPWM.c **** static uint8_t pwm;
+  17:../src/drvPWM.c **** 
+  18:../src/drvPWM.c **** char setPWM(void *parameters);
+  19:../src/drvPWM.c **** char getPWM(void *parameters);
+  20:../src/drvPWM.c **** char initPWM(void *parameters);
+  21:../src/drvPWM.c **** 
+  22:../src/drvPWM.c **** static void r_tau0_create(void)
+  23:../src/drvPWM.c **** {
+  37                             		.loc 1 23 0
+  38                             		; start of function
+  39                             		; push 6: r16 r18 r20
+  40                             		; locals: 2 bytes
+  41 0000 61 EF                   		sel	rb2
+  42 0002 C1                      		push	ax ; r16
+  43                             	.LCFI0:
+  44 0003 C3                      		push	bc ; r18
+  45                             	.LCFI1:
+  46 0004 C5                      		push	de ; r20
+  47                             	.LCFI2:
+  48 0005 61 CF                   		sel	rb0
+  49 0007 20 02                   		subw	sp, #2
+  50                             	.LCFI3:
+  24:../src/drvPWM.c ****         /* Enables TAU0 */
+  25:../src/drvPWM.c ****         TAU0EN = 1U;
+  51                             		.loc 1 25 0
+  52 0009 C9 F0 F0 00             		movw	r8, #240
+  53 000d AD F0                   		movw	ax, r8
+  54 000f BD F4                   		movw	r12, ax
+  55 0011 FA F4                   		movw	hl, r12
+  56 0013 8B                      		mov	a, [hl]
+  57 0014 9D F2                   		mov	r10, a
+  58 0016 6A F2 01                		or	r10, #1
+  59 0019 AD F0                   		movw	ax, r8
+  60 001b 8D F2                   		mov	a, r10
+  61 001d 9B                      		mov	[hl], a
+  26:../src/drvPWM.c **** 
+  27:../src/drvPWM.c ****         /* fclk (24MHz), CK0 = 24MHz, CK1 = 24MHz */
+  28:../src/drvPWM.c ****         TPS0 = _0000_TAU_CKM0_FCLK_0;
+  62                             		.loc 1 28 0
+  63 001e C9 F0 B6 01             		movw	r8, #438
+  64 0022 AD F0                   		movw	ax, r8
+  65 0024 BD F2                   		movw	r10, ax
+  66 0026 FA F2                   		movw	hl, r10
+  67 0028 F6                      		clrw	ax
+  68 0029 BB                      		movw	[hl], ax
+  29:../src/drvPWM.c **** 
+  30:../src/drvPWM.c ****         /* Set INTTM00 low priority */
+  31:../src/drvPWM.c ****         TMPR100 = 1U;
+  69                             		.loc 1 31 0
+  70 002a C9 F0 ED FF             		movw	r8, #-19
+  71 002e AD F0                   		movw	ax, r8
+  72 0030 BD F4                   		movw	r12, ax
+  73 0032 FA F4                   		movw	hl, r12
+  74 0034 8B                      		mov	a, [hl]
+  75 0035 9D F2                   		mov	r10, a
+  76 0037 6A F2 40                		or	r10, #64
+  77 003a AD F0                   		movw	ax, r8
+  78 003c 8D F2                   		mov	a, r10
+  79 003e 9B                      		mov	[hl], a
+  32:../src/drvPWM.c ****         TMPR000 = 1U;
+  80                             		.loc 1 32 0
+  81 003f C9 F0 E9 FF             		movw	r8, #-23
+  82 0043 AD F0                   		movw	ax, r8
+  83 0045 BD F4                   		movw	r12, ax
+  84 0047 FA F4                   		movw	hl, r12
+  85 0049 8B                      		mov	a, [hl]
+  86 004a 9D F2                   		mov	r10, a
+  87 004c 6A F2 40                		or	r10, #64
+  88 004f AD F0                   		movw	ax, r8
+  89 0051 8D F2                   		mov	a, r10
+  90 0053 9B                      		mov	[hl], a
+  33:../src/drvPWM.c **** 
+  34:../src/drvPWM.c ****         /* Set INTTM03 low priority */
+  35:../src/drvPWM.c ****         TMPR103 = 1U;
+  91                             		.loc 1 35 0
+  92 0054 C9 F0 EE FF             		movw	r8, #-18
+  93 0058 AD F0                   		movw	ax, r8
+  94 005a BD F4                   		movw	r12, ax
+  95 005c FA F4                   		movw	hl, r12
+  96 005e 8B                      		mov	a, [hl]
+  97 005f 9D F2                   		mov	r10, a
+  98 0061 6A F2 10                		or	r10, #16
+  99 0064 AD F0                   		movw	ax, r8
+ 100 0066 8D F2                   		mov	a, r10
+ 101 0068 9B                      		mov	[hl], a
+  36:../src/drvPWM.c ****         TMPR003 = 1U;
+ 102                             		.loc 1 36 0
+ 103 0069 C9 F0 EA FF             		movw	r8, #-22
+ 104 006d AD F0                   		movw	ax, r8
+ 105 006f BD F4                   		movw	r12, ax
+ 106 0071 FA F4                   		movw	hl, r12
+ 107 0073 8B                      		mov	a, [hl]
+ 108 0074 9D F2                   		mov	r10, a
+ 109 0076 6A F2 10                		or	r10, #16
+ 110 0079 AD F0                   		movw	ax, r8
+ 111 007b 8D F2                   		mov	a, r10
+ 112 007d 9B                      		mov	[hl], a
+  37:../src/drvPWM.c **** 
+  38:../src/drvPWM.c ****         /* Channel 0 is used as master channel for PWM output function */
+  39:../src/drvPWM.c ****         TMR00 = _0000_TAU_CLOCK_SELECT_CKM0 
+ 113                             		.loc 1 39 0
+ 114 007e C9 F0 90 01             		movw	r8, #400
+ 115 0082 AD F0                   		movw	ax, r8
+ 116 0084 BD F2                   		movw	r10, ax
+ 117 0086 FA F2                   		movw	hl, r10
+ 118 0088 E6                      		onew	ax
+ 119 0089 BB                      		movw	[hl], ax
+  40:../src/drvPWM.c ****                         | _0000_TAU_CLOCK_MODE_CKS 
+  41:../src/drvPWM.c ****                         | _0000_TAU_TRIGGER_SOFTWARE 
+  42:../src/drvPWM.c ****                         | _0001_TAU_MODE_PWM_MASTER;
+  43:../src/drvPWM.c **** 
+  44:../src/drvPWM.c ****         /* Channel 3 is used as slave channel for PWM output function */
+  45:../src/drvPWM.c ****         TMR03 = _0000_TAU_CLOCK_SELECT_CKM0 
+ 120                             		.loc 1 45 0
+ 121 008a C9 F0 96 01             		movw	r8, #406
+ 122 008e AD F0                   		movw	ax, r8
+ 123 0090 BD F4                   		movw	r12, ax
+ 124 0092 FA F4                   		movw	hl, r12
+ 125 0094 30 09 04                		movw	ax, #1033
+ 126 0097 BB                      		movw	[hl], ax
+  46:../src/drvPWM.c ****                         | _0000_TAU_CLOCK_MODE_CKS 
+  47:../src/drvPWM.c ****                         | _0000_TAU_COMBINATION_SLAVE 
+  48:../src/drvPWM.c ****                         | _0400_TAU_TRIGGER_MASTER_INT 
+  49:../src/drvPWM.c ****                         | _0009_TAU_MODE_PWM_SLAVE;
+  50:../src/drvPWM.c **** 
+  51:../src/drvPWM.c ****         TDR00 = 19999U;
+ 127                             		.loc 1 51 0
+ 128 0098 C9 F0 18 FF             		movw	r8, #-232
+ 129 009c AD F0                   		movw	ax, r8
+ 130 009e BD F2                   		movw	r10, ax
+ 131 00a0 FA F2                   		movw	hl, r10
+ 132 00a2 30 1F 4E                		movw	ax, #19999
+ 133 00a5 BB                      		movw	[hl], ax
+  52:../src/drvPWM.c ****         TDR03 = 0U;
+ 134                             		.loc 1 52 0
+ 135 00a6 C9 F0 66 FF             		movw	r8, #-154
+ 136 00aa AD F0                   		movw	ax, r8
+ 137 00ac BD F4                   		movw	r12, ax
+ 138 00ae FA F4                   		movw	hl, r12
+ 139 00b0 F6                      		clrw	ax
+ 140 00b1 BB                      		movw	[hl], ax
+  53:../src/drvPWM.c **** 
+  54:../src/drvPWM.c ****         /* Saída em nível 0 */
+  55:../src/drvPWM.c ****         TO0 &= ~_0001_TAU_CH0_OUTPUT_VALUE_1;
+ 141                             		.loc 1 55 0
+ 142 00b2 C9 F2 B8 01             		movw	r10, #440
+ 143 00b6 C9 F0 B8 01             		movw	r8, #440
+ 144 00ba AD F0                   		movw	ax, r8
+ 145 00bc BD F4                   		movw	r12, ax
+ 146 00be FA F4                   		movw	hl, r12
+ 147 00c0 AB                      		movw	ax, [hl]
+ 148 00c1 BD F0                   		movw	r8, ax
+ 149 00c3 8D F0                   		mov	a, r8
+ 150 00c5 5C FE                   		and	a, #-2
+ 151 00c7 98 00                   		mov	[sp], a
+ 152 00c9 8D F1                   		mov	a, r9
+ 153 00cb 5C FF                   		and	a, #-1
+ 154 00cd 98 01                   		mov	[sp+1], a
+ 155 00cf A8 00                   		movw	ax, [sp]
+ 156 00d1 BD F4                   		movw	r12, ax
+ 157 00d3 AD F2                   		movw	ax, r10
+ 158 00d5 BD F0                   		movw	r8, ax
+ 159 00d7 FA F0                   		movw	hl, r8
+ 160 00d9 AD F4                   		movw	ax, r12
+ 161 00db BB                      		movw	[hl], ax
+  56:../src/drvPWM.c ****         /* Saída desabilitada */
+  57:../src/drvPWM.c ****         TOE0 &= ~_0001_TAU_CH0_OUTPUT_ENABLE;
+ 162                             		.loc 1 57 0
+ 163 00dc C9 F2 BA 01             		movw	r10, #442
+ 164 00e0 C9 F0 BA 01             		movw	r8, #442
+ 165 00e4 AD F0                   		movw	ax, r8
+ 166 00e6 BD F4                   		movw	r12, ax
+ 167 00e8 FA F4                   		movw	hl, r12
+ 168 00ea AB                      		movw	ax, [hl]
+ 169 00eb BD F0                   		movw	r8, ax
+ 170 00ed 8D F0                   		mov	a, r8
+ 171 00ef 5C FE                   		and	a, #-2
+ 172 00f1 9D EC                   		mov	r20, a
+ 173 00f3 8D F1                   		mov	a, r9
+ 174 00f5 5C FF                   		and	a, #-1
+ 175 00f7 9D ED                   		mov	r21, a
+ 176 00f9 AD F2                   		movw	ax, r10
+ 177 00fb BD F0                   		movw	r8, ax
+ 178 00fd FA F0                   		movw	hl, r8
+ 179 00ff AD EC                   		movw	ax, r20
+ 180 0101 BB                      		movw	[hl], ax
+  58:../src/drvPWM.c **** 
+  59:../src/drvPWM.c ****         /* Modo escravo do CH3 */
+  60:../src/drvPWM.c ****         TOM0 |= _0008_TAU_CH3_OUTPUT_COMBIN;
+ 181                             		.loc 1 60 0
+ 182 0102 C9 F2 BE 01             		movw	r10, #446
+ 183 0106 C9 F0 BE 01             		movw	r8, #446
+ 184 010a AD F0                   		movw	ax, r8
+ 185 010c BD F4                   		movw	r12, ax
+ 186 010e FA F4                   		movw	hl, r12
+ 187 0110 AB                      		movw	ax, [hl]
+ 188 0111 BD F0                   		movw	r8, ax
+ 189 0113 8D F0                   		mov	a, r8
+ 190 0115 6C 08                   		or	a, #8
+ 191 0117 9D EA                   		mov	r18, a
+ 192 0119 8D F1                   		mov	a, r9
+ 193 011b 6C 00                   		or	a, #0
+ 194 011d 9D EB                   		mov	r19, a
+ 195 011f AD F2                   		movw	ax, r10
+ 196 0121 BD F0                   		movw	r8, ax
+ 197 0123 FA F0                   		movw	hl, r8
+ 198 0125 AD EA                   		movw	ax, r18
+ 199 0127 BB                      		movw	[hl], ax
+  61:../src/drvPWM.c ****         /* Lógica positiva do CH3 (ativo em nível 1) */
+  62:../src/drvPWM.c ****         TOL0 &= ~_0008_TAU_CH3_OUTPUT_LEVEL_L;
+ 200                             		.loc 1 62 0
+ 201 0128 C9 F2 BC 01             		movw	r10, #444
+ 202 012c C9 F0 BC 01             		movw	r8, #444
+ 203 0130 AD F0                   		movw	ax, r8
+ 204 0132 BD F4                   		movw	r12, ax
+ 205 0134 FA F4                   		movw	hl, r12
+ 206 0136 AB                      		movw	ax, [hl]
+ 207 0137 BD F0                   		movw	r8, ax
+ 208 0139 8D F0                   		mov	a, r8
+ 209 013b 5C F7                   		and	a, #-9
+ 210 013d 9D E8                   		mov	r16, a
+ 211 013f 8D F1                   		mov	a, r9
+ 212 0141 5C FF                   		and	a, #-1
+ 213 0143 9D E9                   		mov	r17, a
+ 214 0145 AD F2                   		movw	ax, r10
+ 215 0147 BD F0                   		movw	r8, ax
+ 216 0149 FA F0                   		movw	hl, r8
+ 217 014b AD E8                   		movw	ax, r16
+ 218 014d BB                      		movw	[hl], ax
+  63:../src/drvPWM.c ****         /* Saída em nível 0 */
+  64:../src/drvPWM.c ****         TO0 &= ~_0008_TAU_CH3_OUTPUT_VALUE_1;
+ 219                             		.loc 1 64 0
+ 220 014e C9 F2 B8 01             		movw	r10, #440
+ 221 0152 C9 F0 B8 01             		movw	r8, #440
+ 222 0156 AD F0                   		movw	ax, r8
+ 223 0158 BD F4                   		movw	r12, ax
+ 224 015a FA F4                   		movw	hl, r12
+ 225 015c AB                      		movw	ax, [hl]
+ 226 015d BD F0                   		movw	r8, ax
+ 227 015f 8D F0                   		mov	a, r8
+ 228 0161 5C F7                   		and	a, #-9
+ 229 0163 9D F6                   		mov	r14, a
+ 230 0165 8D F1                   		mov	a, r9
+ 231 0167 5C FF                   		and	a, #-1
+ 232 0169 9D F7                   		mov	r15, a
+ 233 016b AD F2                   		movw	ax, r10
+ 234 016d BD F0                   		movw	r8, ax
+ 235 016f FA F0                   		movw	hl, r8
+ 236 0171 AD F6                   		movw	ax, r14
+ 237 0173 BB                      		movw	[hl], ax
+  65:../src/drvPWM.c ****         /* Saída desabilitada */
+  66:../src/drvPWM.c ****         TOE0 &= ~_0008_TAU_CH3_OUTPUT_ENABLE;
+ 238                             		.loc 1 66 0
+ 239 0174 C9 F2 BA 01             		movw	r10, #442
+ 240 0178 C9 F0 BA 01             		movw	r8, #442
+ 241 017c AD F0                   		movw	ax, r8
+ 242 017e BD F4                   		movw	r12, ax
+ 243 0180 FA F4                   		movw	hl, r12
+ 244 0182 AB                      		movw	ax, [hl]
+ 245 0183 BD F0                   		movw	r8, ax
+ 246 0185 8D F0                   		mov	a, r8
+ 247 0187 5C F7                   		and	a, #-9
+ 248 0189 9D F4                   		mov	r12, a
+ 249 018b 8D F1                   		mov	a, r9
+ 250 018d 5C FF                   		and	a, #-1
+ 251 018f 9D F5                   		mov	r13, a
+ 252 0191 AD F2                   		movw	ax, r10
+ 253 0193 BD F0                   		movw	r8, ax
+ 254 0195 FA F0                   		movw	hl, r8
+ 255 0197 AD F4                   		movw	ax, r12
+ 256 0199 BB                      		movw	[hl], ax
+  67:../src/drvPWM.c **** 
+  68:../src/drvPWM.c ****         /* Set TO03 pin */
+  69:../src/drvPWM.c ****         PM3 &= 0xfdU;
+ 257                             		.loc 1 69 0
+ 258 019a C9 F0 23 FF             		movw	r8, #-221
+ 259 019e C9 F2 23 FF             		movw	r10, #-221
+ 260 01a2 AD F2                   		movw	ax, r10
+ 261 01a4 BD F4                   		movw	r12, ax
+ 262 01a6 FA F4                   		movw	hl, r12
+ 263 01a8 8B                      		mov	a, [hl]
+ 264 01a9 9D F2                   		mov	r10, a
+ 265 01ab 5A F2 FD                		and	r10, #-3
+ 266 01ae AD F0                   		movw	ax, r8
+ 267 01b0 BD F4                   		movw	r12, ax
+ 268 01b2 FA F4                   		movw	hl, r12
+ 269 01b4 8D F2                   		mov	a, r10
+ 270 01b6 9B                      		mov	[hl], a
+  70:../src/drvPWM.c ****         P3 &= 0xfdU;
+ 271                             		.loc 1 70 0
+ 272 01b7 C9 F0 03 FF             		movw	r8, #-253
+ 273 01bb C9 F2 03 FF             		movw	r10, #-253
+ 274 01bf AD F2                   		movw	ax, r10
+ 275 01c1 BD F4                   		movw	r12, ax
+ 276 01c3 FA F4                   		movw	hl, r12
+ 277 01c5 8B                      		mov	a, [hl]
+ 278 01c6 9D F2                   		mov	r10, a
+ 279 01c8 5A F2 FD                		and	r10, #-3
+ 280 01cb AD F0                   		movw	ax, r8
+ 281 01cd BD F4                   		movw	r12, ax
+ 282 01cf FA F4                   		movw	hl, r12
+ 283 01d1 8D F2                   		mov	a, r10
+ 284 01d3 9B                      		mov	[hl], a
+  71:../src/drvPWM.c **** }
+ 285                             		.loc 1 71 0
+ 286 01d4 10 02                   		addw	sp, #2
+ 287 01d6 61 EF                   		sel	rb2
+ 288 01d8 C4                      		pop	de ; r20
+ 289 01d9 C2                      		pop	bc ; r18
+ 290 01da C0                      		pop	ax ; r16
+ 291 01db 61 CF                   		sel	rb0
+ 292 01dd D7                      		ret
+ 293                             	.LFE0:
+ 296                             	_r_tau0_channel0_start:
+ 297                             	.LFB1:
+  72:../src/drvPWM.c **** 
+  73:../src/drvPWM.c **** static void r_tau0_channel0_start(void)
+  74:../src/drvPWM.c **** {
+ 298                             		.loc 1 74 0
+  75:../src/drvPWM.c ****         /* Clear INTTM00 interrupt flag */
+  76:../src/drvPWM.c ****         TMIF00 = 0U;
+ 299                             		.loc 1 76 0
+ 300 01de C9 F4 E1 FF             		movw	r12, #-31
+ 301 01e2 AD F4                   		movw	ax, r12
+ 302 01e4 BD F0                   		movw	r8, ax
+ 303 01e6 FA F0                   		movw	hl, r8
+ 304 01e8 8B                      		mov	a, [hl]
+ 305 01e9 9D F6                   		mov	r14, a
+ 306 01eb 5A F6 BF                		and	r14, #-65
+ 307 01ee AD F4                   		movw	ax, r12
+ 308 01f0 BD F2                   		movw	r10, ax
+ 309 01f2 8D F6                   		mov	a, r14
+ 310 01f4 9B                      		mov	[hl], a
+  77:../src/drvPWM.c ****         /* Enable INTTM00 interrupt */
+  78:../src/drvPWM.c ****         TMMK00 = 0U;
+ 311                             		.loc 1 78 0
+ 312 01f5 C9 F4 E5 FF             		movw	r12, #-27
+ 313 01f9 AD F4                   		movw	ax, r12
+ 314 01fb BD F0                   		movw	r8, ax
+ 315 01fd FA F0                   		movw	hl, r8
+ 316 01ff 8B                      		mov	a, [hl]
+ 317 0200 9D F6                   		mov	r14, a
+ 318 0202 5A F6 BF                		and	r14, #-65
+ 319 0205 AD F4                   		movw	ax, r12
+ 320 0207 BD F2                   		movw	r10, ax
+ 321 0209 8D F6                   		mov	a, r14
+ 322 020b 9B                      		mov	[hl], a
+  79:../src/drvPWM.c ****         /* Saída habilitada */
+  80:../src/drvPWM.c ****         TOE0 |= _0001_TAU_CH0_OUTPUT_ENABLE;
+ 323                             		.loc 1 80 0
+ 324 020c C9 F6 BA 01             		movw	r14, #442
+ 325 0210 C9 F4 BA 01             		movw	r12, #442
+ 326 0214 AD F4                   		movw	ax, r12
+ 327 0216 BD F0                   		movw	r8, ax
+ 328 0218 FA F0                   		movw	hl, r8
+ 329 021a AB                      		movw	ax, [hl]
+ 330 021b BD F4                   		movw	r12, ax
+ 331 021d 8D F4                   		mov	a, r12
+ 332 021f 6C 01                   		or	a, #1
+ 333 0221 9D F2                   		mov	r10, a
+ 334 0223 8D F5                   		mov	a, r13
+ 335 0225 6C 00                   		or	a, #0
+ 336 0227 9D F3                   		mov	r11, a
+ 337 0229 AD F6                   		movw	ax, r14
+ 338 022b BD F0                   		movw	r8, ax
+ 339 022d FA F0                   		movw	hl, r8
+ 340 022f AD F2                   		movw	ax, r10
+ 341 0231 BB                      		movw	[hl], ax
+  81:../src/drvPWM.c ****         /* Inicia operação conforme configurado */
+  82:../src/drvPWM.c ****         TS0 |= _0001_TAU_CH0_START_TRG_ON;
+ 342                             		.loc 1 82 0
+ 343 0232 C9 F4 B2 01             		movw	r12, #434
+ 344 0236 C9 F2 B2 01             		movw	r10, #434
+ 345 023a AD F2                   		movw	ax, r10
+ 346 023c BD F0                   		movw	r8, ax
+ 347 023e FA F0                   		movw	hl, r8
+ 348 0240 AB                      		movw	ax, [hl]
+ 349 0241 BD F2                   		movw	r10, ax
+ 350 0243 8D F2                   		mov	a, r10
+ 351 0245 6C 01                   		or	a, #1
+ 352 0247 9D F0                   		mov	r8, a
+ 353 0249 8D F3                   		mov	a, r11
+ 354 024b 6C 00                   		or	a, #0
+ 355 024d 9D F1                   		mov	r9, a
+ 356 024f AD F4                   		movw	ax, r12
+ 357 0251 BD F2                   		movw	r10, ax
+ 358 0253 FA F2                   		movw	hl, r10
+ 359 0255 AD F0                   		movw	ax, r8
+ 360 0257 BB                      		movw	[hl], ax
+  83:../src/drvPWM.c **** }
+ 361                             		.loc 1 83 0
+ 362 0258 D7                      		ret
+ 363                             	.LFE1:
+ 366                             	_r_tau0_channel3_start:
+ 367                             	.LFB2:
+  84:../src/drvPWM.c **** 
+  85:../src/drvPWM.c **** static void r_tau0_channel3_start(void)
+  86:../src/drvPWM.c **** {
+ 368                             		.loc 1 86 0
+  87:../src/drvPWM.c ****         /* Clear INTTM03 interrupt flag */
+  88:../src/drvPWM.c ****         TMIF03 = 0U;
+ 369                             		.loc 1 88 0
+ 370 0259 C9 F4 E2 FF             		movw	r12, #-30
+ 371 025d AD F4                   		movw	ax, r12
+ 372 025f BD F0                   		movw	r8, ax
+ 373 0261 FA F0                   		movw	hl, r8
+ 374 0263 8B                      		mov	a, [hl]
+ 375 0264 9D F6                   		mov	r14, a
+ 376 0266 5A F6 EF                		and	r14, #-17
+ 377 0269 AD F4                   		movw	ax, r12
+ 378 026b BD F2                   		movw	r10, ax
+ 379 026d 8D F6                   		mov	a, r14
+ 380 026f 9B                      		mov	[hl], a
+  89:../src/drvPWM.c ****         /* Enable INTTM03 interrupt */
+  90:../src/drvPWM.c ****         TMMK03 = 0U;
+ 381                             		.loc 1 90 0
+ 382 0270 C9 F4 E6 FF             		movw	r12, #-26
+ 383 0274 AD F4                   		movw	ax, r12
+ 384 0276 BD F0                   		movw	r8, ax
+ 385 0278 FA F0                   		movw	hl, r8
+ 386 027a 8B                      		mov	a, [hl]
+ 387 027b 9D F6                   		mov	r14, a
+ 388 027d 5A F6 EF                		and	r14, #-17
+ 389 0280 AD F4                   		movw	ax, r12
+ 390 0282 BD F2                   		movw	r10, ax
+ 391 0284 8D F6                   		mov	a, r14
+ 392 0286 9B                      		mov	[hl], a
+  91:../src/drvPWM.c ****         /* Saída habilitada */
+  92:../src/drvPWM.c ****         TOE0 |= _0008_TAU_CH3_OUTPUT_ENABLE;
+ 393                             		.loc 1 92 0
+ 394 0287 C9 F6 BA 01             		movw	r14, #442
+ 395 028b C9 F4 BA 01             		movw	r12, #442
+ 396 028f AD F4                   		movw	ax, r12
+ 397 0291 BD F0                   		movw	r8, ax
+ 398 0293 FA F0                   		movw	hl, r8
+ 399 0295 AB                      		movw	ax, [hl]
+ 400 0296 BD F4                   		movw	r12, ax
+ 401 0298 8D F4                   		mov	a, r12
+ 402 029a 6C 08                   		or	a, #8
+ 403 029c 9D F2                   		mov	r10, a
+ 404 029e 8D F5                   		mov	a, r13
+ 405 02a0 6C 00                   		or	a, #0
+ 406 02a2 9D F3                   		mov	r11, a
+ 407 02a4 AD F6                   		movw	ax, r14
+ 408 02a6 BD F0                   		movw	r8, ax
+ 409 02a8 FA F0                   		movw	hl, r8
+ 410 02aa AD F2                   		movw	ax, r10
+ 411 02ac BB                      		movw	[hl], ax
+  93:../src/drvPWM.c ****         /* Inicia operação conforme configurado */
+  94:../src/drvPWM.c ****         TS0 |= _0008_TAU_CH3_START_TRG_ON;
+ 412                             		.loc 1 94 0
+ 413 02ad C9 F4 B2 01             		movw	r12, #434
+ 414 02b1 C9 F2 B2 01             		movw	r10, #434
+ 415 02b5 AD F2                   		movw	ax, r10
+ 416 02b7 BD F0                   		movw	r8, ax
+ 417 02b9 FA F0                   		movw	hl, r8
+ 418 02bb AB                      		movw	ax, [hl]
+ 419 02bc BD F2                   		movw	r10, ax
+ 420 02be 8D F2                   		mov	a, r10
+ 421 02c0 6C 08                   		or	a, #8
+ 422 02c2 9D F0                   		mov	r8, a
+ 423 02c4 8D F3                   		mov	a, r11
+ 424 02c6 6C 00                   		or	a, #0
+ 425 02c8 9D F1                   		mov	r9, a
+ 426 02ca AD F4                   		movw	ax, r12
+ 427 02cc BD F2                   		movw	r10, ax
+ 428 02ce FA F2                   		movw	hl, r10
+ 429 02d0 AD F0                   		movw	ax, r8
+ 430 02d2 BB                      		movw	[hl], ax
+  95:../src/drvPWM.c **** }
+ 431                             		.loc 1 95 0
+ 432 02d3 D7                      		ret
+ 433                             	.LFE2:
+ 435                             		.global	___udivhi3
+ 436                             		.global	_setPWM
+ 438                             	_setPWM:
+ 439                             	.LFB3:
+  96:../src/drvPWM.c **** 
+  97:../src/drvPWM.c **** char setPWM(void *parameters)
+  98:../src/drvPWM.c **** {
+ 440                             		.loc 1 98 0
+ 441                             		; start of function
+ 442                             		; push 2: r16
+ 443                             		; locals: 4 bytes
+ 444                             		; outgoing: 4 bytes
+ 445 02d4 61 EF                   		sel	rb2
+ 446 02d6 C1                      		push	ax ; r16
+ 447                             	.LCFI4:
+ 448 02d7 61 CF                   		sel	rb0
+ 449 02d9 20 08                   		subw	sp, #8
+ 450                             	.LCFI5:
+  99:../src/drvPWM.c ****         uint8_t new_pwm = *(uint8_t *) parameters;
+ 451                             		.loc 1 99 0
+ 452 02db A8 0E                   		movw	ax, [sp+14]
+ 453 02dd BD F0                   		movw	r8, ax
+ 454 02df BD F2                   		movw	r10, ax
+ 455 02e1 FA F2                   		movw	hl, r10
+ 456 02e3 8B                      		mov	a, [hl]
+ 457 02e4 9D F0                   		mov	r8, a
+ 458 02e6 98 07                   		mov	[sp+7], a
+ 100:../src/drvPWM.c **** 
+ 101:../src/drvPWM.c **** 	if (new_pwm > 100)
+ 459                             		.loc 1 101 0
+ 460 02e8 4C 64                   		cmp	a, #100 
+ 461 02ea 61 E3                   		skh 
+ 462 02ec EC F7 02 00             		br	!!.L5
+ 102:../src/drvPWM.c **** 		return FALHA;
+ 463                             		.loc 1 102 0
+ 464 02f0 CD F0 01                		mov	r8, #1
+ 465 02f3 EC 3C 03 00             		br	!!.L6
+ 466                             	.L5:
+ 103:../src/drvPWM.c **** 
+ 104:../src/drvPWM.c ****         pwm = new_pwm;
+ 467                             		.loc 1 104 0
+ 468 02f7 88 07                   		mov	a, [sp+7]
+ 469 02f9 9D F0                   		mov	r8, a
+ 470 02fb 9F 0A 00                		mov	!_pwm, a
+ 105:../src/drvPWM.c **** 	TDR03 = (pwm * (TDR00 + 1)) / 100;
+ 471                             		.loc 1 105 0
+ 472 02fe C9 E8 66 FF             		movw	r16, #-154
+ 473 0302 8F 0A 00                		mov	a, !_pwm
+ 474 0305 9D F0                   		mov	r8, a
+ 475 0307 CD F1 00                		mov	r9, #0
+ 476 030a C9 F2 18 FF             		movw	r10, #-232
+ 477 030e AD F2                   		movw	ax, r10
+ 478 0310 BD F4                   		movw	r12, ax
+ 479 0312 FA F4                   		movw	hl, r12
+ 480 0314 AB                      		movw	ax, [hl]
+ 481 0315 BD F2                   		movw	r10, ax
+ 482 0317 A1                      		incw	ax
+ 483 0318 BD F4                   		movw	r12, ax
+ 484                             		; mulhi macro r10 = r8 * r12
+ 485 031a AD F0                   		movw    ax, r8
+ 486 031c DA F4                   		movw    bc, r12
+ 487 031e CE FB 01                		mulhu   ; bcax = bc * ax
+ 488 0321 BD F2                   		movw    r10, ax
+ 489                             		; end of mulhi macro
+ 490 0323 AD F2                   		movw	ax, r10
+ 491 0325 B8 00                   		movw	[sp], ax
+ 492 0327 30 64 00                		movw	ax, #100
+ 493 032a B8 02                   		movw	[sp+2], ax
+ 494 032c FC 00 00 00             		call	!!___udivhi3
+ 495 0330 AD F0                   		movw	ax, r8
+ 496 0332 B8 04                   		movw	[sp+4], ax
+ 497 0334 BD F0                   		movw	r8, ax
+ 498 0336 FA E8                   		movw	hl, r16
+ 499 0338 BB                      		movw	[hl], ax
+ 106:../src/drvPWM.c **** 
+ 107:../src/drvPWM.c **** 	return SUCESSO;
+ 500                             		.loc 1 107 0
+ 501 0339 CD F0 00                		mov	r8, #0
+ 502                             	.L6:
+ 108:../src/drvPWM.c **** }
+ 503                             		.loc 1 108 0
+ 504 033c 10 08                   		addw	sp, #8
+ 505 033e 61 EF                   		sel	rb2
+ 506 0340 C0                      		pop	ax ; r16
+ 507 0341 61 CF                   		sel	rb0
+ 508 0343 D7                      		ret
+ 509                             	.LFE3:
+ 511                             		.global	_getPWM
+ 513                             	_getPWM:
+ 514                             	.LFB4:
+ 109:../src/drvPWM.c **** 
+ 110:../src/drvPWM.c **** char getPWM(void *parameters)
+ 111:../src/drvPWM.c **** {
+ 515                             		.loc 1 111 0
+ 516                             		; start of function
+ 517                             		; locals: 2 bytes
+ 518 0344 20 02                   		subw	sp, #2
+ 519                             	.LCFI6:
+ 112:../src/drvPWM.c ****         uint8_t ret = *(uint8_t *) parameters;
+ 520                             		.loc 1 112 0
+ 521 0346 A8 06                   		movw	ax, [sp+6]
+ 522 0348 BD F0                   		movw	r8, ax
+ 523 034a BD F2                   		movw	r10, ax
+ 524 034c FA F2                   		movw	hl, r10
+ 525 034e 8B                      		mov	a, [hl]
+ 526 034f 9D F0                   		mov	r8, a
+ 527 0351 98 01                   		mov	[sp+1], a
+ 113:../src/drvPWM.c **** 
+ 114:../src/drvPWM.c ****         ret = pwm;
+ 528                             		.loc 1 114 0
+ 529 0353 8F 0A 00                		mov	a, !_pwm
+ 530 0356 9D F0                   		mov	r8, a
+ 531 0358 98 01                   		mov	[sp+1], a
+ 115:../src/drvPWM.c **** 
+ 116:../src/drvPWM.c ****         return SUCESSO;
+ 532                             		.loc 1 116 0
+ 533 035a CD F0 00                		mov	r8, #0
+ 117:../src/drvPWM.c **** }
+ 534                             		.loc 1 117 0
+ 535 035d 10 02                   		addw	sp, #2
+ 536 035f D7                      		ret
+ 537                             	.LFE4:
+ 539                             		.global	_initPWM
+ 541                             	_initPWM:
+ 542                             	.LFB5:
+ 118:../src/drvPWM.c **** 
+ 119:../src/drvPWM.c **** char initPWM(void *parameters)
+ 120:../src/drvPWM.c **** {
+ 543                             		.loc 1 120 0
+ 121:../src/drvPWM.c **** 	r_tau0_create;
+ 122:../src/drvPWM.c **** 	r_tau0_channel0_start;
+ 123:../src/drvPWM.c **** 	r_tau0_channel3_start;
+ 124:../src/drvPWM.c **** 
+ 125:../src/drvPWM.c **** 	return SUCESSO;
+ 544                             		.loc 1 125 0
+ 545 0360 CD F0 00                		mov	r8, #0
+ 126:../src/drvPWM.c **** }
+ 546                             		.loc 1 126 0
+ 547 0363 D7                      		ret
+ 548                             	.LFE5:
+ 550                             		.global	_getPWMDriver
+ 552                             	_getPWMDriver:
+ 553                             	.LFB6:
+ 127:../src/drvPWM.c **** 
+ 128:../src/drvPWM.c **** driver *getPWMDriver(void)
+ 129:../src/drvPWM.c **** {
+ 554                             		.loc 1 129 0
+ 555                             		; start of function
+ 556                             		; locals: 2 bytes
+ 557 0364 20 02                   		subw	sp, #2
+ 558                             	.LCFI7:
+ 130:../src/drvPWM.c **** 	thisDriver.drv_init = initPWM;
+ 559                             		.loc 1 130 0
+ 560 0366 30 00 00                		movw	ax, #%code(_initPWM)
+ 561 0369 BF 04 00                		movw	!_thisDriver+4, ax
+ 131:../src/drvPWM.c **** 
+ 132:../src/drvPWM.c **** 	this_functions[PWM_SET] = setPWM;
+ 562                             		.loc 1 132 0
+ 563 036c 30 00 00                		movw	ax, #%code(_setPWM)
+ 564 036f BF 06 00                		movw	!_this_functions, ax
+ 133:../src/drvPWM.c **** 	this_functions[PWM_GET] = getPWM;
+ 565                             		.loc 1 133 0
+ 566 0372 30 00 00                		movw	ax, #%code(_getPWM)
+ 567 0375 BF 08 00                		movw	!_this_functions+2, ax
+ 134:../src/drvPWM.c **** 
+ 135:../src/drvPWM.c **** 	thisDriver.drv_func = this_functions;
+ 568                             		.loc 1 135 0
+ 569 0378 30 06 00                		movw	ax, #_this_functions
+ 570 037b BF 02 00                		movw	!_thisDriver+2, ax
+ 136:../src/drvPWM.c **** 
+ 137:../src/drvPWM.c **** 	return &thisDriver;
+ 571                             		.loc 1 137 0
+ 572 037e 30 00 00                		movw	ax, #_thisDriver
+ 573 0381 B8 00                   		movw	[sp], ax
+ 574 0383 BD F0                   		movw	r8, ax
+ 138:../src/drvPWM.c **** }
+ 575                             		.loc 1 138 0
+ 576 0385 10 02                   		addw	sp, #2
+ 577 0387 D7                      		ret
+ 578                             	.LFE6:
+ 686                             	.Letext0:
+ 687                             		.file 2 "../src/dd_types.h"
+ 688                             		.file 3 "../src/iodefine.h"
+ 689                             		.file 4 "../src/iodefine_ext.h"
+ 690                             		.file 5 "../src/r_cg_macrodriver.h"
+ 691                             		.file 6 "../src/drvPWM.h"

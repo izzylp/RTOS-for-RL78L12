@@ -1,0 +1,346 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.local	_thisDriver
+  28                             		.comm	_thisDriver,6,2
+  29                             		.local	_this_functions
+  30                             		.comm	_this_functions,4,2
+  31                             		.global	_initBot
+  33                             	_initBot:
+  34                             	.LFB0:
+  35                             		.file 1 "../src/drvBot.c"
+   1:../src/drvBot.c **** /*
+   2:../src/drvBot.c ****  * drvBot.c
+   3:../src/drvBot.c ****  *
+   4:../src/drvBot.c ****  *  Created on: Jun 26, 2014
+   5:../src/drvBot.c ****  *      Author: Pedro
+   6:../src/drvBot.c ****  */
+   7:../src/drvBot.c **** #include "drvBot.h"
+   8:../src/drvBot.c **** #include "r_cg_userdefine.h"
+   9:../src/drvBot.c **** #include "r_cg_macrodriver.h"
+  10:../src/drvBot.c **** 
+  11:../src/drvBot.c **** static driver thisDriver;
+  12:../src/drvBot.c **** static ptrFuncDrv this_functions[BOT_END];
+  13:../src/drvBot.c **** 
+  14:../src/drvBot.c **** char initBot(void *parameters);
+  15:../src/drvBot.c **** char botPush(void *parameters);
+  16:../src/drvBot.c **** char botSelect(void *parameters);
+  17:../src/drvBot.c **** 
+  18:../src/drvBot.c **** char initBot(void *parameters)
+  19:../src/drvBot.c **** {
+  36                             		.loc 1 19 0
+  20:../src/drvBot.c **** 	return SUCESSO;
+  37                             		.loc 1 20 0
+  38 0000 CD F0 00                		mov	r8, #0
+  21:../src/drvBot.c **** }
+  39                             		.loc 1 21 0
+  40 0003 D7                      		ret
+  41                             	.LFE0:
+  43                             		.global	_botPush
+  45                             	_botPush:
+  46                             	.LFB1:
+  22:../src/drvBot.c **** 
+  23:../src/drvBot.c **** char botPush(void *parameters)
+  24:../src/drvBot.c **** {
+  47                             		.loc 1 24 0
+  48                             		; start of function
+  49                             		; locals: 2 bytes
+  50 0004 20 02                   		subw	sp, #2
+  51                             	.LCFI0:
+  25:../src/drvBot.c **** 	uint8_t ret = 0;
+  52                             		.loc 1 25 0
+  53 0006 C8 01 00                		mov	[sp+1], #0
+  26:../src/drvBot.c **** 
+  27:../src/drvBot.c **** 	if (!SW1) {
+  54                             		.loc 1 27 0
+  55 0009 C9 F0 0D FF             		movw	r8, #-243
+  56 000d AD F0                   		movw	ax, r8
+  57 000f BD F2                   		movw	r10, ax
+  58 0011 FA F2                   		movw	hl, r10
+  59 0013 8B                      		mov	a, [hl]
+  60 0014 9D F0                   		mov	r8, a
+  61 0016 5A F0 80                		and	r8, #-128
+  62 0019 D4 F0                   		cmp0	r8 
+  63 001b 61 E8                   		skz 
+  64 001d EC 27 00 00             		br	!!.L4
+  28:../src/drvBot.c **** 		ret |= 0x01;
+  65                             		.loc 1 28 0
+  66 0021 88 01                   		mov	a, [sp+1]
+  67 0023 6C 01                   		or	a, #1
+  68 0025 98 01                   		mov	[sp+1], a
+  69                             	.L4:
+  29:../src/drvBot.c **** 	}
+  30:../src/drvBot.c **** 	if (!SW2) {
+  70                             		.loc 1 30 0
+  71 0027 C9 F0 03 FF             		movw	r8, #-253
+  72 002b AD F0                   		movw	ax, r8
+  73 002d BD F4                   		movw	r12, ax
+  74 002f FA F4                   		movw	hl, r12
+  75 0031 8B                      		mov	a, [hl]
+  76 0032 9D F0                   		mov	r8, a
+  77 0034 5A F0 02                		and	r8, #2
+  78 0037 D4 F0                   		cmp0	r8 
+  79 0039 61 E8                   		skz 
+  80 003b EC 45 00 00             		br	!!.L5
+  31:../src/drvBot.c **** 		ret |= 0x02;
+  81                             		.loc 1 31 0
+  82 003f 88 01                   		mov	a, [sp+1]
+  83 0041 6C 02                   		or	a, #2
+  84 0043 98 01                   		mov	[sp+1], a
+  85                             	.L5:
+  32:../src/drvBot.c **** 	}
+  33:../src/drvBot.c **** 	if (!SW3) {
+  86                             		.loc 1 33 0
+  87 0045 C9 F0 03 FF             		movw	r8, #-253
+  88 0049 AD F0                   		movw	ax, r8
+  89 004b BD F2                   		movw	r10, ax
+  90 004d FA F2                   		movw	hl, r10
+  91 004f 8B                      		mov	a, [hl]
+  92 0050 9D F0                   		mov	r8, a
+  93 0052 5A F0 04                		and	r8, #4
+  94 0055 D4 F0                   		cmp0	r8 
+  95 0057 61 E8                   		skz 
+  96 0059 EC 63 00 00             		br	!!.L6
+  34:../src/drvBot.c **** 		ret |= 0x04;
+  97                             		.loc 1 34 0
+  98 005d 88 01                   		mov	a, [sp+1]
+  99 005f 6C 04                   		or	a, #4
+ 100 0061 98 01                   		mov	[sp+1], a
+ 101                             	.L6:
+  35:../src/drvBot.c **** 	}
+  36:../src/drvBot.c **** 
+  37:../src/drvBot.c ****         *((uint8_t *) parameters) = ret;
+ 102                             		.loc 1 37 0
+ 103 0063 A8 06                   		movw	ax, [sp+6]
+ 104 0065 BD F0                   		movw	r8, ax
+ 105 0067 88 01                   		mov	a, [sp+1]
+ 106 0069 9D F2                   		mov	r10, a
+ 107 006b AD F0                   		movw	ax, r8
+ 108 006d BD F4                   		movw	r12, ax
+ 109 006f FA F4                   		movw	hl, r12
+ 110 0071 8D F2                   		mov	a, r10
+ 111 0073 9B                      		mov	[hl], a
+  38:../src/drvBot.c **** 
+  39:../src/drvBot.c ****         return SUCESSO;
+ 112                             		.loc 1 39 0
+ 113 0074 CD F0 00                		mov	r8, #0
+  40:../src/drvBot.c **** }
+ 114                             		.loc 1 40 0
+ 115 0077 10 02                   		addw	sp, #2
+ 116 0079 D7                      		ret
+ 117                             	.LFE1:
+ 119                             		.global	_botSelect
+ 121                             	_botSelect:
+ 122                             	.LFB2:
+  41:../src/drvBot.c **** 
+  42:../src/drvBot.c **** char botSelect(void *parameters)
+  43:../src/drvBot.c **** {
+ 123                             		.loc 1 43 0
+ 124                             		; start of function
+ 125                             		; locals: 2 bytes
+ 126 007a 20 02                   		subw	sp, #2
+ 127                             	.LCFI1:
+  44:../src/drvBot.c ****         uint8_t button = *(uint8_t *) parameters;
+ 128                             		.loc 1 44 0
+ 129 007c A8 06                   		movw	ax, [sp+6]
+ 130 007e BD F0                   		movw	r8, ax
+ 131 0080 BD F2                   		movw	r10, ax
+ 132 0082 FA F2                   		movw	hl, r10
+ 133 0084 8B                      		mov	a, [hl]
+ 134 0085 9D F0                   		mov	r8, a
+ 135 0087 98 00                   		mov	[sp], a
+  45:../src/drvBot.c ****         uint8_t switch_is_pressed;
+  46:../src/drvBot.c **** 
+  47:../src/drvBot.c ****         /* Utilizando o valor de PRM via referencia */
+  48:../src/drvBot.c **** 	switch (button) {
+ 136                             		.loc 1 48 0
+ 137 0089 70                      		mov	x, a 
+ 138 008a 51 00                   		mov	a, #0
+ 139 008c BD F0                   		movw	r8, ax
+ 140 008e 44 02 00                		cmpw	ax, #2 
+ 141 0091 61 F8                   		sknz 
+ 142 0093 EC D3 00 00             		br	!!.L10
+ 143 0097 AD F0                   		movw	ax, r8
+ 144 0099 44 03 00                		cmpw	ax, #3 
+ 145 009c 61 F8                   		sknz 
+ 146 009e EC F9 00 00             		br	!!.L11
+ 147 00a2 AD F0                   		movw	ax, r8
+ 148 00a4 44 01 00                		cmpw	ax, #1 
+ 149 00a7 61 E8                   		skz 
+ 150 00a9 EC 1F 01 00             		br	!!.L21
+  49:../src/drvBot.c **** 	case 1:
+  50:../src/drvBot.c **** 		if (!SW1)
+ 151                             		.loc 1 50 0
+ 152 00ad C9 F0 0D FF             		movw	r8, #-243
+ 153 00b1 AD F0                   		movw	ax, r8
+ 154 00b3 BD F2                   		movw	r10, ax
+ 155 00b5 FA F2                   		movw	hl, r10
+ 156 00b7 8B                      		mov	a, [hl]
+ 157 00b8 9D F0                   		mov	r8, a
+ 158 00ba 5A F0 80                		and	r8, #-128
+ 159 00bd D4 F0                   		cmp0	r8 
+ 160 00bf 61 E8                   		skz 
+ 161 00c1 EC CC 00 00             		br	!!.L13
+  51:../src/drvBot.c **** 			switch_is_pressed = 1;
+ 162                             		.loc 1 51 0
+ 163 00c5 C8 01 01                		mov	[sp+1], #1
+  52:../src/drvBot.c **** 		else
+  53:../src/drvBot.c **** 			switch_is_pressed = 0;
+  54:../src/drvBot.c **** 		break;
+ 164                             		.loc 1 54 0
+ 165 00c8 EC 23 01 00             		br	!!.L15
+ 166                             	.L13:
+  53:../src/drvBot.c **** 			switch_is_pressed = 0;
+ 167                             		.loc 1 53 0
+ 168 00cc C8 01 00                		mov	[sp+1], #0
+ 169                             		.loc 1 54 0
+ 170 00cf EC 23 01 00             		br	!!.L15
+ 171                             	.L10:
+  55:../src/drvBot.c **** 	case 2:
+  56:../src/drvBot.c **** 		if (!SW2)
+ 172                             		.loc 1 56 0
+ 173 00d3 C9 F0 03 FF             		movw	r8, #-253
+ 174 00d7 AD F0                   		movw	ax, r8
+ 175 00d9 BD F2                   		movw	r10, ax
+ 176 00db FA F2                   		movw	hl, r10
+ 177 00dd 8B                      		mov	a, [hl]
+ 178 00de 9D F0                   		mov	r8, a
+ 179 00e0 5A F0 02                		and	r8, #2
+ 180 00e3 D4 F0                   		cmp0	r8 
+ 181 00e5 61 E8                   		skz 
+ 182 00e7 EC F2 00 00             		br	!!.L16
+  57:../src/drvBot.c **** 			switch_is_pressed = 1;
+ 183                             		.loc 1 57 0
+ 184 00eb C8 01 01                		mov	[sp+1], #1
+  58:../src/drvBot.c **** 		else
+  59:../src/drvBot.c **** 			switch_is_pressed = 0;
+  60:../src/drvBot.c **** 		break;
+ 185                             		.loc 1 60 0
+ 186 00ee EC 23 01 00             		br	!!.L15
+ 187                             	.L16:
+  59:../src/drvBot.c **** 			switch_is_pressed = 0;
+ 188                             		.loc 1 59 0
+ 189 00f2 C8 01 00                		mov	[sp+1], #0
+ 190                             		.loc 1 60 0
+ 191 00f5 EC 23 01 00             		br	!!.L15
+ 192                             	.L11:
+  61:../src/drvBot.c **** 	case 3:
+  62:../src/drvBot.c **** 		if (!SW3)
+ 193                             		.loc 1 62 0
+ 194 00f9 C9 F0 03 FF             		movw	r8, #-253
+ 195 00fd AD F0                   		movw	ax, r8
+ 196 00ff BD F2                   		movw	r10, ax
+ 197 0101 FA F2                   		movw	hl, r10
+ 198 0103 8B                      		mov	a, [hl]
+ 199 0104 9D F0                   		mov	r8, a
+ 200 0106 5A F0 04                		and	r8, #4
+ 201 0109 D4 F0                   		cmp0	r8 
+ 202 010b 61 E8                   		skz 
+ 203 010d EC 18 01 00             		br	!!.L18
+  63:../src/drvBot.c **** 			switch_is_pressed = 1;
+ 204                             		.loc 1 63 0
+ 205 0111 C8 01 01                		mov	[sp+1], #1
+  64:../src/drvBot.c **** 	        else
+  65:../src/drvBot.c **** 			switch_is_pressed = 0;
+  66:../src/drvBot.c **** 		break;
+ 206                             		.loc 1 66 0
+ 207 0114 EC 23 01 00             		br	!!.L15
+ 208                             	.L18:
+  65:../src/drvBot.c **** 			switch_is_pressed = 0;
+ 209                             		.loc 1 65 0
+ 210 0118 C8 01 00                		mov	[sp+1], #0
+ 211                             		.loc 1 66 0
+ 212 011b EC 23 01 00             		br	!!.L15
+ 213                             	.L21:
+  67:../src/drvBot.c **** 	default:
+  68:../src/drvBot.c **** 		switch_is_pressed = 0;
+ 214                             		.loc 1 68 0
+ 215 011f C8 01 00                		mov	[sp+1], #0
+  69:../src/drvBot.c ****                 break;
+ 216                             		.loc 1 69 0
+ 217 0122 00                      		nop
+ 218                             	.L15:
+  70:../src/drvBot.c **** 	}
+  71:../src/drvBot.c **** 	button = switch_is_pressed;
+ 219                             		.loc 1 71 0
+ 220 0123 88 01                   		mov	a, [sp+1]
+ 221 0125 9D F0                   		mov	r8, a
+ 222 0127 98 00                   		mov	[sp], a
+  72:../src/drvBot.c **** 
+  73:../src/drvBot.c **** 	return SUCESSO;
+ 223                             		.loc 1 73 0
+ 224 0129 CD F0 00                		mov	r8, #0
+  74:../src/drvBot.c **** }
+ 225                             		.loc 1 74 0
+ 226 012c 10 02                   		addw	sp, #2
+ 227 012e D7                      		ret
+ 228                             	.LFE2:
+ 230                             		.global	_getBotDriver
+ 232                             	_getBotDriver:
+ 233                             	.LFB3:
+  75:../src/drvBot.c **** 
+  76:../src/drvBot.c **** /* Função para acesso ao driver */
+  77:../src/drvBot.c **** driver *getBotDriver(void)
+  78:../src/drvBot.c **** {
+ 234                             		.loc 1 78 0
+ 235                             		; start of function
+ 236                             		; locals: 2 bytes
+ 237 012f 20 02                   		subw	sp, #2
+ 238                             	.LCFI2:
+  79:../src/drvBot.c **** 	thisDriver.drv_init = initBot;
+ 239                             		.loc 1 79 0
+ 240 0131 30 00 00                		movw	ax, #%code(_initBot)
+ 241 0134 BF 04 00                		movw	!_thisDriver+4, ax
+  80:../src/drvBot.c **** 
+  81:../src/drvBot.c **** 	/* Funções do driver */
+  82:../src/drvBot.c **** 	this_functions[BOT_PUSH] = botPush;
+ 242                             		.loc 1 82 0
+ 243 0137 30 00 00                		movw	ax, #%code(_botPush)
+ 244 013a BF 06 00                		movw	!_this_functions, ax
+  83:../src/drvBot.c **** 	this_functions[BOT_SEL] = botSelect;
+ 245                             		.loc 1 83 0
+ 246 013d 30 00 00                		movw	ax, #%code(_botSelect)
+ 247 0140 BF 08 00                		movw	!_this_functions+2, ax
+  84:../src/drvBot.c **** 
+  85:../src/drvBot.c **** 	thisDriver.drv_func = this_functions;
+ 248                             		.loc 1 85 0
+ 249 0143 30 06 00                		movw	ax, #_this_functions
+ 250 0146 BF 02 00                		movw	!_thisDriver+2, ax
+  86:../src/drvBot.c **** 	return &thisDriver;
+ 251                             		.loc 1 86 0
+ 252 0149 30 00 00                		movw	ax, #_thisDriver
+ 253 014c B8 00                   		movw	[sp], ax
+ 254 014e BD F0                   		movw	r8, ax
+  87:../src/drvBot.c **** }
+ 255                             		.loc 1 87 0
+ 256 0150 10 02                   		addw	sp, #2
+ 257 0152 D7                      		ret
+ 258                             	.LFE3:
+ 322                             	.Letext0:
+ 323                             		.file 2 "../src/dd_types.h"
+ 324                             		.file 3 "../src/iodefine.h"
+ 325                             		.file 4 "../src/r_cg_macrodriver.h"
+ 326                             		.file 5 "../src/drvBot.h"

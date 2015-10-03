@@ -1,0 +1,4 @@
+drvBot.c:17:6:initBot	0	static
+drvBot.c:34:6:botPush	2	static
+drvBot.c:50:6:botSelect	0	static
+drvBot.c:81:9:getBotDriver	2	static

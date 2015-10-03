@@ -1,0 +1,737 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.global	_R_LCD_Create
+  29                             	_R_LCD_Create:
+  30                             	.LFB0:
+  31                             		.file 1 "../src/r_cg_lcd.c"
+   1:../src/r_cg_lcd.c **** /**************************************************************************************************
+   2:../src/r_cg_lcd.c **** * DISCLAIMER
+   3:../src/r_cg_lcd.c **** * This software is supplied by Renesas Electronics Corporation and is only 
+   4:../src/r_cg_lcd.c **** * intended for use with Renesas products. No other uses are authorized. This 
+   5:../src/r_cg_lcd.c **** * software is owned by Renesas Electronics Corporation and is protected under 
+   6:../src/r_cg_lcd.c **** * all applicable laws, including copyright laws.
+   7:../src/r_cg_lcd.c **** * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING 
+   8:../src/r_cg_lcd.c **** * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT 
+   9:../src/r_cg_lcd.c **** * LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE 
+  10:../src/r_cg_lcd.c **** * AND NON-INFRINGEMENT.  ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIMED.
+  11:../src/r_cg_lcd.c **** * TO THE MAXIMUM EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS 
+  12:../src/r_cg_lcd.c **** * ELECTRONICS CORPORATION NOR ANY OF ITS AFFILIATED COMPANIES SHALL BE LIABLE 
+  13:../src/r_cg_lcd.c **** * FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR 
+  14:../src/r_cg_lcd.c **** * ANY REASON RELATED TO THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE 
+  15:../src/r_cg_lcd.c **** * BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  16:../src/r_cg_lcd.c **** * Renesas reserves the right, without notice, to make changes to this software 
+  17:../src/r_cg_lcd.c **** * and to discontinue the availability of this software.  By using this software, 
+  18:../src/r_cg_lcd.c **** * you agree to the additional terms and conditions found by accessing the 
+  19:../src/r_cg_lcd.c **** * following link:
+  20:../src/r_cg_lcd.c **** * http://www.renesas.com/disclaimer
+  21:../src/r_cg_lcd.c **** *
+  22:../src/r_cg_lcd.c **** * Copyright (C) 2012 Renesas Electronics Corporation. All rights reserved.
+  23:../src/r_cg_lcd.c **** ***************************************************************************************************
+  24:../src/r_cg_lcd.c **** 
+  25:../src/r_cg_lcd.c **** /**************************************************************************************************
+  26:../src/r_cg_lcd.c **** * File Name    : r_cg_lcd.c
+  27:../src/r_cg_lcd.c **** * Version      : Applilet3 for RL78/L12 V1.00.00 [23 Mar 2012]
+  28:../src/r_cg_lcd.c **** * Device(s)    : R5F10RLC
+  29:../src/r_cg_lcd.c **** * Tool-Chain   : GNURL78 v12.03
+  30:../src/r_cg_lcd.c **** * Description  : This file implements device driver for LCD module.
+  31:../src/r_cg_lcd.c **** * Creation Date: 21/01/2013
+  32:../src/r_cg_lcd.c **** ***************************************************************************************************
+  33:../src/r_cg_lcd.c **** 
+  34:../src/r_cg_lcd.c **** 
+  35:../src/r_cg_lcd.c **** /**************************************************************************************************
+  36:../src/r_cg_lcd.c **** Includes
+  37:../src/r_cg_lcd.c **** ***************************************************************************************************
+  38:../src/r_cg_lcd.c **** /* Defines the I/O register structures */
+  39:../src/r_cg_lcd.c **** #include "iodefine.h"
+  40:../src/r_cg_lcd.c **** 
+  41:../src/r_cg_lcd.c **** /* Defines the extended I/O register structures */
+  42:../src/r_cg_lcd.c **** #include "iodefine_ext.h"
+  43:../src/r_cg_lcd.c **** 
+  44:../src/r_cg_lcd.c **** /* Header files inclusion */
+  45:../src/r_cg_lcd.c **** #include "r_cg_macrodriver.h"
+  46:../src/r_cg_lcd.c **** #include "r_cg_cgc.h"
+  47:../src/r_cg_lcd.c **** #include "r_cg_lcd.h"
+  48:../src/r_cg_lcd.c **** #include "r_cg_userdefine.h"
+  49:../src/r_cg_lcd.c **** 
+  50:../src/r_cg_lcd.c **** 
+  51:../src/r_cg_lcd.c **** /**************************************************************************************************
+  52:../src/r_cg_lcd.c **** * Function Name: R_LCD_Create
+  53:../src/r_cg_lcd.c **** * Description  : This function initializes the LCD module.
+  54:../src/r_cg_lcd.c **** * Arguments    : None
+  55:../src/r_cg_lcd.c **** * Return Value : None
+  56:../src/r_cg_lcd.c **** ***************************************************************************************************
+  57:../src/r_cg_lcd.c **** void R_LCD_Create (void)
+  58:../src/r_cg_lcd.c **** {
+  32                             		.loc 1 58 0
+  33                             		; start of function
+  34                             		; locals: 2 bytes
+  35 0000 20 02                   		subw	sp, #2
+  36                             	.LCFI0:
+  59:../src/r_cg_lcd.c ****     /* Loop counter */
+  60:../src/r_cg_lcd.c ****     uint16_t i = 0u;
+  37                             		.loc 1 60 0
+  38 0002 F6                      		clrw	ax
+  39 0003 B8 00                   		movw	[sp], ax
+  61:../src/r_cg_lcd.c ****     
+  62:../src/r_cg_lcd.c ****     /* supply LCD clock */
+  63:../src/r_cg_lcd.c ****     RTCEN = 1u;
+  40                             		.loc 1 63 0
+  41 0005 C9 F0 F0 00             		movw	r8, #240
+  42 0009 AD F0                   		movw	ax, r8
+  43 000b BD F4                   		movw	r12, ax
+  44 000d FA F4                   		movw	hl, r12
+  45 000f 8B                      		mov	a, [hl]
+  46 0010 9D F2                   		mov	r10, a
+  47 0012 6A F2 80                		or	r10, #-128
+  48 0015 AD F0                   		movw	ax, r8
+  49 0017 8D F2                   		mov	a, r10
+  50 0019 9B                      		mov	[hl], a
+  64:../src/r_cg_lcd.c ****     
+  65:../src/r_cg_lcd.c ****     /* disable LCD clock operation */
+  66:../src/r_cg_lcd.c ****     LCDON = 0u;
+  51                             		.loc 1 66 0
+  52 001a C9 F0 41 FF             		movw	r8, #-191
+  53 001e AD F0                   		movw	ax, r8
+  54 0020 BD F4                   		movw	r12, ax
+  55 0022 FA F4                   		movw	hl, r12
+  56 0024 8B                      		mov	a, [hl]
+  57 0025 9D F2                   		mov	r10, a
+  58 0027 5A F2 7F                		and	r10, #127
+  59 002a AD F0                   		movw	ax, r8
+  60 002c 8D F2                   		mov	a, r10
+  61 002e 9B                      		mov	[hl], a
+  67:../src/r_cg_lcd.c ****     
+  68:../src/r_cg_lcd.c ****     /* disable INTLCD0 interrupt */
+  69:../src/r_cg_lcd.c ****     LCMK0 = 1u;
+  62                             		.loc 1 69 0
+  63 002f C9 F0 D4 FF             		movw	r8, #-44
+  64 0033 AD F0                   		movw	ax, r8
+  65 0035 BD F4                   		movw	r12, ax
+  66 0037 FA F4                   		movw	hl, r12
+  67 0039 8B                      		mov	a, [hl]
+  68 003a 9D F2                   		mov	r10, a
+  69 003c 6A F2 01                		or	r10, #1
+  70 003f AD F0                   		movw	ax, r8
+  71 0041 8D F2                   		mov	a, r10
+  72 0043 9B                      		mov	[hl], a
+  70:../src/r_cg_lcd.c ****     
+  71:../src/r_cg_lcd.c ****     /* clear INTLCD0 interrupt flag */
+  72:../src/r_cg_lcd.c ****     LCIF0 = 0u;
+  73                             		.loc 1 72 0
+  74 0044 C9 F0 D0 FF             		movw	r8, #-48
+  75 0048 AD F0                   		movw	ax, r8
+  76 004a BD F4                   		movw	r12, ax
+  77 004c FA F4                   		movw	hl, r12
+  78 004e 8B                      		mov	a, [hl]
+  79 004f 9D F2                   		mov	r10, a
+  80 0051 5A F2 FE                		and	r10, #-2
+  81 0054 AD F0                   		movw	ax, r8
+  82 0056 8D F2                   		mov	a, r10
+  83 0058 9B                      		mov	[hl], a
+  73:../src/r_cg_lcd.c ****     
+  74:../src/r_cg_lcd.c ****     /* Select waveform A, display mode 1 and internal voltage */
+  75:../src/r_cg_lcd.c ****     LCDM0 = _00_LCD_DISPLAY_WAVEFORM_A | _0D_LCD_DISPLAY_MODE1 | _40_LCD_VOLTAGE_MODE_INTERNAL;
+  84                             		.loc 1 75 0
+  85 0059 C9 F0 40 FF             		movw	r8, #-192
+  86 005d AD F0                   		movw	ax, r8
+  87 005f BD F2                   		movw	r10, ax
+  88 0061 FA F2                   		movw	hl, r10
+  89 0063 51 4D                   		mov	a, #77
+  90 0065 9B                      		mov	[hl], a
+  76:../src/r_cg_lcd.c ****     
+  77:../src/r_cg_lcd.c ****     /* Set segment pins */
+  78:../src/r_cg_lcd.c ****     PFSEG0 = 0xF0u;
+  91                             		.loc 1 78 0
+  92 0066 C9 F0 00 03             		movw	r8, #768
+  93 006a AD F0                   		movw	ax, r8
+  94 006c BD F4                   		movw	r12, ax
+  95 006e FA F4                   		movw	hl, r12
+  96 0070 51 F0                   		mov	a, #-16
+  97 0072 9B                      		mov	[hl], a
+  79:../src/r_cg_lcd.c ****     PFSEG1 = 0xFFu;
+  98                             		.loc 1 79 0
+  99 0073 C9 F0 01 03             		movw	r8, #769
+ 100 0077 AD F0                   		movw	ax, r8
+ 101 0079 BD F2                   		movw	r10, ax
+ 102 007b FA F2                   		movw	hl, r10
+ 103 007d 51 FF                   		mov	a, #-1
+ 104 007f 9B                      		mov	[hl], a
+  80:../src/r_cg_lcd.c ****     PFSEG2 = 0xF9u;
+ 105                             		.loc 1 80 0
+ 106 0080 C9 F0 02 03             		movw	r8, #770
+ 107 0084 AD F0                   		movw	ax, r8
+ 108 0086 BD F4                   		movw	r12, ax
+ 109 0088 FA F4                   		movw	hl, r12
+ 110 008a 51 F9                   		mov	a, #-7
+ 111 008c 9B                      		mov	[hl], a
+  81:../src/r_cg_lcd.c ****     PFSEG3 = 0x9Fu;
+ 112                             		.loc 1 81 0
+ 113 008d C9 F0 03 03             		movw	r8, #771
+ 114 0091 AD F0                   		movw	ax, r8
+ 115 0093 BD F2                   		movw	r10, ax
+ 116 0095 FA F2                   		movw	hl, r10
+ 117 0097 51 9F                   		mov	a, #-97
+ 118 0099 9B                      		mov	[hl], a
+  82:../src/r_cg_lcd.c ****     PFSEG4 = 0x7Fu;
+ 119                             		.loc 1 82 0
+ 120 009a C9 F0 04 03             		movw	r8, #772
+ 121 009e AD F0                   		movw	ax, r8
+ 122 00a0 BD F4                   		movw	r12, ax
+ 123 00a2 FA F4                   		movw	hl, r12
+ 124 00a4 51 7F                   		mov	a, #127
+ 125 00a6 9B                      		mov	[hl], a
+  83:../src/r_cg_lcd.c **** 
+  84:../src/r_cg_lcd.c ****     /* Set the following pins as I/O, and not as analog */
+  85:../src/r_cg_lcd.c ****     PMC1 &= 0xE7;
+ 126                             		.loc 1 85 0
+ 127 00a7 C9 F0 61 00             		movw	r8, #97
+ 128 00ab C9 F2 61 00             		movw	r10, #97
+ 129 00af AD F2                   		movw	ax, r10
+ 130 00b1 BD F4                   		movw	r12, ax
+ 131 00b3 FA F4                   		movw	hl, r12
+ 132 00b5 8B                      		mov	a, [hl]
+ 133 00b6 9D F2                   		mov	r10, a
+ 134 00b8 5A F2 E7                		and	r10, #-25
+ 135 00bb AD F0                   		movw	ax, r8
+ 136 00bd BD F4                   		movw	r12, ax
+ 137 00bf FA F4                   		movw	hl, r12
+ 138 00c1 8D F2                   		mov	a, r10
+ 139 00c3 9B                      		mov	[hl], a
+  86:../src/r_cg_lcd.c ****     PMC4 &= 0xFD;
+ 140                             		.loc 1 86 0
+ 141 00c4 C9 F0 64 00             		movw	r8, #100
+ 142 00c8 C9 F2 64 00             		movw	r10, #100
+ 143 00cc AD F2                   		movw	ax, r10
+ 144 00ce BD F4                   		movw	r12, ax
+ 145 00d0 FA F4                   		movw	hl, r12
+ 146 00d2 8B                      		mov	a, [hl]
+ 147 00d3 9D F2                   		mov	r10, a
+ 148 00d5 5A F2 FD                		and	r10, #-3
+ 149 00d8 AD F0                   		movw	ax, r8
+ 150 00da BD F4                   		movw	r12, ax
+ 151 00dc FA F4                   		movw	hl, r12
+ 152 00de 8D F2                   		mov	a, r10
+ 153 00e0 9B                      		mov	[hl], a
+  87:../src/r_cg_lcd.c ****     PMC12 &= 0xFE;
+ 154                             		.loc 1 87 0
+ 155 00e1 C9 F0 6C 00             		movw	r8, #108
+ 156 00e5 C9 F2 6C 00             		movw	r10, #108
+ 157 00e9 AD F2                   		movw	ax, r10
+ 158 00eb BD F4                   		movw	r12, ax
+ 159 00ed FA F4                   		movw	hl, r12
+ 160 00ef 8B                      		mov	a, [hl]
+ 161 00f0 9D F2                   		mov	r10, a
+ 162 00f2 5A F2 FE                		and	r10, #-2
+ 163 00f5 AD F0                   		movw	ax, r8
+ 164 00f7 BD F4                   		movw	r12, ax
+ 165 00f9 FA F4                   		movw	hl, r12
+ 166 00fb 8D F2                   		mov	a, r10
+ 167 00fd 9B                      		mov	[hl], a
+  88:../src/r_cg_lcd.c ****     PMC14 &= 0xC3;
+ 168                             		.loc 1 88 0
+ 169 00fe C9 F0 6E 00             		movw	r8, #110
+ 170 0102 C9 F2 6E 00             		movw	r10, #110
+ 171 0106 AD F2                   		movw	ax, r10
+ 172 0108 BD F4                   		movw	r12, ax
+ 173 010a FA F4                   		movw	hl, r12
+ 174 010c 8B                      		mov	a, [hl]
+ 175 010d 9D F2                   		mov	r10, a
+ 176 010f 5A F2 C3                		and	r10, #-61
+ 177 0112 AD F0                   		movw	ax, r8
+ 178 0114 BD F4                   		movw	r12, ax
+ 179 0116 FA F4                   		movw	hl, r12
+ 180 0118 8D F2                   		mov	a, r10
+ 181 011a 9B                      		mov	[hl], a
+  89:../src/r_cg_lcd.c ****     
+  90:../src/r_cg_lcd.c ****     /* Set the segment pins as Output */
+  91:../src/r_cg_lcd.c ****     PM1  &= 0x06;
+ 182                             		.loc 1 91 0
+ 183 011b C9 F0 21 FF             		movw	r8, #-223
+ 184 011f C9 F2 21 FF             		movw	r10, #-223
+ 185 0123 AD F2                   		movw	ax, r10
+ 186 0125 BD F4                   		movw	r12, ax
+ 187 0127 FA F4                   		movw	hl, r12
+ 188 0129 8B                      		mov	a, [hl]
+ 189 012a 9D F2                   		mov	r10, a
+ 190 012c 5A F2 06                		and	r10, #6
+ 191 012f AD F0                   		movw	ax, r8
+ 192 0131 BD F4                   		movw	r12, ax
+ 193 0133 FA F4                   		movw	hl, r12
+ 194 0135 8D F2                   		mov	a, r10
+ 195 0137 9B                      		mov	[hl], a
+  92:../src/r_cg_lcd.c ****     PM3  &= 0xFE;
+ 196                             		.loc 1 92 0
+ 197 0138 C9 F0 23 FF             		movw	r8, #-221
+ 198 013c C9 F2 23 FF             		movw	r10, #-221
+ 199 0140 AD F2                   		movw	ax, r10
+ 200 0142 BD F4                   		movw	r12, ax
+ 201 0144 FA F4                   		movw	hl, r12
+ 202 0146 8B                      		mov	a, [hl]
+ 203 0147 9D F2                   		mov	r10, a
+ 204 0149 5A F2 FE                		and	r10, #-2
+ 205 014c AD F0                   		movw	ax, r8
+ 206 014e BD F4                   		movw	r12, ax
+ 207 0150 FA F4                   		movw	hl, r12
+ 208 0152 8D F2                   		mov	a, r10
+ 209 0154 9B                      		mov	[hl], a
+  93:../src/r_cg_lcd.c ****     PM4  &= 0xF1;
+ 210                             		.loc 1 93 0
+ 211 0155 C9 F0 24 FF             		movw	r8, #-220
+ 212 0159 C9 F2 24 FF             		movw	r10, #-220
+ 213 015d AD F2                   		movw	ax, r10
+ 214 015f BD F4                   		movw	r12, ax
+ 215 0161 FA F4                   		movw	hl, r12
+ 216 0163 8B                      		mov	a, [hl]
+ 217 0164 9D F2                   		mov	r10, a
+ 218 0166 5A F2 F1                		and	r10, #-15
+ 219 0169 AD F0                   		movw	ax, r8
+ 220 016b BD F4                   		movw	r12, ax
+ 221 016d FA F4                   		movw	hl, r12
+ 222 016f 8D F2                   		mov	a, r10
+ 223 0171 9B                      		mov	[hl], a
+  94:../src/r_cg_lcd.c ****     PM5  &= 0xE0;
+ 224                             		.loc 1 94 0
+ 225 0172 C9 F0 25 FF             		movw	r8, #-219
+ 226 0176 C9 F2 25 FF             		movw	r10, #-219
+ 227 017a AD F2                   		movw	ax, r10
+ 228 017c BD F4                   		movw	r12, ax
+ 229 017e FA F4                   		movw	hl, r12
+ 230 0180 8B                      		mov	a, [hl]
+ 231 0181 9D F2                   		mov	r10, a
+ 232 0183 5A F2 E0                		and	r10, #-32
+ 233 0186 AD F0                   		movw	ax, r8
+ 234 0188 BD F4                   		movw	r12, ax
+ 235 018a FA F4                   		movw	hl, r12
+ 236 018c 8D F2                   		mov	a, r10
+ 237 018e 9B                      		mov	[hl], a
+  95:../src/r_cg_lcd.c ****     PM6  &= 0xFC;
+ 238                             		.loc 1 95 0
+ 239 018f C9 F0 26 FF             		movw	r8, #-218
+ 240 0193 C9 F2 26 FF             		movw	r10, #-218
+ 241 0197 AD F2                   		movw	ax, r10
+ 242 0199 BD F4                   		movw	r12, ax
+ 243 019b FA F4                   		movw	hl, r12
+ 244 019d 8B                      		mov	a, [hl]
+ 245 019e 9D F2                   		mov	r10, a
+ 246 01a0 5A F2 FC                		and	r10, #-4
+ 247 01a3 AD F0                   		movw	ax, r8
+ 248 01a5 BD F4                   		movw	r12, ax
+ 249 01a7 FA F4                   		movw	hl, r12
+ 250 01a9 8D F2                   		mov	a, r10
+ 251 01ab 9B                      		mov	[hl], a
+  96:../src/r_cg_lcd.c ****     PM7  &= 0x00;
+ 252                             		.loc 1 96 0
+ 253 01ac C9 F0 27 FF             		movw	r8, #-217
+ 254 01b0 AD F0                   		movw	ax, r8
+ 255 01b2 BD F2                   		movw	r10, ax
+ 256 01b4 FA F2                   		movw	hl, r10
+ 257 01b6 8B                      		mov	a, [hl]
+ 258 01b7 9D F0                   		mov	r8, a
+ 259 01b9 C9 F0 27 FF             		movw	r8, #-217
+ 260 01bd AD F0                   		movw	ax, r8
+ 261 01bf BD F4                   		movw	r12, ax
+ 262 01c1 FA F4                   		movw	hl, r12
+ 263 01c3 F1                      		clrb	a
+ 264 01c4 9B                      		mov	[hl], a
+  97:../src/r_cg_lcd.c ****     PM12 &= 0xFE;
+ 265                             		.loc 1 97 0
+ 266 01c5 C9 F0 2C FF             		movw	r8, #-212
+ 267 01c9 C9 F2 2C FF             		movw	r10, #-212
+ 268 01cd AD F2                   		movw	ax, r10
+ 269 01cf BD F4                   		movw	r12, ax
+ 270 01d1 FA F4                   		movw	hl, r12
+ 271 01d3 8B                      		mov	a, [hl]
+ 272 01d4 9D F2                   		mov	r10, a
+ 273 01d6 5A F2 FE                		and	r10, #-2
+ 274 01d9 AD F0                   		movw	ax, r8
+ 275 01db BD F4                   		movw	r12, ax
+ 276 01dd FA F4                   		movw	hl, r12
+ 277 01df 8D F2                   		mov	a, r10
+ 278 01e1 9B                      		mov	[hl], a
+  98:../src/r_cg_lcd.c ****     PM14 &= 0x00;
+ 279                             		.loc 1 98 0
+ 280 01e2 C9 F0 2E FF             		movw	r8, #-210
+ 281 01e6 AD F0                   		movw	ax, r8
+ 282 01e8 BD F2                   		movw	r10, ax
+ 283 01ea FA F2                   		movw	hl, r10
+ 284 01ec 8B                      		mov	a, [hl]
+ 285 01ed 9D F0                   		mov	r8, a
+ 286 01ef C9 F0 2E FF             		movw	r8, #-210
+ 287 01f3 AD F0                   		movw	ax, r8
+ 288 01f5 BD F4                   		movw	r12, ax
+ 289 01f7 FA F4                   		movw	hl, r12
+ 290 01f9 F1                      		clrb	a
+ 291 01fa 9B                      		mov	[hl], a
+  99:../src/r_cg_lcd.c ****     
+ 100:../src/r_cg_lcd.c ****     /* Set the user LED port pins as outputs*/
+ 101:../src/r_cg_lcd.c ****     LED1_DIR = 0;
+ 292                             		.loc 1 101 0
+ 293 01fb C9 F0 22 FF             		movw	r8, #-222
+ 294 01ff AD F0                   		movw	ax, r8
+ 295 0201 BD F4                   		movw	r12, ax
+ 296 0203 FA F4                   		movw	hl, r12
+ 297 0205 8B                      		mov	a, [hl]
+ 298 0206 9D F2                   		mov	r10, a
+ 299 0208 5A F2 FD                		and	r10, #-3
+ 300 020b AD F0                   		movw	ax, r8
+ 301 020d 8D F2                   		mov	a, r10
+ 302 020f 9B                      		mov	[hl], a
+ 102:../src/r_cg_lcd.c ****     LED2_DIR = 0;
+ 303                             		.loc 1 102 0
+ 304 0210 C9 F0 2C FF             		movw	r8, #-212
+ 305 0214 AD F0                   		movw	ax, r8
+ 306 0216 BD F4                   		movw	r12, ax
+ 307 0218 FA F4                   		movw	hl, r12
+ 308 021a 8B                      		mov	a, [hl]
+ 309 021b 9D F2                   		mov	r10, a
+ 310 021d 5A F2 DF                		and	r10, #-33
+ 311 0220 AD F0                   		movw	ax, r8
+ 312 0222 8D F2                   		mov	a, r10
+ 313 0224 9B                      		mov	[hl], a
+ 103:../src/r_cg_lcd.c ****     
+ 104:../src/r_cg_lcd.c ****     /* Turn off the user LEDs */
+ 105:../src/r_cg_lcd.c ****     LED0 = LED_OFF;
+ 314                             		.loc 1 105 0
+ 315 0225 C9 F0 0D FF             		movw	r8, #-243
+ 316 0229 AD F0                   		movw	ax, r8
+ 317 022b BD F4                   		movw	r12, ax
+ 318 022d FA F4                   		movw	hl, r12
+ 319 022f 8B                      		mov	a, [hl]
+ 320 0230 9D F2                   		mov	r10, a
+ 321 0232 6A F2 01                		or	r10, #1
+ 322 0235 AD F0                   		movw	ax, r8
+ 323 0237 8D F2                   		mov	a, r10
+ 324 0239 9B                      		mov	[hl], a
+ 106:../src/r_cg_lcd.c ****     LED1 = LED_OFF;
+ 325                             		.loc 1 106 0
+ 326 023a C9 F0 02 FF             		movw	r8, #-254
+ 327 023e AD F0                   		movw	ax, r8
+ 328 0240 BD F4                   		movw	r12, ax
+ 329 0242 FA F4                   		movw	hl, r12
+ 330 0244 8B                      		mov	a, [hl]
+ 331 0245 9D F2                   		mov	r10, a
+ 332 0247 6A F2 02                		or	r10, #2
+ 333 024a AD F0                   		movw	ax, r8
+ 334 024c 8D F2                   		mov	a, r10
+ 335 024e 9B                      		mov	[hl], a
+ 107:../src/r_cg_lcd.c ****     LED2 = LED_OFF;
+ 336                             		.loc 1 107 0
+ 337 024f C9 F0 0C FF             		movw	r8, #-244
+ 338 0253 AD F0                   		movw	ax, r8
+ 339 0255 BD F4                   		movw	r12, ax
+ 340 0257 FA F4                   		movw	hl, r12
+ 341 0259 8B                      		mov	a, [hl]
+ 342 025a 9D F2                   		mov	r10, a
+ 343 025c 6A F2 20                		or	r10, #32
+ 344 025f AD F0                   		movw	ax, r8
+ 345 0261 8D F2                   		mov	a, r10
+ 346 0263 9B                      		mov	[hl], a
+ 108:../src/r_cg_lcd.c ****     
+ 109:../src/r_cg_lcd.c ****     /* Configure ANI0 as an analog input,
+ 110:../src/r_cg_lcd.c ****        and ANI1 as a digital IO */
+ 111:../src/r_cg_lcd.c ****     ADPC = 0x02;
+ 347                             		.loc 1 111 0
+ 348 0264 C9 F0 76 00             		movw	r8, #118
+ 349 0268 AD F0                   		movw	ax, r8
+ 350 026a BD F2                   		movw	r10, ax
+ 351 026c FA F2                   		movw	hl, r10
+ 352 026e 51 02                   		mov	a, #2
+ 353 0270 9B                      		mov	[hl], a
+ 112:../src/r_cg_lcd.c ****     
+ 113:../src/r_cg_lcd.c ****     /* Set LED1 pin as an output */
+ 114:../src/r_cg_lcd.c ****     PM2 &= 0xFD;
+ 354                             		.loc 1 114 0
+ 355 0271 C9 F0 22 FF             		movw	r8, #-222
+ 356 0275 C9 F2 22 FF             		movw	r10, #-222
+ 357 0279 AD F2                   		movw	ax, r10
+ 358 027b BD F4                   		movw	r12, ax
+ 359 027d FA F4                   		movw	hl, r12
+ 360 027f 8B                      		mov	a, [hl]
+ 361 0280 9D F2                   		mov	r10, a
+ 362 0282 5A F2 FD                		and	r10, #-3
+ 363 0285 AD F0                   		movw	ax, r8
+ 364 0287 BD F4                   		movw	r12, ax
+ 365 0289 FA F4                   		movw	hl, r12
+ 366 028b 8D F2                   		mov	a, r10
+ 367 028d 9B                      		mov	[hl], a
+ 115:../src/r_cg_lcd.c ****     
+ 116:../src/r_cg_lcd.c ****     COMEXP = 0U;
+ 368                             		.loc 1 116 0
+ 369 028e C9 F0 4C FF             		movw	r8, #-180
+ 370 0292 AD F0                   		movw	ax, r8
+ 371 0294 BD F4                   		movw	r12, ax
+ 372 0296 FA F4                   		movw	hl, r12
+ 373 0298 8B                      		mov	a, [hl]
+ 374 0299 9D F2                   		mov	r10, a
+ 375 029b 5A F2 BF                		and	r10, #-65
+ 376 029e AD F0                   		movw	ax, r8
+ 377 02a0 8D F2                   		mov	a, r10
+ 378 02a2 9B                      		mov	[hl], a
+ 117:../src/r_cg_lcd.c ****     LCDM1 |= _00_LCD_DISPLAY_PATTERN_A;
+ 379                             		.loc 1 117 0
+ 380 02a3 C9 F0 41 FF             		movw	r8, #-191
+ 381 02a7 C9 F2 41 FF             		movw	r10, #-191
+ 382 02ab AD F2                   		movw	ax, r10
+ 383 02ad BD F4                   		movw	r12, ax
+ 384 02af FA F4                   		movw	hl, r12
+ 385 02b1 8B                      		mov	a, [hl]
+ 386 02b2 9D F2                   		mov	r10, a
+ 387 02b4 AD F0                   		movw	ax, r8
+ 388 02b6 BD F4                   		movw	r12, ax
+ 389 02b8 FA F4                   		movw	hl, r12
+ 390 02ba 8D F2                   		mov	a, r10
+ 391 02bc 9B                      		mov	[hl], a
+ 118:../src/r_cg_lcd.c ****     LCDC0 = _00_LCD_SOURCE_CLOCK_FSUB | _07_LCD_CLOCK_FLCD_256; 
+ 392                             		.loc 1 118 0
+ 393 02bd C9 F0 42 FF             		movw	r8, #-190
+ 394 02c1 AD F0                   		movw	ax, r8
+ 395 02c3 BD F2                   		movw	r10, ax
+ 396 02c5 FA F2                   		movw	hl, r10
+ 397 02c7 51 07                   		mov	a, #7
+ 398 02c9 9B                      		mov	[hl], a
+ 119:../src/r_cg_lcd.c ****     VLCD = 0x0EU;
+ 399                             		.loc 1 119 0
+ 400 02ca C9 F0 43 FF             		movw	r8, #-189
+ 401 02ce AD F0                   		movw	ax, r8
+ 402 02d0 BD F4                   		movw	r12, ax
+ 403 02d2 FA F4                   		movw	hl, r12
+ 404 02d4 51 0E                   		mov	a, #14
+ 405 02d6 9B                      		mov	[hl], a
+ 120:../src/r_cg_lcd.c ****     
+ 121:../src/r_cg_lcd.c ****     /* Wait for the reference voltage setup time */
+ 122:../src/r_cg_lcd.c ****     for (i = 0u; i <= 300u; i++)
+ 406                             		.loc 1 122 0
+ 407 02d7 F6                      		clrw	ax
+ 408 02d8 B8 00                   		movw	[sp], ax
+ 409 02da EC E5 02 00             		br	!!.L2
+ 410                             	.L3:
+ 411                             		.loc 1 122 0 is_stmt 0 discriminator 2
+ 412 02de A8 00                   		movw	ax, [sp]
+ 413 02e0 BD F0                   		movw	r8, ax
+ 414 02e2 A1                      		incw	ax
+ 415 02e3 B8 00                   		movw	[sp], ax
+ 416                             	.L2:
+ 417                             		.loc 1 122 0 discriminator 1
+ 418 02e5 A8 00                   		movw	ax, [sp]
+ 419 02e7 44 2C 01                		cmpw	ax, #300 
+ 420 02ea 61 E3                   		skh 
+ 421 02ec EC DE 02 00             		br	!!.L3
+ 123:../src/r_cg_lcd.c ****     {
+ 124:../src/r_cg_lcd.c ****         /* Do nothing */
+ 125:../src/r_cg_lcd.c ****     }
+ 126:../src/r_cg_lcd.c **** }
+ 422                             		.loc 1 126 0 is_stmt 1
+ 423 02f0 10 02                   		addw	sp, #2
+ 424 02f2 D7                      		ret
+ 425                             	.LFE0:
+ 427                             		.global	_R_LCD_Start
+ 429                             	_R_LCD_Start:
+ 430                             	.LFB1:
+ 127:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 128:../src/r_cg_lcd.c **** * End of function R_LCD_Create
+ 129:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 130:../src/r_cg_lcd.c **** 
+ 131:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 132:../src/r_cg_lcd.c **** * Function Name: R_LCD_Start
+ 133:../src/r_cg_lcd.c **** * Description  : This function enables the LCD display.
+ 134:../src/r_cg_lcd.c **** * Arguments    : None
+ 135:../src/r_cg_lcd.c **** * Return Value : None
+ 136:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 137:../src/r_cg_lcd.c **** void R_LCD_Start (void)
+ 138:../src/r_cg_lcd.c **** {
+ 431                             		.loc 1 138 0
+ 139:../src/r_cg_lcd.c ****     LCDON = 1U;
+ 432                             		.loc 1 139 0
+ 433 02f3 C9 F0 41 FF             		movw	r8, #-191
+ 434 02f7 AD F0                   		movw	ax, r8
+ 435 02f9 BD F4                   		movw	r12, ax
+ 436 02fb FA F4                   		movw	hl, r12
+ 437 02fd 8B                      		mov	a, [hl]
+ 438 02fe 9D F2                   		mov	r10, a
+ 439 0300 6A F2 80                		or	r10, #-128
+ 440 0303 AD F0                   		movw	ax, r8
+ 441 0305 8D F2                   		mov	a, r10
+ 442 0307 9B                      		mov	[hl], a
+ 140:../src/r_cg_lcd.c **** }
+ 443                             		.loc 1 140 0
+ 444 0308 D7                      		ret
+ 445                             	.LFE1:
+ 447                             		.global	_R_LCD_Stop
+ 449                             	_R_LCD_Stop:
+ 450                             	.LFB2:
+ 141:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 142:../src/r_cg_lcd.c **** * End of function R_LCD_Start
+ 143:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 144:../src/r_cg_lcd.c **** 
+ 145:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 146:../src/r_cg_lcd.c **** * Function Name: R_LCD_Stop
+ 147:../src/r_cg_lcd.c **** * Description  : This function disables the LCD display.
+ 148:../src/r_cg_lcd.c **** * Arguments    : None
+ 149:../src/r_cg_lcd.c **** * Return Value : None
+ 150:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 151:../src/r_cg_lcd.c **** void R_LCD_Stop (void)
+ 152:../src/r_cg_lcd.c **** {
+ 451                             		.loc 1 152 0
+ 153:../src/r_cg_lcd.c ****     LCDON = 0U;
+ 452                             		.loc 1 153 0
+ 453 0309 C9 F0 41 FF             		movw	r8, #-191
+ 454 030d AD F0                   		movw	ax, r8
+ 455 030f BD F4                   		movw	r12, ax
+ 456 0311 FA F4                   		movw	hl, r12
+ 457 0313 8B                      		mov	a, [hl]
+ 458 0314 9D F2                   		mov	r10, a
+ 459 0316 5A F2 7F                		and	r10, #127
+ 460 0319 AD F0                   		movw	ax, r8
+ 461 031b 8D F2                   		mov	a, r10
+ 462 031d 9B                      		mov	[hl], a
+ 154:../src/r_cg_lcd.c **** }
+ 463                             		.loc 1 154 0
+ 464 031e D7                      		ret
+ 465                             	.LFE2:
+ 467                             		.global	_R_LCD_Set_Voltage_On
+ 469                             	_R_LCD_Set_Voltage_On:
+ 470                             	.LFB3:
+ 155:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 156:../src/r_cg_lcd.c **** * End of function R_LCD_Stop
+ 157:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 158:../src/r_cg_lcd.c **** 
+ 159:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 160:../src/r_cg_lcd.c **** * Function Name: R_LCD_Set_Voltage_On
+ 161:../src/r_cg_lcd.c **** * Description  : This function enables voltage boost circuit or capacitor split circuit.
+ 162:../src/r_cg_lcd.c **** * Arguments    : None
+ 163:../src/r_cg_lcd.c **** * Return Value : None
+ 164:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 165:../src/r_cg_lcd.c **** void R_LCD_Set_Voltage_On (void)
+ 166:../src/r_cg_lcd.c **** {
+ 471                             		.loc 1 166 0
+ 472                             		; start of function
+ 473                             		; locals: 2 bytes
+ 474 031f 20 02                   		subw	sp, #2
+ 475                             	.LCFI1:
+ 167:../src/r_cg_lcd.c ****     uint16_t i;
+ 168:../src/r_cg_lcd.c ****     
+ 169:../src/r_cg_lcd.c ****     VLCON = 1U;
+ 476                             		.loc 1 169 0
+ 477 0321 C9 F0 41 FF             		movw	r8, #-191
+ 478 0325 AD F0                   		movw	ax, r8
+ 479 0327 BD F4                   		movw	r12, ax
+ 480 0329 FA F4                   		movw	hl, r12
+ 481 032b 8B                      		mov	a, [hl]
+ 482 032c 9D F2                   		mov	r10, a
+ 483 032e 6A F2 20                		or	r10, #32
+ 484 0331 AD F0                   		movw	ax, r8
+ 485 0333 8D F2                   		mov	a, r10
+ 486 0335 9B                      		mov	[hl], a
+ 170:../src/r_cg_lcd.c ****     
+ 171:../src/r_cg_lcd.c ****     /* Wait for the voltage boost wait time (500 ms or 5s (VDD > VLC0)) */
+ 172:../src/r_cg_lcd.c ****     for (i = 0U; i <= 30000; i++)
+ 487                             		.loc 1 172 0
+ 488 0336 F6                      		clrw	ax
+ 489 0337 B8 00                   		movw	[sp], ax
+ 490 0339 EC 44 03 00             		br	!!.L7
+ 491                             	.L8:
+ 492                             		.loc 1 172 0 is_stmt 0 discriminator 2
+ 493 033d A8 00                   		movw	ax, [sp]
+ 494 033f BD F0                   		movw	r8, ax
+ 495 0341 A1                      		incw	ax
+ 496 0342 B8 00                   		movw	[sp], ax
+ 497                             	.L7:
+ 498                             		.loc 1 172 0 discriminator 1
+ 499 0344 A8 00                   		movw	ax, [sp]
+ 500 0346 44 30 75                		cmpw	ax, #30000 
+ 501 0349 61 E3                   		skh 
+ 502 034b EC 3D 03 00             		br	!!.L8
+ 173:../src/r_cg_lcd.c ****     {
+ 174:../src/r_cg_lcd.c ****         /* Do nothing */
+ 175:../src/r_cg_lcd.c ****     }
+ 176:../src/r_cg_lcd.c **** 
+ 177:../src/r_cg_lcd.c ****     SCOC = 1U;
+ 503                             		.loc 1 177 0 is_stmt 1
+ 504 034f C9 F0 41 FF             		movw	r8, #-191
+ 505 0353 AD F0                   		movw	ax, r8
+ 506 0355 BD F4                   		movw	r12, ax
+ 507 0357 FA F4                   		movw	hl, r12
+ 508 0359 8B                      		mov	a, [hl]
+ 509 035a 9D F2                   		mov	r10, a
+ 510 035c 6A F2 40                		or	r10, #64
+ 511 035f AD F0                   		movw	ax, r8
+ 512 0361 8D F2                   		mov	a, r10
+ 513 0363 9B                      		mov	[hl], a
+ 178:../src/r_cg_lcd.c **** }
+ 514                             		.loc 1 178 0
+ 515 0364 10 02                   		addw	sp, #2
+ 516 0366 D7                      		ret
+ 517                             	.LFE3:
+ 519                             		.global	_R_LCD_Set_Voltage_Off
+ 521                             	_R_LCD_Set_Voltage_Off:
+ 522                             	.LFB4:
+ 179:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 180:../src/r_cg_lcd.c **** * End of function R_LCD_Set_Voltage_On
+ 181:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 182:../src/r_cg_lcd.c **** 
+ 183:../src/r_cg_lcd.c **** /**************************************************************************************************
+ 184:../src/r_cg_lcd.c **** * Function Name: R_LCD_Set_Voltage_Off
+ 185:../src/r_cg_lcd.c **** * Description  : This function disables voltage boost circuit or capacitor split circuit.
+ 186:../src/r_cg_lcd.c **** * Arguments    : None
+ 187:../src/r_cg_lcd.c **** * Return Value : None
+ 188:../src/r_cg_lcd.c **** ***************************************************************************************************
+ 189:../src/r_cg_lcd.c **** void R_LCD_Set_Voltage_Off (void)
+ 190:../src/r_cg_lcd.c **** {
+ 523                             		.loc 1 190 0
+ 191:../src/r_cg_lcd.c ****     /* Disable the voltage */
+ 192:../src/r_cg_lcd.c ****     SCOC = 0U;
+ 524                             		.loc 1 192 0
+ 525 0367 C9 F0 41 FF             		movw	r8, #-191
+ 526 036b AD F0                   		movw	ax, r8
+ 527 036d BD F4                   		movw	r12, ax
+ 528 036f FA F4                   		movw	hl, r12
+ 529 0371 8B                      		mov	a, [hl]
+ 530 0372 9D F2                   		mov	r10, a
+ 531 0374 5A F2 BF                		and	r10, #-65
+ 532 0377 AD F0                   		movw	ax, r8
+ 533 0379 8D F2                   		mov	a, r10
+ 534 037b 9B                      		mov	[hl], a
+ 193:../src/r_cg_lcd.c ****     VLCON = 0U;
+ 535                             		.loc 1 193 0
+ 536 037c C9 F0 41 FF             		movw	r8, #-191
+ 537 0380 AD F0                   		movw	ax, r8
+ 538 0382 BD F4                   		movw	r12, ax
+ 539 0384 FA F4                   		movw	hl, r12
+ 540 0386 8B                      		mov	a, [hl]
+ 541 0387 9D F2                   		mov	r10, a
+ 542 0389 5A F2 DF                		and	r10, #-33
+ 543 038c AD F0                   		movw	ax, r8
+ 544 038e 8D F2                   		mov	a, r10
+ 545 0390 9B                      		mov	[hl], a
+ 194:../src/r_cg_lcd.c **** }
+ 546                             		.loc 1 194 0
+ 547 0391 D7                      		ret
+ 548                             	.LFE4:
+ 616                             	.Letext0:
+ 617                             		.file 2 "../src/iodefine.h"
+ 618                             		.file 3 "../src/iodefine_ext.h"
+ 619                             		.file 4 "../src/r_cg_macrodriver.h"

@@ -1,0 +1,215 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.local	_thisDriver
+  28                             		.comm	_thisDriver,6,2
+  29                             		.local	_this_functions
+  30                             		.comm	_this_functions,8,2
+  31                             		.global	_initADC
+  33                             	_initADC:
+  34                             	.LFB0:
+  35                             		.file 1 "../src/drvADC.c"
+   1:../src/drvADC.c **** /*
+   2:../src/drvADC.c ****  * drvADC.c
+   3:../src/drvADC.c ****  *
+   4:../src/drvADC.c ****  *  Created on: Jul 15, 2014
+   5:../src/drvADC.c ****  *      Author: Pedro
+   6:../src/drvADC.c ****  */
+   7:../src/drvADC.c **** #include "drvADC.h"
+   8:../src/drvADC.c **** #include "r_cg_userdefine.h"
+   9:../src/drvADC.c **** #include "r_cg_macrodriver.h"
+  10:../src/drvADC.c **** #include "r_cg_adc.h"
+  11:../src/drvADC.c **** 
+  12:../src/drvADC.c **** static driver thisDriver;
+  13:../src/drvADC.c **** static ptrFuncDrv this_functions[ADC_END];
+  14:../src/drvADC.c **** 
+  15:../src/drvADC.c **** char initADC(void *parameters);
+  16:../src/drvADC.c **** char ADCStart(void *parameters);
+  17:../src/drvADC.c **** char ADCSGet(void *parameters);
+  18:../src/drvADC.c **** char ADCGet(void *parameters);
+  19:../src/drvADC.c **** char ADCStop(void *parameters);
+  20:../src/drvADC.c **** 
+  21:../src/drvADC.c **** char initADC(void *parameters)
+  22:../src/drvADC.c **** {
+  36                             		.loc 1 22 0
+  23:../src/drvADC.c **** 	R_ADC_Create();
+  37                             		.loc 1 23 0
+  38 0000 FC 00 00 00             		call	!!%code(_R_ADC_Create)
+  24:../src/drvADC.c **** 	R_ADC_Set_Operation_On();
+  39                             		.loc 1 24 0
+  40 0004 FC 00 00 00             		call	!!%code(_R_ADC_Set_Operation_On)
+  25:../src/drvADC.c **** 
+  26:../src/drvADC.c **** 	return SUCESSO;
+  41                             		.loc 1 26 0
+  42 0008 CD F0 00                		mov	r8, #0
+  27:../src/drvADC.c **** }
+  43                             		.loc 1 27 0
+  44 000b D7                      		ret
+  45                             	.LFE0:
+  47                             		.global	_ADCStart
+  49                             	_ADCStart:
+  50                             	.LFB1:
+  28:../src/drvADC.c **** 
+  29:../src/drvADC.c **** char ADCStart(void *parameters)
+  30:../src/drvADC.c **** {
+  51                             		.loc 1 30 0
+  31:../src/drvADC.c **** 	R_ADC_Start();
+  52                             		.loc 1 31 0
+  53 000c FC 00 00 00             		call	!!%code(_R_ADC_Start)
+  32:../src/drvADC.c **** 
+  33:../src/drvADC.c **** 	return SUCESSO;
+  54                             		.loc 1 33 0
+  55 0010 CD F0 00                		mov	r8, #0
+  34:../src/drvADC.c **** }
+  56                             		.loc 1 34 0
+  57 0013 D7                      		ret
+  58                             	.LFE1:
+  60                             		.global	_ADCSGet
+  62                             	_ADCSGet:
+  63                             	.LFB2:
+  35:../src/drvADC.c **** 
+  36:../src/drvADC.c **** char ADCSGet(void *parameters)
+  37:../src/drvADC.c **** {
+  64                             		.loc 1 37 0
+  65                             		; start of function
+  66                             		; outgoing: 2 bytes
+  67 0014 20 02                   		subw	sp, #2
+  68                             	.LCFI0:
+  38:../src/drvADC.c **** 	R_ADC_Start();
+  69                             		.loc 1 38 0
+  70 0016 FC 00 00 00             		call	!!%code(_R_ADC_Start)
+  39:../src/drvADC.c **** 	R_ADC_Get_Result((uint16_t *const) parameters);
+  71                             		.loc 1 39 0
+  72 001a A8 06                   		movw	ax, [sp+6]
+  73 001c BD F0                   		movw	r8, ax
+  74 001e B8 00                   		movw	[sp], ax
+  75 0020 FC 00 00 00             		call	!!%code(_R_ADC_Get_Result)
+  40:../src/drvADC.c **** 
+  41:../src/drvADC.c **** 	return SUCESSO;
+  76                             		.loc 1 41 0
+  77 0024 CD F0 00                		mov	r8, #0
+  42:../src/drvADC.c **** }
+  78                             		.loc 1 42 0
+  79 0027 10 02                   		addw	sp, #2
+  80 0029 D7                      		ret
+  81                             	.LFE2:
+  83                             		.global	_ADCGet
+  85                             	_ADCGet:
+  86                             	.LFB3:
+  43:../src/drvADC.c **** 
+  44:../src/drvADC.c **** char ADCGet(void *parameters)
+  45:../src/drvADC.c **** {
+  87                             		.loc 1 45 0
+  88                             		; start of function
+  89                             		; outgoing: 2 bytes
+  90 002a 20 02                   		subw	sp, #2
+  91                             	.LCFI1:
+  46:../src/drvADC.c **** 	R_ADC_Get_Result((uint16_t *const) parameters);
+  92                             		.loc 1 46 0
+  93 002c A8 06                   		movw	ax, [sp+6]
+  94 002e BD F0                   		movw	r8, ax
+  95 0030 B8 00                   		movw	[sp], ax
+  96 0032 FC 00 00 00             		call	!!%code(_R_ADC_Get_Result)
+  47:../src/drvADC.c **** 
+  48:../src/drvADC.c **** 	return SUCESSO;
+  97                             		.loc 1 48 0
+  98 0036 CD F0 00                		mov	r8, #0
+  49:../src/drvADC.c **** }
+  99                             		.loc 1 49 0
+ 100 0039 10 02                   		addw	sp, #2
+ 101 003b D7                      		ret
+ 102                             	.LFE3:
+ 104                             		.global	_ADCStop
+ 106                             	_ADCStop:
+ 107                             	.LFB4:
+  50:../src/drvADC.c **** 
+  51:../src/drvADC.c **** char ADCStop(void *parameters)
+  52:../src/drvADC.c **** {
+ 108                             		.loc 1 52 0
+  53:../src/drvADC.c **** 	R_ADC_Stop();
+ 109                             		.loc 1 53 0
+ 110 003c FC 00 00 00             		call	!!%code(_R_ADC_Stop)
+  54:../src/drvADC.c **** 
+  55:../src/drvADC.c **** 	return SUCESSO;
+ 111                             		.loc 1 55 0
+ 112 0040 CD F0 00                		mov	r8, #0
+  56:../src/drvADC.c **** }
+ 113                             		.loc 1 56 0
+ 114 0043 D7                      		ret
+ 115                             	.LFE4:
+ 117                             		.global	_getADCDriver
+ 119                             	_getADCDriver:
+ 120                             	.LFB5:
+  57:../src/drvADC.c **** 
+  58:../src/drvADC.c **** /* Função para acesso ao driver */
+  59:../src/drvADC.c **** driver *getADCDriver(void)
+  60:../src/drvADC.c **** {
+ 121                             		.loc 1 60 0
+ 122                             		; start of function
+ 123                             		; locals: 2 bytes
+ 124 0044 20 02                   		subw	sp, #2
+ 125                             	.LCFI2:
+  61:../src/drvADC.c **** 	thisDriver.drv_init = initADC;
+ 126                             		.loc 1 61 0
+ 127 0046 30 00 00                		movw	ax, #%code(_initADC)
+ 128 0049 BF 04 00                		movw	!_thisDriver+4, ax
+  62:../src/drvADC.c **** 
+  63:../src/drvADC.c **** 	/* Funções do driver */
+  64:../src/drvADC.c **** 	this_functions[ADC_START] = ADCStart;
+ 129                             		.loc 1 64 0
+ 130 004c 30 00 00                		movw	ax, #%code(_ADCStart)
+ 131 004f BF 06 00                		movw	!_this_functions, ax
+  65:../src/drvADC.c **** 	this_functions[ADC_SGET] = ADCSGet;
+ 132                             		.loc 1 65 0
+ 133 0052 30 00 00                		movw	ax, #%code(_ADCSGet)
+ 134 0055 BF 08 00                		movw	!_this_functions+2, ax
+  66:../src/drvADC.c **** 	this_functions[ADC_GET] = ADCGet;
+ 135                             		.loc 1 66 0
+ 136 0058 30 00 00                		movw	ax, #%code(_ADCGet)
+ 137 005b BF 0A 00                		movw	!_this_functions+4, ax
+  67:../src/drvADC.c **** 	this_functions[ADC_STOP] = ADCStop;
+ 138                             		.loc 1 67 0
+ 139 005e 30 00 00                		movw	ax, #%code(_ADCStop)
+ 140 0061 BF 0C 00                		movw	!_this_functions+6, ax
+  68:../src/drvADC.c **** 
+  69:../src/drvADC.c **** 	thisDriver.drv_func = this_functions;
+ 141                             		.loc 1 69 0
+ 142 0064 30 06 00                		movw	ax, #_this_functions
+ 143 0067 BF 02 00                		movw	!_thisDriver+2, ax
+  70:../src/drvADC.c **** 	return &thisDriver;
+ 144                             		.loc 1 70 0
+ 145 006a 30 00 00                		movw	ax, #_thisDriver
+ 146 006d B8 00                   		movw	[sp], ax
+ 147 006f BD F0                   		movw	r8, ax
+  71:../src/drvADC.c **** }
+ 148                             		.loc 1 71 0
+ 149 0071 10 02                   		addw	sp, #2
+ 150 0073 D7                      		ret
+ 151                             	.LFE5:
+ 231                             	.Letext0:
+ 232                             		.file 2 "../src/dd_types.h"
+ 233                             		.file 3 "../src/r_cg_macrodriver.h"
+ 234                             		.file 4 "../src/drvADC.h"

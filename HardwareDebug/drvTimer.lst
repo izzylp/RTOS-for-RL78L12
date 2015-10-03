@@ -1,0 +1,134 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.local	_thisDriver
+  28                             		.comm	_thisDriver,6,2
+  29                             		.local	_this_functions
+  30                             		.comm	_this_functions,4,2
+  31                             		.global	_initTimer
+  33                             	_initTimer:
+  34                             	.LFB0:
+  35                             		.file 1 "../src/drvTimer.c"
+   1:../src/drvTimer.c **** /*
+   2:../src/drvTimer.c ****  * drvTimer.c
+   3:../src/drvTimer.c ****  *
+   4:../src/drvTimer.c ****  *  Created on: 20/09/2014
+   5:../src/drvTimer.c ****  *      Author: Luis
+   6:../src/drvTimer.c ****  */
+   7:../src/drvTimer.c **** 
+   8:../src/drvTimer.c **** #include "drvTimer.h"
+   9:../src/drvTimer.c **** #include "r_cg_it.h"
+  10:../src/drvTimer.c **** #include "r_cg_macrodriver.h"
+  11:../src/drvTimer.c **** #include "r_cg_userdefine.h"
+  12:../src/drvTimer.c **** 
+  13:../src/drvTimer.c **** static driver thisDriver;
+  14:../src/drvTimer.c **** static ptrFuncDrv this_functions[TIMER_END];
+  15:../src/drvTimer.c **** 
+  16:../src/drvTimer.c **** char initTimer(void *parameters);
+  17:../src/drvTimer.c **** char startTimer(void *parameters);
+  18:../src/drvTimer.c **** char stopTimer(void *parameters);
+  19:../src/drvTimer.c **** 
+  20:../src/drvTimer.c **** char initTimer(void *parameters)
+  21:../src/drvTimer.c **** {
+  36                             		.loc 1 21 0
+  22:../src/drvTimer.c **** 	return SUCESSO;
+  37                             		.loc 1 22 0
+  38 0000 CD F0 00                		mov	r8, #0
+  23:../src/drvTimer.c **** }
+  39                             		.loc 1 23 0
+  40 0003 D7                      		ret
+  41                             	.LFE0:
+  43                             		.global	_startTimer
+  45                             	_startTimer:
+  46                             	.LFB1:
+  24:../src/drvTimer.c **** 
+  25:../src/drvTimer.c **** char startTimer(void *parameters)
+  26:../src/drvTimer.c **** {
+  47                             		.loc 1 26 0
+  27:../src/drvTimer.c ****         R_IT_Start();
+  48                             		.loc 1 27 0
+  49 0004 FC 00 00 00             		call	!!%code(_R_IT_Start)
+  28:../src/drvTimer.c **** }
+  50                             		.loc 1 28 0
+  51 0008 D7                      		ret
+  52                             	.LFE1:
+  54                             		.global	_stopTimer
+  56                             	_stopTimer:
+  57                             	.LFB2:
+  29:../src/drvTimer.c **** 
+  30:../src/drvTimer.c **** char stopTimer(void *parameters)
+  31:../src/drvTimer.c **** {
+  58                             		.loc 1 31 0
+  32:../src/drvTimer.c ****         R_IT_Stop();
+  59                             		.loc 1 32 0
+  60 0009 FC 00 00 00             		call	!!%code(_R_IT_Stop)
+  33:../src/drvTimer.c **** }
+  61                             		.loc 1 33 0
+  62 000d D7                      		ret
+  63                             	.LFE2:
+  65                             		.global	_getTimDriver
+  67                             	_getTimDriver:
+  68                             	.LFB3:
+  34:../src/drvTimer.c **** 
+  35:../src/drvTimer.c **** driver *getTimDriver(void)
+  36:../src/drvTimer.c **** {
+  69                             		.loc 1 36 0
+  70                             		; start of function
+  71                             		; locals: 2 bytes
+  72 000e 20 02                   		subw	sp, #2
+  73                             	.LCFI0:
+  37:../src/drvTimer.c **** 	thisDriver.drv_init = initTimer;
+  74                             		.loc 1 37 0
+  75 0010 30 00 00                		movw	ax, #%code(_initTimer)
+  76 0013 BF 04 00                		movw	!_thisDriver+4, ax
+  38:../src/drvTimer.c **** 
+  39:../src/drvTimer.c **** 	this_functions[TIMER_START] = startTimer;
+  77                             		.loc 1 39 0
+  78 0016 30 00 00                		movw	ax, #%code(_startTimer)
+  79 0019 BF 06 00                		movw	!_this_functions, ax
+  40:../src/drvTimer.c **** 	this_functions[TIMER_STOP] = stopTimer;
+  80                             		.loc 1 40 0
+  81 001c 30 00 00                		movw	ax, #%code(_stopTimer)
+  82 001f BF 08 00                		movw	!_this_functions+2, ax
+  41:../src/drvTimer.c **** 
+  42:../src/drvTimer.c **** 	thisDriver.drv_func = this_functions;
+  83                             		.loc 1 42 0
+  84 0022 30 06 00                		movw	ax, #_this_functions
+  85 0025 BF 02 00                		movw	!_thisDriver+2, ax
+  43:../src/drvTimer.c **** 
+  44:../src/drvTimer.c **** 	return &thisDriver;
+  86                             		.loc 1 44 0
+  87 0028 30 00 00                		movw	ax, #_thisDriver
+  88 002b B8 00                   		movw	[sp], ax
+  89 002d BD F0                   		movw	r8, ax
+  45:../src/drvTimer.c **** }
+  90                             		.loc 1 45 0
+  91 002f 10 02                   		addw	sp, #2
+  92 0031 D7                      		ret
+  93                             	.LFE3:
+ 149                             	.Letext0:
+ 150                             		.file 2 "../src/dd_types.h"
+ 151                             		.file 3 "../src/drvTimer.h"

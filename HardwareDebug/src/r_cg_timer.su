@@ -1,0 +1,7 @@
+r_cg_timer.c:55:6:R_TAU0_Create	16	static
+r_cg_timer.c:116:6:R_TAU0_Channel0_Start	0	static
+r_cg_timer.c:137:6:R_TAU0_Channel0_Stop	0	static
+r_cg_timer.c:159:6:R_TAU0_Channel1_Higher8bits_Start	0	static
+r_cg_timer.c:180:6:R_TAU0_Channel1_Higher8bits_Stop	0	static
+r_cg_timer.c:202:6:R_TAU0_Channel2_Start	0	static
+r_cg_timer.c:223:6:R_TAU0_Channel2_Stop	0	static

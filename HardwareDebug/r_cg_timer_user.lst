@@ -1,0 +1,887 @@
+   1                             	r8	=	0xffef0
+   2                             	r16	=	0xffee8
+   3                             	r24	=	0xffee0
+   4                             	r9	=	0xffef1
+   5                             	r17	=	0xffee9
+   6                             	r25	=	0xffee1
+   7                             	r10	=	0xffef2
+   8                             	r18	=	0xffeea
+   9                             	r26	=	0xffee2
+  10                             	r11	=	0xffef3
+  11                             	r19	=	0xffeeb
+  12                             	r27	=	0xffee3
+  13                             	r12	=	0xffef4
+  14                             	r20	=	0xffeec
+  15                             	r28	=	0xffee4
+  16                             	r13	=	0xffef5
+  17                             	r21	=	0xffeed
+  18                             	r29	=	0xffee5
+  19                             	r14	=	0xffef6
+  20                             	r22	=	0xffeee
+  21                             	r30	=	0xffee6
+  22                             	r15	=	0xffef7
+  23                             	r23	=	0xffeef
+  24                             	r31	=	0xffee7
+  25                             	.text
+  26                             	.Ltext0:
+  27                             		.global	_g_scroll_data
+  28                             	.data
+  31                             	_g_scroll_data:
+  32 0000 20 59 52 50 42 20 52 4C 		.string	" YRPB RL78/L12 Demo "
+  32      37 38 2F 4C 31 32 20 44 
+  32      65 6D 6F 20 00 
+  33 0015 00 00 00 00 00 00 00 00 		.zero	9
+  33      00 
+  34 001e 20 52 4C 37 38 20 54 72 		.string	" RL78 True Low Power "
+  34      75 65 20 4C 6F 77 20 50 
+  34      6F 77 65 72 20 00 
+  35 0034 00 00 00 00 00 00 00 00 		.zero	8
+  36 003c 20 4F 6E 20 42 6F 61 72 		.string	" On Board LCD Driver "
+  36      64 20 4C 43 44 20 44 72 
+  36      69 76 65 72 20 00 
+  37 0052 00 00 00 00 00 00 00 00 		.zero	8
+  38 005a 00 00 00 00 00 00 00 00 		.zero	30
+  38      00 00 00 00 00 00 00 00 
+  38      00 00 00 00 00 00 00 00 
+  38      00 00 00 00 00 00 
+  39                             		.global	_g_scroll_data_pointer
+  40                             		.balign 2
+  43                             	_g_scroll_data_pointer:
+  44 0078 00 00                   		.short	_g_scroll_data
+  45                             		.global	_g_enable_scroll
+  48                             	_g_enable_scroll:
+  49 007a 00                      		.zero	1
+  50                             	.text
+  51                             		.global	_INT_TM00
+  53                             	_INT_TM00:
+  54                             	.LFB0:
+  55                             		.file 1 "../src/r_cg_timer_user.c"
+   1:../src/r_cg_timer_user.c **** /**************************************************************************************************
+   2:../src/r_cg_timer_user.c **** * DISCLAIMER
+   3:../src/r_cg_timer_user.c **** * This software is supplied by Renesas Electronics Corporation and is only 
+   4:../src/r_cg_timer_user.c **** * intended for use with Renesas products. No other uses are authorized. This 
+   5:../src/r_cg_timer_user.c **** * software is owned by Renesas Electronics Corporation and is protected under 
+   6:../src/r_cg_timer_user.c **** * all applicable laws, including copyright laws.
+   7:../src/r_cg_timer_user.c **** * THIS SOFTWARE IS PROVIDED "AS IS" AND RENESAS MAKES NO WARRANTIES REGARDING 
+   8:../src/r_cg_timer_user.c **** * THIS SOFTWARE, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING BUT NOT 
+   9:../src/r_cg_timer_user.c **** * LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE 
+  10:../src/r_cg_timer_user.c **** * AND NON-INFRINGEMENT.  ALL SUCH WARRANTIES ARE EXPRESSLY DISCLAIMED.
+  11:../src/r_cg_timer_user.c **** * TO THE MAXIMUM EXTENT PERMITTED NOT PROHIBITED BY LAW, NEITHER RENESAS 
+  12:../src/r_cg_timer_user.c **** * ELECTRONICS CORPORATION NOR ANY OF ITS AFFILIATED COMPANIES SHALL BE LIABLE 
+  13:../src/r_cg_timer_user.c **** * FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR 
+  14:../src/r_cg_timer_user.c **** * ANY REASON RELATED TO THIS SOFTWARE, EVEN IF RENESAS OR ITS AFFILIATES HAVE 
+  15:../src/r_cg_timer_user.c **** * BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  16:../src/r_cg_timer_user.c **** * Renesas reserves the right, without notice, to make changes to this software 
+  17:../src/r_cg_timer_user.c **** * and to discontinue the availability of this software.  By using this software, 
+  18:../src/r_cg_timer_user.c **** * you agree to the additional terms and conditions found by accessing the 
+  19:../src/r_cg_timer_user.c **** * following link:
+  20:../src/r_cg_timer_user.c **** * http://www.renesas.com/disclaimer
+  21:../src/r_cg_timer_user.c **** *
+  22:../src/r_cg_timer_user.c **** * Copyright (C) 2012 Renesas Electronics Corporation. All rights reserved.
+  23:../src/r_cg_timer_user.c **** ***************************************************************************************************
+  24:../src/r_cg_timer_user.c **** 
+  25:../src/r_cg_timer_user.c **** /**************************************************************************************************
+  26:../src/r_cg_timer_user.c **** * File Name    : r_cg_timer_user.c
+  27:../src/r_cg_timer_user.c **** * Version      : Applilet3 for RL78/L12 V1.00.00 [23 Mar 2012]
+  28:../src/r_cg_timer_user.c **** * Device(s)    : R5F10RLC
+  29:../src/r_cg_timer_user.c **** * Tool-Chain   : GNURL78 v12.03
+  30:../src/r_cg_timer_user.c **** * Description  : This file implements device driver for TAU module.
+  31:../src/r_cg_timer_user.c **** * Creation Date: 21/01/2013
+  32:../src/r_cg_timer_user.c **** ***************************************************************************************************
+  33:../src/r_cg_timer_user.c **** 
+  34:../src/r_cg_timer_user.c **** 
+  35:../src/r_cg_timer_user.c **** /**************************************************************************************************
+  36:../src/r_cg_timer_user.c **** Includes
+  37:../src/r_cg_timer_user.c **** ***************************************************************************************************
+  38:../src/r_cg_timer_user.c **** /* Defines the I/O register structures */
+  39:../src/r_cg_timer_user.c **** #include "iodefine.h"
+  40:../src/r_cg_timer_user.c **** 
+  41:../src/r_cg_timer_user.c **** /* Defines the extended I/O register structures */
+  42:../src/r_cg_timer_user.c **** #include "iodefine_ext.h"
+  43:../src/r_cg_timer_user.c **** 
+  44:../src/r_cg_timer_user.c **** /* Header files inclusion */
+  45:../src/r_cg_timer_user.c **** #include "r_cg_macrodriver.h"
+  46:../src/r_cg_timer_user.c **** #include "r_cg_timer.h"
+  47:../src/r_cg_timer_user.c **** #include "r_cg_cgc.h"
+  48:../src/r_cg_timer_user.c **** #include "r_cg_adc.h"
+  49:../src/r_cg_timer_user.c **** #include "r_cg_rtc.h"
+  50:../src/r_cg_timer_user.c **** #include "r_cg_intc.h"
+  51:../src/r_cg_timer_user.c **** #include "lcd_panel.h"
+  52:../src/r_cg_timer_user.c **** #include "r_main.h"
+  53:../src/r_cg_timer_user.c **** #include "r_cg_userdefine.h"
+  54:../src/r_cg_timer_user.c **** 
+  55:../src/r_cg_timer_user.c **** /**************************************************************************************************
+  56:../src/r_cg_timer_user.c **** Global variables and functions
+  57:../src/r_cg_timer_user.c **** ***************************************************************************************************
+  58:../src/r_cg_timer_user.c **** /* String to be scrolled across the star-burst segments.
+  59:../src/r_cg_timer_user.c ****    Leave at least one space following the last alphabetic/numeric character in the string*/
+  60:../src/r_cg_timer_user.c **** char g_scroll_data[SCROLL_LINES][SCROLL_BUFF_SIZE] =
+  61:../src/r_cg_timer_user.c **** {
+  62:../src/r_cg_timer_user.c ****     " YRPB RL78/L12 Demo ",
+  63:../src/r_cg_timer_user.c ****     " RL78 True Low Power ",
+  64:../src/r_cg_timer_user.c ****     " On Board LCD Driver "
+  65:../src/r_cg_timer_user.c **** };
+  66:../src/r_cg_timer_user.c **** 
+  67:../src/r_cg_timer_user.c **** /* Pointer used to specify the start address of buffer 
+  68:../src/r_cg_timer_user.c **** arrays containing data to be scrolled on the LCD panel */
+  69:../src/r_cg_timer_user.c **** char * g_scroll_data_pointer = g_scroll_data[0];
+  70:../src/r_cg_timer_user.c **** 
+  71:../src/r_cg_timer_user.c **** /* Holds statuses for enabling/disabling text scrolling on the LCD panel */
+  72:../src/r_cg_timer_user.c **** uint8_t g_enable_scroll = 0u;
+  73:../src/r_cg_timer_user.c **** 
+  74:../src/r_cg_timer_user.c **** 
+  75:../src/r_cg_timer_user.c **** /**************************************************************************************************
+  76:../src/r_cg_timer_user.c **** * Function Name: INT_TM00
+  77:../src/r_cg_timer_user.c **** * Description  : This function is INTTM00 interrupt service routine.
+  78:../src/r_cg_timer_user.c **** * Arguments    : None
+  79:../src/r_cg_timer_user.c **** * Return Value : None
+  80:../src/r_cg_timer_user.c **** ***************************************************************************************************
+  81:../src/r_cg_timer_user.c **** void INT_TM00 (void)
+  82:../src/r_cg_timer_user.c **** {
+  56                             		.loc 1 82 0
+  57                             		; start of function
+  58                             		; push 18: ax bc de hl r8 r10 r12 r14 r22
+  59                             		; locals: 6 bytes
+  60                             		; outgoing: 4 bytes
+  61 0000 61 CF                   		sel	rb0
+  62 0002 C1                      		push	ax
+  63                             	.LCFI0:
+  64 0003 C3                      		push	bc
+  65                             	.LCFI1:
+  66 0004 C5                      		push	de
+  67                             	.LCFI2:
+  68 0005 C7                      		push	hl
+  69                             	.LCFI3:
+  70 0006 61 DF                   		sel	rb1
+  71 0008 C1                      		push	ax ; r8
+  72                             	.LCFI4:
+  73 0009 C3                      		push	bc ; r10
+  74                             	.LCFI5:
+  75 000a C5                      		push	de ; r12
+  76                             	.LCFI6:
+  77 000b C7                      		push	hl ; r14
+  78                             	.LCFI7:
+  79 000c 61 EF                   		sel	rb2
+  80 000e C7                      		push	hl ; r22
+  81                             	.LCFI8:
+  82 000f 61 CF                   		sel	rb0
+  83 0011 20 0A                   		subw	sp, #10
+  84                             	.LCFI9:
+  83:../src/r_cg_timer_user.c ****     /* Declare count variables */
+  84:../src/r_cg_timer_user.c ****     static uint8_t i = 0;
+  85:../src/r_cg_timer_user.c ****     static uint8_t j = 0;
+  86:../src/r_cg_timer_user.c **** 
+  87:../src/r_cg_timer_user.c ****     /* Update the LCD every second timer interrupt */
+  88:../src/r_cg_timer_user.c **** 	if (1u == i++)
+  85                             		.loc 1 88 0
+  86 0013 8F 00 00                		mov	a, !_i.2023
+  87 0016 9D F0                   		mov	r8, a
+  88 0018 81                      		inc	a
+  89 0019 9D F1                   		mov	r9, a
+  90 001b 9F 00 00                		mov	!_i.2023, a
+  91 001e 4A F0 01                		cmp	r8, #1 
+  92 0021 61 E8                   		skz 
+  93 0023 EC 44 00 00             		br	!!.L2
+  89:../src/r_cg_timer_user.c **** 	{
+  90:../src/r_cg_timer_user.c **** 		/* Display the text on the LCD panel.
+  91:../src/r_cg_timer_user.c **** 		   Casting to ensure correct data type */
+  92:../src/r_cg_timer_user.c **** 		Display_Panel_String(PANEL_LCD_LINE1, g_scroll_data_pointer);
+  94                             		.loc 1 92 0
+  95 0027 AF 00 00                		movw	ax, !_g_scroll_data_pointer
+  96 002a BD F0                   		movw	r8, ax
+  97 002c C8 00 33                		mov	[sp], #51
+  98 002f B8 02                   		movw	[sp+2], ax
+  99 0031 FC 00 00 00             		call	!!%code(_Display_Panel_String)
+  93:../src/r_cg_timer_user.c **** 
+  94:../src/r_cg_timer_user.c **** 		/* Reset the count */
+  95:../src/r_cg_timer_user.c **** 		i = 0;
+ 100                             		.loc 1 95 0
+ 101 0035 F5 00 00                		clrb	!_i.2023
+  96:../src/r_cg_timer_user.c **** 
+  97:../src/r_cg_timer_user.c **** 		/* Increment the address */
+  98:../src/r_cg_timer_user.c **** 		g_scroll_data_pointer++;
+ 102                             		.loc 1 98 0
+ 103 0038 AF 00 00                		movw	ax, !_g_scroll_data_pointer
+ 104 003b BD F0                   		movw	r8, ax
+ 105 003d A6 F0                   		incw	r8
+ 106 003f AD F0                   		movw	ax, r8
+ 107 0041 BF 00 00                		movw	!_g_scroll_data_pointer, ax
+ 108                             	.L2:
+  99:../src/r_cg_timer_user.c **** 	}
+ 100:../src/r_cg_timer_user.c **** 
+ 101:../src/r_cg_timer_user.c **** 	/* Check if the NULL character has been encountered */
+ 102:../src/r_cg_timer_user.c **** 	if (0u == *g_scroll_data_pointer)
+ 109                             		.loc 1 102 0
+ 110 0044 AF 00 00                		movw	ax, !_g_scroll_data_pointer
+ 111 0047 BD F0                   		movw	r8, ax
+ 112 0049 BD F2                   		movw	r10, ax
+ 113 004b FA F2                   		movw	hl, r10
+ 114 004d 8B                      		mov	a, [hl]
+ 115 004e 9D F0                   		mov	r8, a
+ 116 0050 D4 F0                   		cmp0	r8 
+ 117 0052 61 E8                   		skz 
+ 118 0054 EC B8 00 00             		br	!!.L3
+ 103:../src/r_cg_timer_user.c **** 	{
+ 104:../src/r_cg_timer_user.c **** 		/* Copy the start address of the text to be scrolled */
+ 105:../src/r_cg_timer_user.c **** 		g_scroll_data_pointer = g_scroll_data[j];
+ 119                             		.loc 1 105 0
+ 120 0058 8F 01 00                		mov	a, !_j.2024
+ 121 005b 9D F0                   		mov	r8, a
+ 122 005d 70                      		mov	x, a 
+ 123 005e 51 00                   		mov	a, #0
+ 124 0060 B8 08                   		movw	[sp+8], ax
+ 125 0062 BD F4                   		movw	r12, ax
+ 126 0064 B8 06                   		movw	[sp+6], ax
+ 127 0066 01                      		addw	ax, ax
+ 128 0067 B8 04                   		movw	[sp+4], ax
+ 129 0069 BD F0                   		movw	r8, ax
+ 130 006b B8 06                   		movw	[sp+6], ax
+ 131 006d 31 4D                   		shlw	ax, 4
+ 132 006f BD F0                   		movw	r8, ax
+ 133 0071 A8 06                   		movw	ax, [sp+6]
+ 134 0073 16                      		movw	hl, ax
+ 135 0074 AD F0                   		movw	ax, r8
+ 136 0076 27                      		subw	ax, hl
+ 137 0077 BD F0                   		movw	r8, ax
+ 138 0079 04 00 00                		addw	ax, #_g_scroll_data
+ 139 007c BD F0                   		movw	r8, ax
+ 140 007e BF 00 00                		movw	!_g_scroll_data_pointer, ax
+ 106:../src/r_cg_timer_user.c **** 
+ 107:../src/r_cg_timer_user.c **** 		/* Reset the counter after all scroll sentences have been displayed */
+ 108:../src/r_cg_timer_user.c **** 		if (SCROLL_LINES == ++j)
+ 141                             		.loc 1 108 0
+ 142 0081 8F 01 00                		mov	a, !_j.2024
+ 143 0084 9D F0                   		mov	r8, a
+ 144 0086 A4 F0                   		inc	r8
+ 145 0088 8D F0                   		mov	a, r8
+ 146 008a 9F 01 00                		mov	!_j.2024, a
+ 147 008d 9D F0                   		mov	r8, a
+ 148 008f 4A F0 04                		cmp	r8, #4 
+ 149 0092 61 E8                   		skz 
+ 150 0094 EC 9B 00 00             		br	!!.L4
+ 109:../src/r_cg_timer_user.c **** 		{
+ 110:../src/r_cg_timer_user.c **** 			j = 0;
+ 151                             		.loc 1 110 0
+ 152 0098 F5 01 00                		clrb	!_j.2024
+ 153                             	.L4:
+ 111:../src/r_cg_timer_user.c **** 		}
+ 112:../src/r_cg_timer_user.c **** 
+ 113:../src/r_cg_timer_user.c **** 		/* Stop scrolling? */
+ 114:../src/r_cg_timer_user.c **** 		if (FINITE_SCROLL & g_enable_scroll)
+ 154                             		.loc 1 114 0
+ 155 009b 8F 00 00                		mov	a, !_g_enable_scroll
+ 156 009e 9D F0                   		mov	r8, a
+ 157 00a0 5A F0 01                		and	r8, #1
+ 158 00a3 D4 F0                   		cmp0	r8 
+ 159 00a5 61 F8                   		sknz 
+ 160 00a7 EC B8 00 00             		br	!!.L3
+ 115:../src/r_cg_timer_user.c **** 		{
+ 116:../src/r_cg_timer_user.c **** 			/* Disable scrolling */
+ 117:../src/r_cg_timer_user.c **** 			g_enable_scroll &= ~ENABLE_SCROLL;
+ 161                             		.loc 1 117 0
+ 162 00ab 8F 00 00                		mov	a, !_g_enable_scroll
+ 163 00ae 9D F0                   		mov	r8, a
+ 164 00b0 5A F0 FB                		and	r8, #-5
+ 165 00b3 8D F0                   		mov	a, r8
+ 166 00b5 9F 00 00                		mov	!_g_enable_scroll, a
+ 167                             	.L3:
+ 118:../src/r_cg_timer_user.c **** 		}
+ 119:../src/r_cg_timer_user.c **** 	}
+ 120:../src/r_cg_timer_user.c **** 
+ 121:../src/r_cg_timer_user.c ****     /* Clear the interrupt flag */
+ 122:../src/r_cg_timer_user.c ****     TMIF00 = 0x0;
+ 168                             		.loc 1 122 0
+ 169 00b8 C9 F0 E1 FF             		movw	r8, #-31
+ 170 00bc AD F0                   		movw	ax, r8
+ 171 00be BD F4                   		movw	r12, ax
+ 172 00c0 FA F4                   		movw	hl, r12
+ 173 00c2 8B                      		mov	a, [hl]
+ 174 00c3 9D F2                   		mov	r10, a
+ 175 00c5 5A F2 BF                		and	r10, #-65
+ 176 00c8 AD F0                   		movw	ax, r8
+ 177 00ca 8D F2                   		mov	a, r10
+ 178 00cc 9B                      		mov	[hl], a
+ 123:../src/r_cg_timer_user.c **** }
+ 179                             		.loc 1 123 0
+ 180 00cd 10 0A                   		addw	sp, #10
+ 181 00cf 61 EF                   		sel	rb2
+ 182 00d1 C6                      		pop	hl ; r22
+ 183 00d2 61 DF                   		sel	rb1
+ 184 00d4 C6                      		pop	hl ; r14
+ 185 00d5 C4                      		pop	de ; r12
+ 186 00d6 C2                      		pop	bc ; r10
+ 187 00d7 C0                      		pop	ax ; r8
+ 188 00d8 61 CF                   		sel	rb0
+ 189 00da C6                      		pop	hl
+ 190 00db C4                      		pop	de
+ 191 00dc C2                      		pop	bc
+ 192 00dd C0                      		pop	ax
+ 193 00de 61 FC                   		reti
+ 194                             	.LFE0:
+ 196                             		.global	___udivhi3
+ 197                             		.global	_INT_TM01H
+ 199                             	_INT_TM01H:
+ 200                             	.LFB1:
+ 124:../src/r_cg_timer_user.c **** /**************************************************************************************************
+ 125:../src/r_cg_timer_user.c **** * End of function INT_TM00
+ 126:../src/r_cg_timer_user.c **** ***************************************************************************************************
+ 127:../src/r_cg_timer_user.c **** 
+ 128:../src/r_cg_timer_user.c **** /**************************************************************************************************
+ 129:../src/r_cg_timer_user.c **** * Function Name: INT_TM01H
+ 130:../src/r_cg_timer_user.c **** * Description  : This function is INTTM01H interrupt service routine.
+ 131:../src/r_cg_timer_user.c **** * Arguments    : None
+ 132:../src/r_cg_timer_user.c **** * Return Value : None
+ 133:../src/r_cg_timer_user.c **** ***************************************************************************************************
+ 134:../src/r_cg_timer_user.c **** void INT_TM01H (void)
+ 135:../src/r_cg_timer_user.c **** {
+ 201                             		.loc 1 135 0
+ 202                             		; start of function
+ 203                             		; push 18: ax bc de hl r8 r10 r12 r14 r22
+ 204                             		; locals: 2 bytes
+ 205                             		; outgoing: 4 bytes
+ 206 00e0 61 CF                   		sel	rb0
+ 207 00e2 C1                      		push	ax
+ 208                             	.LCFI10:
+ 209 00e3 C3                      		push	bc
+ 210                             	.LCFI11:
+ 211 00e4 C5                      		push	de
+ 212                             	.LCFI12:
+ 213 00e5 C7                      		push	hl
+ 214                             	.LCFI13:
+ 215 00e6 61 DF                   		sel	rb1
+ 216 00e8 C1                      		push	ax ; r8
+ 217                             	.LCFI14:
+ 218 00e9 C3                      		push	bc ; r10
+ 219                             	.LCFI15:
+ 220 00ea C5                      		push	de ; r12
+ 221                             	.LCFI16:
+ 222 00eb C7                      		push	hl ; r14
+ 223                             	.LCFI17:
+ 224 00ec 61 EF                   		sel	rb2
+ 225 00ee C7                      		push	hl ; r22
+ 226                             	.LCFI18:
+ 227 00ef 61 CF                   		sel	rb0
+ 228 00f1 20 06                   		subw	sp, #6
+ 229                             	.LCFI19:
+ 136:../src/r_cg_timer_user.c **** 	/* Variable used to alternate between the Cool and Heat symbols */
+ 137:../src/r_cg_timer_user.c **** 	static uint8_t j = 0u;
+ 138:../src/r_cg_timer_user.c **** 	static uint8_t k = FALSE;
+ 139:../src/r_cg_timer_user.c **** 	static uint8_t l = 0u;
+ 140:../src/r_cg_timer_user.c **** 
+ 141:../src/r_cg_timer_user.c **** 	/* Max ADC value is 1023. Scaling ADC values less than 100 will result in 0 */
+ 142:../src/r_cg_timer_user.c **** 	if (99 < g_adc_value)
+ 230                             		.loc 1 142 0
+ 231 00f3 AF 00 00                		movw	ax, !_g_adc_value
+ 232 00f6 BD F0                   		movw	r8, ax
+ 233 00f8 44 63 00                		cmpw	ax, #99 
+ 234 00fb 61 E3                   		skh 
+ 235 00fd EC 20 01 00             		br	!!.L6
+ 143:../src/r_cg_timer_user.c **** 	{
+ 144:../src/r_cg_timer_user.c **** 		/* Scale the ADC value to a figure between 0 and 11 */
+ 145:../src/r_cg_timer_user.c **** 	    l = g_adc_value / 100;
+ 236                             		.loc 1 145 0
+ 237 0101 AF 00 00                		movw	ax, !_g_adc_value
+ 238 0104 BD F0                   		movw	r8, ax
+ 239 0106 B8 00                   		movw	[sp], ax
+ 240 0108 30 64 00                		movw	ax, #100
+ 241 010b B8 02                   		movw	[sp+2], ax
+ 242 010d FC 00 00 00             		call	!!___udivhi3
+ 243 0111 AD F0                   		movw	ax, r8
+ 244 0113 B8 04                   		movw	[sp+4], ax
+ 245 0115 88 04                   		mov	a, [sp+4]
+ 246 0117 9D F0                   		mov	r8, a
+ 247 0119 9F 02 00                		mov	!_l.2030, a
+ 248 011c EC 23 01 00             		br	!!.L7
+ 249                             	.L6:
+ 146:../src/r_cg_timer_user.c **** 	}
+ 147:../src/r_cg_timer_user.c **** 	else
+ 148:../src/r_cg_timer_user.c **** 	{
+ 149:../src/r_cg_timer_user.c **** 		/* Set the count interval to 1, when the ADC value is less than 100 */
+ 150:../src/r_cg_timer_user.c **** 		l = 1;
+ 250                             		.loc 1 150 0
+ 251 0120 E5 02 00                		oneb	!_l.2030
+ 252                             	.L7:
+ 151:../src/r_cg_timer_user.c **** 	}
+ 152:../src/r_cg_timer_user.c **** 	/* Alternate between the Heat and Cool symbols */
+ 153:../src/r_cg_timer_user.c ****     if ((TRUE == k) && (l == ++j))
+ 253                             		.loc 1 153 0
+ 254 0123 8F 03 00                		mov	a, !_k.2029
+ 255 0126 9D F0                   		mov	r8, a
+ 256 0128 4A F0 01                		cmp	r8, #1 
+ 257 012b 61 E8                   		skz 
+ 258 012d EC 6A 01 00             		br	!!.L8
+ 259                             		.loc 1 153 0 is_stmt 0 discriminator 1
+ 260 0131 8F 04 00                		mov	a, !_j.2028
+ 261 0134 9D F0                   		mov	r8, a
+ 262 0136 A4 F0                   		inc	r8
+ 263 0138 8D F0                   		mov	a, r8
+ 264 013a 9F 04 00                		mov	!_j.2028, a
+ 265 013d 9D F1                   		mov	r9, a
+ 266 013f 8F 02 00                		mov	a, !_l.2030
+ 267 0142 9D F0                   		mov	r8, a
+ 268 0144 8D F1                   		mov	a, r9
+ 269 0146 4B F0                   		cmp	a, r8 
+ 270 0148 61 E8                   		skz 
+ 271 014a EC 6A 01 00             		br	!!.L8
+ 154:../src/r_cg_timer_user.c ****     {
+ 155:../src/r_cg_timer_user.c ****     	/* Turn on the Heat symbol and turn off the Cool symbol */
+ 156:../src/r_cg_timer_user.c ****     	Symbol_Map(LCD_HEAT_ON);
+ 272                             		.loc 1 156 0 is_stmt 1
+ 273 014e 30 31 31                		movw	ax, #12593
+ 274 0151 B8 00                   		movw	[sp], ax
+ 275 0153 FC 00 00 00             		call	!!%code(_Symbol_Map)
+ 157:../src/r_cg_timer_user.c ****     	Symbol_Map(LCD_COOL_OFF);
+ 276                             		.loc 1 157 0
+ 277 0157 30 30 66                		movw	ax, #26160
+ 278 015a B8 00                   		movw	[sp], ax
+ 279 015c FC 00 00 00             		call	!!%code(_Symbol_Map)
+ 158:../src/r_cg_timer_user.c **** 
+ 159:../src/r_cg_timer_user.c ****     	k = FALSE;
+ 280                             		.loc 1 159 0
+ 281 0160 F5 03 00                		clrb	!_k.2029
+ 160:../src/r_cg_timer_user.c ****     	j = 0;
+ 282                             		.loc 1 160 0
+ 283 0163 F5 04 00                		clrb	!_j.2028
+ 284 0166 EC C1 01 00             		br	!!.L9
+ 285                             	.L8:
+ 161:../src/r_cg_timer_user.c ****     }
+ 162:../src/r_cg_timer_user.c ****     else if ((FALSE == k) && (l == ++j))
+ 286                             		.loc 1 162 0
+ 287 016a 8F 03 00                		mov	a, !_k.2029
+ 288 016d 9D F0                   		mov	r8, a
+ 289 016f D4 F0                   		cmp0	r8 
+ 290 0171 61 E8                   		skz 
+ 291 0173 EC B0 01 00             		br	!!.L10
+ 292                             		.loc 1 162 0 is_stmt 0 discriminator 1
+ 293 0177 8F 04 00                		mov	a, !_j.2028
+ 294 017a 9D F0                   		mov	r8, a
+ 295 017c A4 F0                   		inc	r8
+ 296 017e 8D F0                   		mov	a, r8
+ 297 0180 9F 04 00                		mov	!_j.2028, a
+ 298 0183 9D F1                   		mov	r9, a
+ 299 0185 8F 02 00                		mov	a, !_l.2030
+ 300 0188 9D F0                   		mov	r8, a
+ 301 018a 8D F1                   		mov	a, r9
+ 302 018c 4B F0                   		cmp	a, r8 
+ 303 018e 61 E8                   		skz 
+ 304 0190 EC B0 01 00             		br	!!.L10
+ 163:../src/r_cg_timer_user.c **** 	{
+ 164:../src/r_cg_timer_user.c **** 		/* Turn off the Heat symbol and turn on the Cool symbol */
+ 165:../src/r_cg_timer_user.c **** 		Symbol_Map(LCD_HEAT_OFF);
+ 305                             		.loc 1 165 0 is_stmt 1
+ 306 0194 30 30 31                		movw	ax, #12592
+ 307 0197 B8 00                   		movw	[sp], ax
+ 308 0199 FC 00 00 00             		call	!!%code(_Symbol_Map)
+ 166:../src/r_cg_timer_user.c **** 		Symbol_Map(LCD_COOL_ON);
+ 309                             		.loc 1 166 0
+ 310 019d 30 31 65                		movw	ax, #25905
+ 311 01a0 B8 00                   		movw	[sp], ax
+ 312 01a2 FC 00 00 00             		call	!!%code(_Symbol_Map)
+ 167:../src/r_cg_timer_user.c **** 
+ 168:../src/r_cg_timer_user.c **** 		k = TRUE;
+ 313                             		.loc 1 168 0
+ 314 01a6 E5 03 00                		oneb	!_k.2029
+ 169:../src/r_cg_timer_user.c **** 		j = 0;
+ 315                             		.loc 1 169 0
+ 316 01a9 F5 04 00                		clrb	!_j.2028
+ 317 01ac EC C1 01 00             		br	!!.L9
+ 318                             	.L10:
+ 170:../src/r_cg_timer_user.c **** 	}
+ 171:../src/r_cg_timer_user.c ****     else
+ 172:../src/r_cg_timer_user.c ****     {
+ 173:../src/r_cg_timer_user.c ****     	/* Reset the count when it reaches 10 */
+ 174:../src/r_cg_timer_user.c ****     	if (10u == j)
+ 319                             		.loc 1 174 0
+ 320 01b0 8F 04 00                		mov	a, !_j.2028
+ 321 01b3 9D F0                   		mov	r8, a
+ 322 01b5 4A F0 0A                		cmp	r8, #10 
+ 323 01b8 61 E8                   		skz 
+ 324 01ba EC C1 01 00             		br	!!.L9
+ 175:../src/r_cg_timer_user.c ****     	{
+ 176:../src/r_cg_timer_user.c ****     		j = 0;
+ 325                             		.loc 1 176 0
+ 326 01be F5 04 00                		clrb	!_j.2028
+ 327                             	.L9:
+ 177:../src/r_cg_timer_user.c ****     	}
+ 178:../src/r_cg_timer_user.c ****     }
+ 179:../src/r_cg_timer_user.c ****     
+ 180:../src/r_cg_timer_user.c ****     /* Clear the interrupt flag */
+ 181:../src/r_cg_timer_user.c ****     TMIF01 = 0u;
+ 328                             		.loc 1 181 0
+ 329 01c1 C9 F0 E2 FF             		movw	r8, #-30
+ 330 01c5 AD F0                   		movw	ax, r8
+ 331 01c7 BD F4                   		movw	r12, ax
+ 332 01c9 FA F4                   		movw	hl, r12
+ 333 01cb 8B                      		mov	a, [hl]
+ 334 01cc 9D F2                   		mov	r10, a
+ 335 01ce 5A F2 FB                		and	r10, #-5
+ 336 01d1 AD F0                   		movw	ax, r8
+ 337 01d3 8D F2                   		mov	a, r10
+ 338 01d5 9B                      		mov	[hl], a
+ 182:../src/r_cg_timer_user.c **** }
+ 339                             		.loc 1 182 0
+ 340 01d6 10 06                   		addw	sp, #6
+ 341 01d8 61 EF                   		sel	rb2
+ 342 01da C6                      		pop	hl ; r22
+ 343 01db 61 DF                   		sel	rb1
+ 344 01dd C6                      		pop	hl ; r14
+ 345 01de C4                      		pop	de ; r12
+ 346 01df C2                      		pop	bc ; r10
+ 347 01e0 C0                      		pop	ax ; r8
+ 348 01e1 61 CF                   		sel	rb0
+ 349 01e3 C6                      		pop	hl
+ 350 01e4 C4                      		pop	de
+ 351 01e5 C2                      		pop	bc
+ 352 01e6 C0                      		pop	ax
+ 353 01e7 61 FC                   		reti
+ 354                             	.LFE1:
+ 356                             		.global	_INT_TM02
+ 358                             	_INT_TM02:
+ 359                             	.LFB2:
+ 183:../src/r_cg_timer_user.c **** /**************************************************************************************************
+ 184:../src/r_cg_timer_user.c **** * End of function INT_TM01H
+ 185:../src/r_cg_timer_user.c **** ***************************************************************************************************
+ 186:../src/r_cg_timer_user.c **** 
+ 187:../src/r_cg_timer_user.c **** /**************************************************************************************************
+ 188:../src/r_cg_timer_user.c **** * Function Name: INT_TM02
+ 189:../src/r_cg_timer_user.c **** * Description  : This function is INTTM02 interrupt service routine.
+ 190:../src/r_cg_timer_user.c **** * Arguments    : None
+ 191:../src/r_cg_timer_user.c **** * Return Value : None
+ 192:../src/r_cg_timer_user.c **** ***************************************************************************************************
+ 193:../src/r_cg_timer_user.c **** void INT_TM02 (void)
+ 194:../src/r_cg_timer_user.c **** {
+ 360                             		.loc 1 194 0
+ 361                             		; start of function
+ 362                             		; push 18: ax bc de hl r8 r10 r12 r14 r22
+ 363                             		; locals: 2 bytes
+ 364                             		; outgoing: 4 bytes
+ 365 01e9 61 CF                   		sel	rb0
+ 366 01eb C1                      		push	ax
+ 367                             	.LCFI20:
+ 368 01ec C3                      		push	bc
+ 369                             	.LCFI21:
+ 370 01ed C5                      		push	de
+ 371                             	.LCFI22:
+ 372 01ee C7                      		push	hl
+ 373                             	.LCFI23:
+ 374 01ef 61 DF                   		sel	rb1
+ 375 01f1 C1                      		push	ax ; r8
+ 376                             	.LCFI24:
+ 377 01f2 C3                      		push	bc ; r10
+ 378                             	.LCFI25:
+ 379 01f3 C5                      		push	de ; r12
+ 380                             	.LCFI26:
+ 381 01f4 C7                      		push	hl ; r14
+ 382                             	.LCFI27:
+ 383 01f5 61 EF                   		sel	rb2
+ 384 01f7 C7                      		push	hl ; r22
+ 385                             	.LCFI28:
+ 386 01f8 61 CF                   		sel	rb0
+ 387 01fa 20 06                   		subw	sp, #6
+ 388                             	.LCFI29:
+ 195:../src/r_cg_timer_user.c ****     /* Declare a count variable used to turn on battery level bars in sequence */
+ 196:../src/r_cg_timer_user.c ****     static uint8_t bat_level_indicator = 1u;
+ 197:../src/r_cg_timer_user.c ****     static uint8_t count_direction     = FALSE;
+ 198:../src/r_cg_timer_user.c ****     
+ 199:../src/r_cg_timer_user.c ****     /* Flag used to control the LCD segment changes */
+ 200:../src/r_cg_timer_user.c ****     uint8_t  segment_changer = FALSE;
+ 389                             		.loc 1 200 0
+ 390 01fc C8 05 00                		mov	[sp+5], #0
+ 201:../src/r_cg_timer_user.c ****     
+ 202:../src/r_cg_timer_user.c ****     /* Variable used to count interrupt occurrences */
+ 203:../src/r_cg_timer_user.c ****     static uint8_t segment_change_update = 0u;
+ 204:../src/r_cg_timer_user.c ****     
+ 205:../src/r_cg_timer_user.c ****     /* Used to point to a 2-dimensional array element containing string literals */
+ 206:../src/r_cg_timer_user.c ****     static uint8_t string_counter = 0u;
+ 207:../src/r_cg_timer_user.c **** 
+ 208:../src/r_cg_timer_user.c ****     /* Set the flag for every two counts of the interrupt occurrence */
+ 209:../src/r_cg_timer_user.c ****     if (0x50u == ++segment_change_update)
+ 391                             		.loc 1 209 0
+ 392 01ff 8F 05 00                		mov	a, !_segment_change_update.2037
+ 393 0202 9D F0                   		mov	r8, a
+ 394 0204 A4 F0                   		inc	r8
+ 395 0206 8D F0                   		mov	a, r8
+ 396 0208 9F 05 00                		mov	!_segment_change_update.2037, a
+ 397 020b 9D F0                   		mov	r8, a
+ 398 020d 4A F0 50                		cmp	r8, #80 
+ 399 0210 61 E8                   		skz 
+ 400 0212 EC 2A 02 00             		br	!!.L12
+ 210:../src/r_cg_timer_user.c ****     {
+ 211:../src/r_cg_timer_user.c ****         /* Indicates that the segment needs updating */
+ 212:../src/r_cg_timer_user.c ****     	segment_changer = TRUE;
+ 401                             		.loc 1 212 0
+ 402 0216 C8 05 01                		mov	[sp+5], #1
+ 213:../src/r_cg_timer_user.c ****         
+ 214:../src/r_cg_timer_user.c ****         /* Reset the string counter */
+ 215:../src/r_cg_timer_user.c ****         if (4u == string_counter)
+ 403                             		.loc 1 215 0
+ 404 0219 8F 06 00                		mov	a, !_string_counter.2038
+ 405 021c 9D F0                   		mov	r8, a
+ 406 021e 4A F0 04                		cmp	r8, #4 
+ 407 0221 61 E8                   		skz 
+ 408 0223 EC 2A 02 00             		br	!!.L12
+ 216:../src/r_cg_timer_user.c ****         {
+ 217:../src/r_cg_timer_user.c ****             string_counter = 0u;
+ 409                             		.loc 1 217 0
+ 410 0227 F5 06 00                		clrb	!_string_counter.2038
+ 411                             	.L12:
+ 218:../src/r_cg_timer_user.c ****         }
+ 219:../src/r_cg_timer_user.c ****     }
+ 220:../src/r_cg_timer_user.c ****     
+ 221:../src/r_cg_timer_user.c ****     /* Turn on the number of bars indicated by the counter then increment the counter */
+ 222:../src/r_cg_timer_user.c **** 	switch (bat_level_indicator)
+ 412                             		.loc 1 222 0
+ 413 022a 8F 7B 00                		mov	a, !_bat_level_indicator.2034
+ 414 022d 9D F0                   		mov	r8, a
+ 415 022f CD F1 00                		mov	r9, #0
+ 416 0232 AD F0                   		movw	ax, r8
+ 417 0234 44 02 00                		cmpw	ax, #2 
+ 418 0237 61 F8                   		sknz 
+ 419 0239 EC A1 02 00             		br	!!.L14
+ 420 023d AD F0                   		movw	ax, r8
+ 421 023f 44 02 00                		cmpw	ax, #2 
+ 422 0242 71 FF                   		xor1 CY,a.7
+ 423 0244 61 F3                   		sknh 
+ 424 0246 EC 59 02 00             		br	!!.L15
+ 425 024a AD F0                   		movw	ax, r8
+ 426 024c 44 01 00                		cmpw	ax, #1 
+ 427 024f 61 F8                   		sknz 
+ 428 0251 EC 73 02 00             		br	!!.L16
+ 223:../src/r_cg_timer_user.c **** 	{
+ 224:../src/r_cg_timer_user.c **** 		case BATT_LEVEL_1:
+ 225:../src/r_cg_timer_user.c **** 		{
+ 226:../src/r_cg_timer_user.c **** 			/* Turn on 1 battery bars */
+ 227:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_1, BATTERY_OUTLINE_OFF);
+ 228:../src/r_cg_timer_user.c **** 
+ 229:../src/r_cg_timer_user.c **** 			/* Turn off the battery outline */
+ 230:../src/r_cg_timer_user.c **** 			SEG17_DEF &= (uint8_t)(~0x01u);
+ 231:../src/r_cg_timer_user.c **** 
+ 232:../src/r_cg_timer_user.c **** 			/* Change the count direction */
+ 233:../src/r_cg_timer_user.c **** 			count_direction = TRUE;
+ 234:../src/r_cg_timer_user.c **** 		}
+ 235:../src/r_cg_timer_user.c **** 		break;
+ 236:../src/r_cg_timer_user.c **** 
+ 237:../src/r_cg_timer_user.c **** 		case BATT_LEVEL_2:
+ 238:../src/r_cg_timer_user.c **** 		{
+ 239:../src/r_cg_timer_user.c **** 			/* Turn on 2 battery bars */
+ 240:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_2, BATTERY_OUTLINE_OFF);
+ 241:../src/r_cg_timer_user.c **** 
+ 242:../src/r_cg_timer_user.c **** 			/* Turn off the battery outline */
+ 243:../src/r_cg_timer_user.c **** 			SEG17_DEF &= (uint8_t)(~0x01u);
+ 244:../src/r_cg_timer_user.c **** 		}
+ 245:../src/r_cg_timer_user.c **** 		break;
+ 246:../src/r_cg_timer_user.c **** 
+ 247:../src/r_cg_timer_user.c **** 		case BATT_LEVEL_3:
+ 248:../src/r_cg_timer_user.c **** 		{
+ 249:../src/r_cg_timer_user.c **** 			/* Turn on 3 battery bars */
+ 250:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_3, BATTERY_OUTLINE_OFF);
+ 251:../src/r_cg_timer_user.c **** 
+ 252:../src/r_cg_timer_user.c **** 			/* Turn off the battery outline */
+ 253:../src/r_cg_timer_user.c **** 			SEG17_DEF &= (uint8_t)(~0x01u);
+ 254:../src/r_cg_timer_user.c **** 		}
+ 255:../src/r_cg_timer_user.c **** 		break;
+ 256:../src/r_cg_timer_user.c **** 
+ 257:../src/r_cg_timer_user.c **** 		case BATT_LEVEL_4:
+ 258:../src/r_cg_timer_user.c **** 		{
+ 259:../src/r_cg_timer_user.c **** 			/* Turn on 4 battery bars */
+ 260:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_4, BATTERY_OUTLINE_OFF);
+ 261:../src/r_cg_timer_user.c **** 
+ 262:../src/r_cg_timer_user.c **** 			/* Change the count direction */
+ 263:../src/r_cg_timer_user.c **** 			count_direction = FALSE;
+ 264:../src/r_cg_timer_user.c **** 		}
+ 265:../src/r_cg_timer_user.c **** 		break;
+ 266:../src/r_cg_timer_user.c **** 
+ 267:../src/r_cg_timer_user.c **** 		default:
+ 268:../src/r_cg_timer_user.c **** 		{
+ 269:../src/r_cg_timer_user.c **** 			/* Do nothing */
+ 270:../src/r_cg_timer_user.c **** 		}
+ 271:../src/r_cg_timer_user.c **** 		break;
+ 429                             		.loc 1 271 0
+ 430 0255 EC 05 03 00             		br	!!.L19
+ 431                             	.L15:
+ 222:../src/r_cg_timer_user.c **** 	switch (bat_level_indicator)
+ 432                             		.loc 1 222 0
+ 433 0259 AD F0                   		movw	ax, r8
+ 434 025b 44 03 00                		cmpw	ax, #3 
+ 435 025e 61 F8                   		sknz 
+ 436 0260 EC CC 02 00             		br	!!.L17
+ 437 0264 AD F0                   		movw	ax, r8
+ 438 0266 44 04 00                		cmpw	ax, #4 
+ 439 0269 61 F8                   		sknz 
+ 440 026b EC F7 02 00             		br	!!.L18
+ 441                             		.loc 1 271 0
+ 442 026f EC 05 03 00             		br	!!.L19
+ 443                             	.L16:
+ 227:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_1, BATTERY_OUTLINE_OFF);
+ 444                             		.loc 1 227 0
+ 445 0273 C8 00 01                		mov	[sp], #1
+ 446 0276 C8 02 00                		mov	[sp+2], #0
+ 447 0279 FC 00 00 00             		call	!!%code(_SECTD_Glyph_Map)
+ 230:../src/r_cg_timer_user.c **** 			SEG17_DEF &= (uint8_t)(~0x01u);
+ 448                             		.loc 1 230 0
+ 449 027d C9 F0 0E 04             		movw	r8, #1038
+ 450 0281 C9 F2 0E 04             		movw	r10, #1038
+ 451 0285 AD F2                   		movw	ax, r10
+ 452 0287 BD F4                   		movw	r12, ax
+ 453 0289 FA F4                   		movw	hl, r12
+ 454 028b 8B                      		mov	a, [hl]
+ 455 028c 9D F2                   		mov	r10, a
+ 456 028e 5A F2 FE                		and	r10, #-2
+ 457 0291 AD F0                   		movw	ax, r8
+ 458 0293 BD F4                   		movw	r12, ax
+ 459 0295 FA F4                   		movw	hl, r12
+ 460 0297 8D F2                   		mov	a, r10
+ 461 0299 9B                      		mov	[hl], a
+ 233:../src/r_cg_timer_user.c **** 			count_direction = TRUE;
+ 462                             		.loc 1 233 0
+ 463 029a E5 07 00                		oneb	!_count_direction.2035
+ 235:../src/r_cg_timer_user.c **** 		break;
+ 464                             		.loc 1 235 0
+ 465 029d EC 05 03 00             		br	!!.L19
+ 466                             	.L14:
+ 240:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_2, BATTERY_OUTLINE_OFF);
+ 467                             		.loc 1 240 0
+ 468 02a1 C8 00 02                		mov	[sp], #2
+ 469 02a4 C8 02 00                		mov	[sp+2], #0
+ 470 02a7 FC 00 00 00             		call	!!%code(_SECTD_Glyph_Map)
+ 243:../src/r_cg_timer_user.c **** 			SEG17_DEF &= (uint8_t)(~0x01u);
+ 471                             		.loc 1 243 0
+ 472 02ab C9 F0 0E 04             		movw	r8, #1038
+ 473 02af C9 F2 0E 04             		movw	r10, #1038
+ 474 02b3 AD F2                   		movw	ax, r10
+ 475 02b5 BD F4                   		movw	r12, ax
+ 476 02b7 FA F4                   		movw	hl, r12
+ 477 02b9 8B                      		mov	a, [hl]
+ 478 02ba 9D F2                   		mov	r10, a
+ 479 02bc 5A F2 FE                		and	r10, #-2
+ 480 02bf AD F0                   		movw	ax, r8
+ 481 02c1 BD F4                   		movw	r12, ax
+ 482 02c3 FA F4                   		movw	hl, r12
+ 483 02c5 8D F2                   		mov	a, r10
+ 484 02c7 9B                      		mov	[hl], a
+ 245:../src/r_cg_timer_user.c **** 		break;
+ 485                             		.loc 1 245 0
+ 486 02c8 EC 05 03 00             		br	!!.L19
+ 487                             	.L17:
+ 250:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_3, BATTERY_OUTLINE_OFF);
+ 488                             		.loc 1 250 0
+ 489 02cc C8 00 03                		mov	[sp], #3
+ 490 02cf C8 02 00                		mov	[sp+2], #0
+ 491 02d2 FC 00 00 00             		call	!!%code(_SECTD_Glyph_Map)
+ 253:../src/r_cg_timer_user.c **** 			SEG17_DEF &= (uint8_t)(~0x01u);
+ 492                             		.loc 1 253 0
+ 493 02d6 C9 F0 0E 04             		movw	r8, #1038
+ 494 02da C9 F2 0E 04             		movw	r10, #1038
+ 495 02de AD F2                   		movw	ax, r10
+ 496 02e0 BD F4                   		movw	r12, ax
+ 497 02e2 FA F4                   		movw	hl, r12
+ 498 02e4 8B                      		mov	a, [hl]
+ 499 02e5 9D F2                   		mov	r10, a
+ 500 02e7 5A F2 FE                		and	r10, #-2
+ 501 02ea AD F0                   		movw	ax, r8
+ 502 02ec BD F4                   		movw	r12, ax
+ 503 02ee FA F4                   		movw	hl, r12
+ 504 02f0 8D F2                   		mov	a, r10
+ 505 02f2 9B                      		mov	[hl], a
+ 255:../src/r_cg_timer_user.c **** 		break;
+ 506                             		.loc 1 255 0
+ 507 02f3 EC 05 03 00             		br	!!.L19
+ 508                             	.L18:
+ 260:../src/r_cg_timer_user.c **** 			SECTD_Glyph_Map(BATT_LEVEL_4, BATTERY_OUTLINE_OFF);
+ 509                             		.loc 1 260 0
+ 510 02f7 C8 00 04                		mov	[sp], #4
+ 511 02fa C8 02 00                		mov	[sp+2], #0
+ 512 02fd FC 00 00 00             		call	!!%code(_SECTD_Glyph_Map)
+ 263:../src/r_cg_timer_user.c **** 			count_direction = FALSE;
+ 513                             		.loc 1 263 0
+ 514 0301 F5 07 00                		clrb	!_count_direction.2035
+ 265:../src/r_cg_timer_user.c **** 		break;
+ 515                             		.loc 1 265 0
+ 516 0304 00                      		nop
+ 517                             	.L19:
+ 272:../src/r_cg_timer_user.c **** 	}
+ 273:../src/r_cg_timer_user.c **** 
+ 274:../src/r_cg_timer_user.c **** 	/* Check if the counter is greater than the available number of bars */
+ 275:../src/r_cg_timer_user.c **** 	if (TRUE == count_direction)
+ 518                             		.loc 1 275 0
+ 519 0305 8F 07 00                		mov	a, !_count_direction.2035
+ 520 0308 9D F0                   		mov	r8, a
+ 521 030a 4A F0 01                		cmp	r8, #1 
+ 522 030d 61 E8                   		skz 
+ 523 030f EC 23 03 00             		br	!!.L20
+ 276:../src/r_cg_timer_user.c **** 	{
+ 277:../src/r_cg_timer_user.c **** 		bat_level_indicator++;
+ 524                             		.loc 1 277 0
+ 525 0313 8F 7B 00                		mov	a, !_bat_level_indicator.2034
+ 526 0316 9D F0                   		mov	r8, a
+ 527 0318 A4 F0                   		inc	r8
+ 528 031a 8D F0                   		mov	a, r8
+ 529 031c 9F 7B 00                		mov	!_bat_level_indicator.2034, a
+ 530 031f EC 2F 03 00             		br	!!.L21
+ 531                             	.L20:
+ 278:../src/r_cg_timer_user.c **** 	}
+ 279:../src/r_cg_timer_user.c **** 	else
+ 280:../src/r_cg_timer_user.c **** 	{
+ 281:../src/r_cg_timer_user.c **** 		bat_level_indicator--;
+ 532                             		.loc 1 281 0
+ 533 0323 8F 7B 00                		mov	a, !_bat_level_indicator.2034
+ 534 0326 9D F0                   		mov	r8, a
+ 535 0328 B4 F0                   		dec	r8
+ 536 032a 8D F0                   		mov	a, r8
+ 537 032c 9F 7B 00                		mov	!_bat_level_indicator.2034, a
+ 538                             	.L21:
+ 282:../src/r_cg_timer_user.c **** 	}
+ 283:../src/r_cg_timer_user.c ****     
+ 284:../src/r_cg_timer_user.c **** 	/* Clear the interrupt flag */
+ 285:../src/r_cg_timer_user.c ****     TMIF02 = 0x0;
+ 539                             		.loc 1 285 0
+ 540 032f C9 F0 E2 FF             		movw	r8, #-30
+ 541 0333 AD F0                   		movw	ax, r8
+ 542 0335 BD F4                   		movw	r12, ax
+ 543 0337 FA F4                   		movw	hl, r12
+ 544 0339 8B                      		mov	a, [hl]
+ 545 033a 9D F2                   		mov	r10, a
+ 546 033c 5A F2 F7                		and	r10, #-9
+ 547 033f AD F0                   		movw	ax, r8
+ 548 0341 8D F2                   		mov	a, r10
+ 549 0343 9B                      		mov	[hl], a
+ 286:../src/r_cg_timer_user.c **** }
+ 550                             		.loc 1 286 0
+ 551 0344 10 06                   		addw	sp, #6
+ 552 0346 61 EF                   		sel	rb2
+ 553 0348 C6                      		pop	hl ; r22
+ 554 0349 61 DF                   		sel	rb1
+ 555 034b C6                      		pop	hl ; r14
+ 556 034c C4                      		pop	de ; r12
+ 557 034d C2                      		pop	bc ; r10
+ 558 034e C0                      		pop	ax ; r8
+ 559 034f 61 CF                   		sel	rb0
+ 560 0351 C6                      		pop	hl
+ 561 0352 C4                      		pop	de
+ 562 0353 C2                      		pop	bc
+ 563 0354 C0                      		pop	ax
+ 564 0355 61 FC                   		reti
+ 565                             	.LFE2:
+ 567                             		.local	_i.2023
+ 568                             		.comm	_i.2023,1,1
+ 569                             		.local	_j.2024
+ 570                             		.comm	_j.2024,1,1
+ 571                             		.local	_l.2030
+ 572                             		.comm	_l.2030,1,1
+ 573                             		.local	_k.2029
+ 574                             		.comm	_k.2029,1,1
+ 575                             		.local	_j.2028
+ 576                             		.comm	_j.2028,1,1
+ 577                             		.local	_segment_change_update.2037
+ 578                             		.comm	_segment_change_update.2037,1,1
+ 579                             		.local	_string_counter.2038
+ 580                             		.comm	_string_counter.2038,1,1
+ 581                             	.data
+ 584                             	_bat_level_indicator.2034:
+ 585 007b 01                      		.byte	1
+ 586                             		.local	_count_direction.2035
+ 587                             		.comm	_count_direction.2035,1,1
+ 750                             	.Letext0:
+ 751                             		.file 2 "../src/iodefine.h"
+ 752                             		.file 3 "../src/r_cg_macrodriver.h"
+ 753                             		.file 4 "../src/r_cg_adc.h"

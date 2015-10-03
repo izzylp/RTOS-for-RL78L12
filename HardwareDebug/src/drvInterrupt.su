@@ -1,0 +1,2 @@
+drvInterrupt.c:15:6:initInterrupt	0	static
+drvInterrupt.c:20:9:getIntDriver	2	static

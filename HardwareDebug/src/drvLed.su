@@ -1,0 +1,5 @@
+drvLed.c:9:6:initLed	0	static
+drvLed.c:22:6:ligaLed	2	static
+drvLed.c:40:6:desligaLed	2	static
+drvLed.c:58:6:toggleLed	2	static
+drvLed.c:77:9:getLedDriver	2	static

@@ -1,0 +1,6 @@
+r_cg_it.c:49:6:R_IT_Create	0	static
+r_cg_it.c:64:6:R_IT_Start	0	static
+r_cg_it.c:81:7:R_IT_enable_interrupts	0	static
+r_cg_it.c:99:6:R_IT_Stop	0	static
+r_cg_it.c:120:6:R_IT_Set_Power_Off	0	static
+r_cg_it.c:135:6:IT_Change_Timer_Condition	0	static

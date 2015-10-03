@@ -1,0 +1,11 @@
+kernel.c:33:6:IdleFunc	0	static
+kernel.c:40:6:timedLoopStart	8	static
+kernel.c:44:6:timedLoopWait	16	static
+kernel.c:51:6:delay	2	static
+kernel.c:56:6:createStack	0	static
+kernel.c:131:6:CreateIdleProc	8	static
+kernel.c:167:6:kernelInit	10	static
+kernel.c:187:6:kernelAddProc	56	static
+kernel.c:228:6:kernelLoop	0	static
+kernel.c:247:6:Scheduler	80	static
+kernel.c:314:6:INT_IT	34	static
